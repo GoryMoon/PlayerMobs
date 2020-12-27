@@ -418,12 +418,13 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
 
     @Override
     public ITextComponent getName() {
-        return getCustomName();
+        ITextComponent customName = getCustomName();
+        return customName != null ? customName: new StringTextComponent(getUsername());
     }
 
     @Override
     public ITextComponent getDisplayName() {
-        return getCustomName();
+        return getName();
     }
 
     @Override
