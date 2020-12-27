@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="fd54361b-f05b-4b75-8e67-5a558f893fe2" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/modules/PlayerMobs.main.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/versions.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/prepare_keystore.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/cd.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/ci.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/generated/resources/.cache/cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/generated/resources/assets/player_mobs/lang/en_ud.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/generated/resources/assets/player_mobs/lang/en_us.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/generated/resources/assets/player_mobs/models/item/player_mob_spawn_egg.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/generated/resources/data/player_mobs/loot_tables/entities/player_mob.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/Configs.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/Constants.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/LangKeys.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/PlayerMobs.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/PlayerMobsCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/client/render/PlayerMobCapeLayer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/client/render/PlayerMobRenderer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/entity/EntityRegistry.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/entity/PlayerMobEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/names/NameManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/names/ProfileUpdater.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/sound/SoundBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/sound/SoundRegistry.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/utils/CustomRegistrate.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/utils/DeathHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/utils/ItemManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/utils/SpawnHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/se/gory_moon/player_mobs/utils/TextureUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/META-INF/accesstransformer.cfg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/META-INF/mods.toml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/assets/player_mobs/sounds.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/pack.mcmeta" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="PlayerMobs" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="PlayerMobs" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="PlayerMobs" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="fg_runs" type="c8890929:TasksNode$1" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--tags" />
+        <option name="title" value="All" />
+      </GitPushTagMode>
+    </option>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="MIXED" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$APPLICATION_HOME_DIR$/plugins/maven/lib/maven3" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="1ltLfyPV5anbSPcufNCtvc3aIEA" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="GoToClass.includeLibraries" value="false" />
+    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="add_unversioned_files" value="true" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="extract.method.default.visibility" value="private" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="options.lastSelected" value="preferences.lookFeel" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="show.unlinked.gradle.project.popup" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.runData">
+    <configuration default="true" type="Applet">
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PlayerMobs [genIntellijRuns]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="genIntellijRuns" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <option name="TEST_OBJECT" value="class" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="TestNG">
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.runClient" />
+      <item itemvalue="Application.runData" />
+      <item itemvalue="Application.runServer" />
+      <item itemvalue="Gradle.PlayerMobs [genIntellijRuns]" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.PlayerMobs [genIntellijRuns]" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fd54361b-f05b-4b75-8e67-5a558f893fe2" name="Default Changelist" comment="" />
+      <created>1608411551090</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1608411551090</updated>
+      <workItem from="1608411553541" duration="2628000" />
+      <workItem from="1608421159383" duration="906000" />
+      <workItem from="1608422515362" duration="180000" />
+      <workItem from="1608422708108" duration="29000" />
+      <workItem from="1608422746959" duration="749000" />
+      <workItem from="1608423646093" duration="24000" />
+      <workItem from="1608424184539" duration="1817000" />
+      <workItem from="1608494873309" duration="255000" />
+      <workItem from="1608495137407" duration="101389000" />
+      <workItem from="1608993555874" duration="45000" />
+      <workItem from="1608993623020" duration="26000" />
+      <workItem from="1608993658356" duration="526000" />
+      <workItem from="1608994205073" duration="44000" />
+      <workItem from="1608994253431" duration="8755000" />
+    </task>
+    <task id="LOCAL-00001" summary="feat(build) First release candidate">
+      <created>1609029594393</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1609029594393</updated>
+    </task>
+    <task id="LOCAL-00002" summary="feat(build): First release candidate">
+      <created>1609029765016</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1609029765016</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat(build) First release candidate" />
+    <MESSAGE value="feat(build): First release candidate" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(build): First release candidate" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="304" y="166" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1608945579998">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="304" y="166" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1680.963@0.23.1680.963" timestamp="1608945579998" />
+    <state x="653" y="227" key="#com.intellij.ide.util.MemberChooser" timestamp="1608667092320">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="653" y="227" key="#com.intellij.ide.util.MemberChooser/0.23.1680.963@0.23.1680.963" timestamp="1608667092320" />
+    <state x="358" y="438" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog" timestamp="1608666744561">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="358" y="438" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog/0.23.1680.963@0.23.1680.963" timestamp="1608666744561" />
+    <state x="547" y="319" key="#com.intellij.refactoring.move.moveMembers.MoveMembersDialog" timestamp="1608652715619">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="547" y="319" key="#com.intellij.refactoring.move.moveMembers.MoveMembersDialog/0.23.1680.963@0.23.1680.963" timestamp="1608652715619" />
+    <state x="522" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1608572935721">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="522" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1680.963@0.23.1680.963" timestamp="1608572935721" />
+    <state x="603" y="222" key="#xdebugger.evaluate" timestamp="1608942403237">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="603" y="222" key="#xdebugger.evaluate/0.23.1680.963@0.23.1680.963" timestamp="1608942403237" />
+    <state x="628" y="253" key="FileChooserDialogImpl" timestamp="1608664465242">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="628" y="253" key="FileChooserDialogImpl/0.23.1680.963@0.23.1680.963" timestamp="1608664465242" />
+    <state width="1638" height="245" key="GridCell.Tab.0.bottom" timestamp="1609029578066">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state width="1638" height="245" key="GridCell.Tab.0.bottom/0.23.1680.963@0.23.1680.963" timestamp="1609029578066" />
+    <state width="1638" height="245" key="GridCell.Tab.0.center" timestamp="1609029578066">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state width="1638" height="245" key="GridCell.Tab.0.center/0.23.1680.963@0.23.1680.963" timestamp="1609029578066" />
+    <state width="1638" height="245" key="GridCell.Tab.0.left" timestamp="1609029578066">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state width="1638" height="245" key="GridCell.Tab.0.left/0.23.1680.963@0.23.1680.963" timestamp="1609029578066" />
+    <state width="1638" height="245" key="GridCell.Tab.0.right" timestamp="1609029578066">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state width="1638" height="245" key="GridCell.Tab.0.right/0.23.1680.963@0.23.1680.963" timestamp="1609029578066" />
+    <state width="1638" height="303" key="GridCell.Tab.1.bottom" timestamp="1608998433957">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state width="1638" height="303" key="GridCell.Tab.1.bottom/0.23.1680.963@0.23.1680.963" timestamp="1608998433957" />
+    <state width="1638" height="303" key="GridCell.Tab.1.center" timestamp="1608998433956">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state width="1638" height="303" key="GridCell.Tab.1.center/0.23.1680.963@0.23.1680.963" timestamp="1608998433956" />
+    <state width="1638" height="303" key="GridCell.Tab.1.left" timestamp="1608998433956">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state width="1638" height="303" key="GridCell.Tab.1.left/0.23.1680.963@0.23.1680.963" timestamp="1608998433956" />
+    <state width="1638" height="303" key="GridCell.Tab.1.right" timestamp="1608998433957">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state width="1638" height="303" key="GridCell.Tab.1.right/0.23.1680.963@0.23.1680.963" timestamp="1608998433957" />
+    <state x="639" y="429" key="ReplaceDuplicatesPrompt" timestamp="1608573765080">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="639" y="429" key="ReplaceDuplicatesPrompt/0.23.1680.963@0.23.1680.963" timestamp="1608573765080" />
+    <state x="341" y="143" key="SettingsEditor" timestamp="1608938184335">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="341" y="143" key="SettingsEditor/0.23.1680.963@0.23.1680.963" timestamp="1608938184335" />
+    <state x="440" y="244" key="Vcs.Push.Dialog.v2" timestamp="1609030986226">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="440" y="244" key="Vcs.Push.Dialog.v2/0.23.1680.963@0.23.1680.963" timestamp="1609030986226" />
+    <state x="633" y="425" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1608550902513">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="633" y="425" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1680.963@0.23.1680.963" timestamp="1608550902513" />
+    <state x="374" y="240" width="931" height="595" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1608944737064">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="374" y="240" width="931" height="595" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.23.1680.963@0.23.1680.963" timestamp="1608944737064" />
+    <state x="578" y="249" width="557" height="510" key="extract.method.dialog" timestamp="1608573748553">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="578" y="249" width="557" height="510" key="extract.method.dialog/0.23.1680.963@0.23.1680.963" timestamp="1608573748553" />
+    <state x="640" y="370" key="scopes" timestamp="1608548326200">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="640" y="370" key="scopes/0.23.1680.963@0.23.1680.963" timestamp="1608548326200" />
+    <state x="505" y="234" width="670" height="676" key="search.everywhere.popup" timestamp="1608997444273">
+      <screen x="0" y="23" width="1680" height="963" />
+    </state>
+    <state x="505" y="234" width="670" height="676" key="search.everywhere.popup/0.23.1680.963@0.23.1680.963" timestamp="1608997444273" />
+  </component>
+</project>
