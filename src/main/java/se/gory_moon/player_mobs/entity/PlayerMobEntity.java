@@ -418,18 +418,12 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
 
     @Override
     public ITextComponent getName() {
-        return new StringTextComponent(getUsername());
-    }
-
-    @Nullable
-    @Override
-    public ITextComponent getCustomName() {
-        return getName();
+        return getCustomName();
     }
 
     @Override
     public ITextComponent getDisplayName() {
-        return getName();
+        return getCustomName();
     }
 
     @Override
@@ -473,6 +467,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     public void setUsername(String name) {
         String oldName = getUsername();
         getDataManager().set(NAME, name);
+        setCustomName(new StringTextComponent(name));
 
         if("Herobrine".equals(name)){
             getAttribute(Attributes.ATTACK_DAMAGE).applyPersistentModifier(new AttributeModifier("Herobrine Damage Bonus", 1, AttributeModifier.Operation.MULTIPLY_TOTAL));
