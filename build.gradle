@@ -19,7 +19,7 @@ apply plugin: 'maven-publish'
 
 version = mod_version
 group = 'se.gory_moon'
-archivesBaseName = 'playermobs'
+archivesBaseName = 'PlayerMobs'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -32,7 +32,7 @@ minecraft {
 
     mappings channel: mcp_channel, version: mcp_mappings
     
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
         client {
@@ -42,7 +42,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                playerinvasion {
+                player_mobs {
                     source sourceSets.main
                 }
             }
@@ -55,7 +55,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                playerinvasion {
+                player_mobs {
                     source sourceSets.main
                 }
             }
@@ -68,10 +68,10 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', 'playermobs', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'player_mobs', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                playerinvasion {
+                player_mobs {
                     source sourceSets.main
                 }
             }
@@ -88,7 +88,7 @@ configurations {
 
 shadowJar {
     configurations = [project.configurations.shade]
-    relocate 'com.tterrag.registrate', 'se.gory_moon.playermobs.repack.registrate'
+    relocate 'com.tterrag.registrate', 'se.gory_moon.player_mobs.repack.registrate'
     classifier = ''
 }
 
@@ -123,7 +123,7 @@ task deobfJar(type: ShadowJar) {
     from sourceSets.main.output
 
     configurations = [project.configurations.shade]
-    relocate 'com.tterrag.registrate', 'se.gory_moon.playermobs.repack.registrate'
+    relocate 'com.tterrag.registrate', 'se.gory_moon.player_mobs.repack.registrate'
 
     classifier = 'deobf'
 }
@@ -145,7 +145,7 @@ artifacts {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "playermobs",
+            "Specification-Title": "player_mobs",
             "Specification-Vendor": "GoryMoon",
             "Specification-Version": "1", // We are version 1 of ourselves
             "Implementation-Title": project.name,

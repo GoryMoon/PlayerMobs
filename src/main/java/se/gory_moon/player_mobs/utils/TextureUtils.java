@@ -1,10 +1,10 @@
-package se.gory_moon.playermobs.client;
+package se.gory_moon.player_mobs.utils;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
-import se.gory_moon.playermobs.entity.PlayerMobEntity;
+import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 
 import java.util.Map;
 
@@ -43,7 +43,11 @@ public class TextureUtils {
         }
 
         if (profile != null && profile.getName() != null) {
-            Minecraft.getInstance().getSkinManager().loadProfileTextures(profile, entity.getSkinCallback(), true);
+            Minecraft mc = Minecraft.getInstance();
+            Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = mc.getSkinManager().loadSkinFromCache(profile);
+            if (map.containsKey(type)) {
+                return mc.getSkinManager().loadSkin(map.get(type), type, entity.getSkinCallback());
+            }
         }
         return getDefault(profile, type);
     }

@@ -1,6 +1,5 @@
-package se.gory_moon.playermobs.entity;
+package se.gory_moon.player_mobs.entity;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.resources.SkinManager;
@@ -40,6 +39,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.ShootableItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -47,8 +47,10 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.GroundPathNavigator;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.math.MathHelper;
@@ -61,12 +63,15 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
-import se.gory_moon.playermobs.Configs;
-import se.gory_moon.playermobs.names.NameManager;
-import se.gory_moon.playermobs.names.ProfileUpdater;
+import se.gory_moon.player_mobs.Configs;
+import se.gory_moon.player_mobs.names.NameManager;
+import se.gory_moon.player_mobs.names.ProfileUpdater;
+import se.gory_moon.player_mobs.sound.SoundRegistry;
+import se.gory_moon.player_mobs.utils.ItemManager;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
@@ -77,6 +82,13 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     private boolean skinAvailable;
     private boolean capeAvailable;
     private boolean profileReady;
+
+    public double prevChasingPosX;
+    public double prevChasingPosY;
+    public double prevChasingPosZ;
+    public double chasingPosX;
+    public double chasingPosY;
+    public double chasingPosZ;
 
     private static final UUID BABY_SPEED_BOOST_ID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
     private static final AttributeModifier BABY_SPEED_BOOST = new AttributeModifier(BABY_SPEED_BOOST_ID, "Baby speed boost", 0.5D, AttributeModifier.Operation.MULTIPLY_BASE);
@@ -100,8 +112,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     };
 
     public PlayerMobEntity(World worldIn) {
-        super(EntityRegistry.PLAYER_MOB_ENTITY.get(), worldIn);
-        this.setCombatTask();
+        this(EntityRegistry.PLAYER_MOB_ENTITY.get(), worldIn);
     }
 
     public PlayerMobEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
@@ -113,7 +124,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         return LivingEntity.registerAttributes()
                 .createMutableAttribute(Attributes.FOLLOW_RANGE, 35D)
                 .createMutableAttribute(Attributes.ATTACK_KNOCKBACK)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 4D)
+                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 3.5D)
                 .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.24D);
     }
 
@@ -157,21 +168,20 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         if (rand.nextFloat() < (difficulty.getDifficulty() == Difficulty.HARD ? 0.1F: 0.5F)) {
             int i = rand.nextInt(3);
 
-            if (i == 0) {
-                // TODO ranom tools?
-                setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.STONE_SWORD));
-                if (difficulty.getDifficulty() == Difficulty.HARD) {
-                    if (rand.nextFloat() > 0.5f) {
-                        setItemStackToSlot(EquipmentSlotType.OFFHAND, new ItemStack(Items.SHIELD));
-                        getAttribute(Attributes.MAX_HEALTH).applyPersistentModifier(new AttributeModifier("Shield Bonus", rand.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.MULTIPLY_TOTAL));
+            if (i <= 1) {
+                ItemStack stack = ItemManager.INSTANCE.getRandomMainHand(rand);
+                setItemStackToSlot(EquipmentSlotType.MAINHAND, stack);
+                if (rand.nextFloat() > 0.5f) {
+                    if (stack.getItem() instanceof ShootableItem) {
+                        ArrayList<ResourceLocation> potions = new ArrayList<>(ForgeRegistries.POTION_TYPES.getKeys());
+                        Potion potion = ForgeRegistries.POTION_TYPES.getValue(potions.get(rand.nextInt(potions.size())));
+                        setItemStackToSlot(EquipmentSlotType.OFFHAND, PotionUtils.addPotionToItemStack(new ItemStack(Items.TIPPED_ARROW), potion));
+                    } else {
+                        if (difficulty.getDifficulty() == Difficulty.HARD) {
+                            setItemStackToSlot(EquipmentSlotType.OFFHAND, ItemManager.INSTANCE.getRandomOffHand(rand));
+                            getAttribute(Attributes.MAX_HEALTH).applyPersistentModifier(new AttributeModifier("Shield Bonus", rand.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.MULTIPLY_TOTAL));
+                        }
                     }
-                }
-            } else if (i == 1){
-                setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BOW));
-                if (rand.nextFloat() > 0.5F) {
-                    ArrayList<ResourceLocation> potions = new ArrayList<>(ForgeRegistries.POTION_TYPES.getKeys());
-                    Potion potion = ForgeRegistries.POTION_TYPES.getValue(potions.get(rand.nextInt(potions.size())));
-                    setItemStackToSlot(EquipmentSlotType.OFFHAND, PotionUtils.addPotionToItemStack(new ItemStack(Items.TIPPED_ARROW), potion));
                 }
             }
         }
@@ -186,51 +196,91 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     @Override
+    public void notifyDataManagerChange(DataParameter<?> key) {
+        if (IS_CHILD.equals(key)) {
+            this.recalculateSize();
+        }
+
+        super.notifyDataManagerChange(key);
+    }
+
+    @Override
+    protected int getExperiencePoints(PlayerEntity player) {
+        if (this.isChild()) {
+            this.experienceValue = (int)((float)this.experienceValue * 2.5F);
+        }
+
+        return super.getExperiencePoints(player);
+    }
+
+    @Override
     public float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn) {
-        if (poseIn == Pose.SWIMMING) {
-            return 0.4F;
-        }
-        return 1.62F;
+        return this.isChild() ? 0.93F: 1.62F;
     }
 
     @Override
-    public void tick() {
-        super.tick();
-
-        if (isPoseClear(Pose.SWIMMING)) {
-            Pose pose;
-            if (isSwimming()) {
-                pose = Pose.SWIMMING;
-            } else if (isSneaking()) {
-                pose = Pose.CROUCHING;
-            } else {
-                pose = Pose.STANDING;
-            }
-
-            if (!isPoseClear(pose)) {
-                if (isPoseClear(Pose.CROUCHING)) {
-                    pose = Pose.CROUCHING;
-                } else {
-                    pose = Pose.SWIMMING;
-                }
-            }
-            setPose(pose);
-        }
+    public boolean canPassengerSteer() {
+        return false;
     }
 
     @Override
-    public ImmutableList<Pose> getAvailablePoses() {
-        return ImmutableList.of(Pose.STANDING, Pose.CROUCHING, Pose.SWIMMING);
+    public boolean isElytraFlying() {
+        return false;
     }
 
     @Override
     public double getYOffset() {
-        return -0.35D;
+        return this.isChild() ? 0.0D : -0.45D;
     }
 
     @Override
     public boolean canEquipItem(ItemStack stack) {
         return (stack.getItem() != Items.EGG || !this.isChild() || !this.isPassenger()) && super.canEquipItem(stack);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        this.prevChasingPosX = this.chasingPosX;
+        this.prevChasingPosY = this.chasingPosY;
+        this.prevChasingPosZ = this.chasingPosZ;
+        double x = this.getPosX() - this.chasingPosX;
+        double y = this.getPosY() - this.chasingPosY;
+        double z = this.getPosZ() - this.chasingPosZ;
+        double maxCapeAngle = 10.0D;
+        if (x > maxCapeAngle) {
+            this.chasingPosX = this.getPosX();
+            this.prevChasingPosX = this.chasingPosX;
+        }
+
+        if (z > maxCapeAngle) {
+            this.chasingPosZ = this.getPosZ();
+            this.prevChasingPosZ = this.chasingPosZ;
+        }
+
+        if (y > maxCapeAngle) {
+            this.chasingPosY = this.getPosY();
+            this.prevChasingPosY = this.chasingPosY;
+        }
+
+        if (x < -maxCapeAngle) {
+            this.chasingPosX = this.getPosX();
+            this.prevChasingPosX = this.chasingPosX;
+        }
+
+        if (z < -maxCapeAngle) {
+            this.chasingPosZ = this.getPosZ();
+            this.prevChasingPosZ = this.chasingPosZ;
+        }
+
+        if (y < -maxCapeAngle) {
+            this.chasingPosY = this.getPosY();
+            this.prevChasingPosY = this.chasingPosY;
+        }
+
+        this.chasingPosX += x * 0.25D;
+        this.chasingPosZ += z * 0.25D;
+        this.chasingPosY += y * 0.25D;
     }
 
     @Override
@@ -248,6 +298,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
 
     @Override
     public void setChild(boolean isChild) {
+        super.setChild(isChild);
         this.getDataManager().set(IS_CHILD, isChild);
         if (this.world != null && !this.world.isRemote) {
             ModifiableAttributeInstance attribute = this.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -269,9 +320,10 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     @Override
     public ILivingEntityData onInitialSpawn(IServerWorld world, DifficultyInstance difficulty, SpawnReason reason, @Nullable ILivingEntityData spawnData, @Nullable CompoundNBT dataTag) {
         spawnData = super.onInitialSpawn(world, difficulty, reason, spawnData, dataTag);
-        setUsername(NameManager.INSTANCE.getRandomName());
         this.setEquipmentBasedOnDifficulty(difficulty);
         this.setEnchantmentBasedOnDifficulty(difficulty);
+
+        setUsername(NameManager.INSTANCE.getRandomName());
         this.setCombatTask();
         float additionalDifficulty = difficulty.getClampedAdditionalDifficulty();
         this.setCanPickUpLoot(this.rand.nextFloat() < Configs.COMMON.pickupItemsChance.get() * additionalDifficulty);
@@ -380,6 +432,27 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         return getName();
     }
 
+    @Override
+    public boolean hasCustomName() {
+        return true;
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return SoundRegistry.PLAYER_MOB_LIVING.get();
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
+        return SoundRegistry.PLAYER_MOB_HURT.get();
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundRegistry.PLAYER_MOB_DEATH.get();
+    }
+
+
     public GameProfile getProfile() {
         if (profile == null && !getUsername().isEmpty()) {
             profile = new GameProfile(null, getUsername());
@@ -388,7 +461,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         return profile;
     }
 
-    public void setProfile(GameProfile profile) {
+    public void setProfile(@Nullable GameProfile profile) {
         this.profile = profile;
         profileReady = true;
     }
@@ -398,6 +471,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     public void setUsername(String name) {
+        String oldName = getUsername();
         getDataManager().set(NAME, name);
 
         if("Herobrine".equals(name)){
@@ -405,7 +479,9 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
             getAttribute(Attributes.MOVEMENT_SPEED).applyPersistentModifier(new AttributeModifier("Herobrine Speed Bonus", 0.5, AttributeModifier.Operation.MULTIPLY_TOTAL));
         }
 
-        getUsername();
+        if (!Objects.equals(oldName, name)) {
+            getProfile();
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -449,5 +525,4 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
                 return cape;
         }
     }
-
 }

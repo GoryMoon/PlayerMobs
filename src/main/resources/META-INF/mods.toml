@@ -1,15 +1,14 @@
 modLoader="javafml"
 loaderVersion="[34,)"
-license="LGPL 3"
-issueTrackerURL="https://github.com/GoryMoon/PlayerMobs"
+license="LGPL v.3"
+issueTrackerURL="https://github.com/GoryMoon/PlayerMobs/issues"
 
 [[mods]]
-    modId="playermobs"
+    modId="player_mobs"
     version="${file.jarVersion}"
     displayName="Player Mobs"
-    #updateJSONURL="http://myurl.me/"
+    updateJSONURL="https://github.com/GoryMoon/PlayerMobs/tree/update/versions.json"
     displayURL="https://www.curseforge.com/minecraft/mc-mods/player-mobs"
-    #logoFile="examplemod.png"
     credits="Thanks to Headcrumbs for the base idea."
     authors="GoryMoon"
     description='''

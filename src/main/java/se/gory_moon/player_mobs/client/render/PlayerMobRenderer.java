@@ -1,4 +1,4 @@
-package se.gory_moon.playermobs.client.render;
+package se.gory_moon.player_mobs.client.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -13,8 +13,8 @@ import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.ResourceLocation;
-import se.gory_moon.playermobs.entity.PlayerMobEntity;
-import se.gory_moon.playermobs.client.TextureUtils;
+import se.gory_moon.player_mobs.entity.PlayerMobEntity;
+import se.gory_moon.player_mobs.utils.TextureUtils;
 
 public class PlayerMobRenderer extends BipedRenderer<PlayerMobEntity, PlayerModel<PlayerMobEntity>> {
 
@@ -25,6 +25,7 @@ public class PlayerMobRenderer extends BipedRenderer<PlayerMobEntity, PlayerMode
         super(renderManager, STEVE, 0.5F);
         this.addLayer(new BipedArmorLayer<>(this, new BipedModel<>(0.5F), new BipedModel<>(1.0F)));
         this.addLayer(new ArrowLayer<>(this));
+        this.addLayer(new PlayerMobCapeLayer(this));
         this.addLayer(new HeadLayer<>(this));
     }
 

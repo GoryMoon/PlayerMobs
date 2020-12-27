@@ -1,7 +1,7 @@
-package se.gory_moon.playermobs.names;
+package se.gory_moon.player_mobs.names;
 
 import net.minecraft.tileentity.SkullTileEntity;
-import se.gory_moon.playermobs.entity.PlayerMobEntity;
+import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 
 import java.util.ArrayDeque;
 import java.util.Queue;

@@ -1,4 +1,4 @@
-package se.gory_moon.playermobs;
+package se.gory_moon.player_mobs;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.RegistryKey;
@@ -9,14 +9,15 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.DimensionType;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import se.gory_moon.player_mobs.names.NameManager;
+import se.gory_moon.player_mobs.utils.ItemManager;
+import se.gory_moon.player_mobs.utils.SpawnHandler;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = Constants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Configs {
 
     public static final Common COMMON;
@@ -34,16 +35,21 @@ public class Configs {
         public ForgeConfigSpec.BooleanValue openDoors;
         public ForgeConfigSpec.EnumValue<Difficulty> openDoorsDifficulty;
         public ForgeConfigSpec.DoubleValue pickupItemsChance;
+        public ForgeConfigSpec.DoubleValue playerHeadDropChance;
+        public ForgeConfigSpec.DoubleValue mobHeadDropChance;
 
         public ForgeConfigSpec.IntValue spawnWeight;
         public ForgeConfigSpec.IntValue spawnMinSize;
         public ForgeConfigSpec.IntValue spawnMaxSize;
         public ForgeConfigSpec.DoubleValue babySpawnChance;
         public ForgeConfigSpec.ConfigValue<List<? extends String>> dimensionBlockList;
+        public ForgeConfigSpec.ConfigValue<List<? extends String>> mainItems;
+        public ForgeConfigSpec.ConfigValue<List<? extends String>> offhandItems;
 
         public ForgeConfigSpec.ConfigValue<List<? extends String>> mobNames;
         public ForgeConfigSpec.ConfigValue<List<? extends String>> nameLinks;
         public ForgeConfigSpec.IntValue nameLinksSyncTime;
+        public ForgeConfigSpec.BooleanValue useWhitelist;
 
         public Common(ForgeConfigSpec.Builder builder) {
             builder.push("general");
@@ -64,6 +70,16 @@ public class Configs {
                     .comment("The chance to use when spawned if a player mob can pickup items.",
                             "Set to -1 to disable.")
                     .defineInRange("Pickup Item Chance", 0.55D, -1D, 1D);
+
+            playerHeadDropChance = builder
+                    .comment("The chance of players dropping a head with their texture.",
+                            "Set to -1 to disable.")
+                    .defineInRange("Player Head Drop Chance", 1, -1D, 1D);
+
+            mobHeadDropChance = builder
+                    .comment("The chance of player mobs dropping their head.",
+                            "Set to -1 to disable.")
+                    .defineInRange("Mob Head Drop Chance", 0.25D, -1D, 1D);
 
             builder.pop()
                     .comment("Configs related to spawning the mobs")
@@ -94,6 +110,20 @@ public class Configs {
                             "Example id: \"minecraft:overworld\"")
                     .defineList("Dimension Blocklist", ImmutableList.of(), Common::verifyDimension);
 
+            mainItems = builder
+                    .comment("A list of items that the player mobs can spawn with.",
+                            "Default is 50% of getting a bow or a sword, then the swords are distributed after that.",
+                            "There is a separated chance to spawn with an item at all, this is to pick what it to spawn when it does",
+                            "Syntax is 'namespace:id-weight'")
+                    .defineList("Spawn Items", DEFAULT_MAIN_HAND_ITEMS, Common::validString);
+
+            offhandItems = builder
+                    .comment("What item to be able to spawn in the offhand",
+                            "It won't spawn an item in the offhand if it spawns with a bow like item.",
+                            "There is a separated chance to spawn with an item at all, this is to pick what it to spawn when it does",
+                            "Syntax is 'namespace:id-weight'")
+                    .defineList("Spawn Items Offhand", DEFAULT_OFFHAND_ITEMS, Common::validString);
+
             builder.pop()
                     .comment("Configs related to the names of the mobs.")
                     .push("names");
@@ -114,6 +144,10 @@ public class Configs {
                     .comment("A list of names that the player mobs can have.")
                     .defineList("Mob Names", DEFAULT_NAMES, Common::validString);
 
+            useWhitelist = builder
+                    .comment("If the names in the whitelist should be used for the player mobs.")
+                    .define("Use Whitelist", true);
+
             builder.pop();
         }
 
@@ -123,7 +157,10 @@ public class Configs {
 
         @SuppressWarnings("ConstantConditions")
         public boolean isDimensionBlocked(DimensionType type) {
-            return dimensionBlockList.get().contains(DynamicRegistries.func_239770_b_().getRegistry(Registry.DIMENSION_TYPE_KEY).getKey(type).toString());
+            if (dynamicRegistries == null) {
+                dynamicRegistries = DynamicRegistries.func_239770_b_();
+            }
+            return dimensionBlockList.get().contains(dynamicRegistries.getRegistry(Registry.DIMENSION_TYPE_KEY).getKey(type).toString());
         }
 
         private static DynamicRegistries.Impl dynamicRegistries;
@@ -145,10 +182,34 @@ public class Configs {
         }
 
         @SubscribeEvent
-        public static void onLoad(ModConfig.ModConfigEvent event) {
+        void onLoad(ModConfig.Reloading event) {
+            configReload();
+        }
+
+        @SubscribeEvent
+        void onLoad(ModConfig.Loading event) {
+            configReload();
+        }
+
+        private static void configReload() {
             dynamicRegistries = null;
             SpawnHandler.invalidateSpawner();
+            NameManager.INSTANCE.configLoad();
+            ItemManager.INSTANCE.configLoad();
         }
+
+        private static final List<String> DEFAULT_MAIN_HAND_ITEMS = ImmutableList.of(
+                "minecraft:bow-100",
+                "minecraft:stone_sword-64",
+                "minecraft:iron_sword-20",
+                "minecraft:golden_sword-10",
+                "minecraft:diamond_sword-5",
+                "minecraft:netherite_sword-1"
+        );
+
+        private static final List<String> DEFAULT_OFFHAND_ITEMS = ImmutableList.of(
+                "minecraft:shield-1"
+        );
 
         private static final List<String> DEFAULT_NAMES = ImmutableList.of(
                 "Gory_Moon",
@@ -156,14 +217,34 @@ public class Configs {
                 "LexManos",
                 "cpw11",
                 "vadis365",
-                "Turkey2349",
+                "Mrbysco",
+                "016Nojr",
+                "dmodoomsirius",
+                "Buuz135",
+                "Ray",
+                "malte0811",
+                "TamasHenning",
+                "neptunepink",
+                "BluSunrize",
+                "KnightMiner_",
+                "Darkhax",
+                "SkySom",
+                "darkphan",
+                "wyld",
+                "SOTMead",
+                "paulsoaresjr",
+                "Drullkus",
+                "XCompWiz",
+                "Vswe",
+                "TurkeyDev",
                 "Gen_Deathrow",
                 "Sevadus",
                 "direwolf20",
+                "Soaryn",
                 "jeb_",
                 "Dinnerbone",
                 "Grumm",
-                "Searge"
+                "fry_"
         );
     }
 }

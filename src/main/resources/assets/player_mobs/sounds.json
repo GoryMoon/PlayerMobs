@@ -1,0 +1,25 @@
+{
+    "player_mob.living": {
+        "category": "hostile",
+        "sounds": [
+        ]
+    },
+    "player_mob.hurt": {
+        "category": "hostile",
+        "sounds": [
+            "minecraft:damage/hit1",
+            "minecraft:damage/hit2",
+            "minecraft:damage/hit3"
+        ],
+        "subtitle": "player_mobs.subtitles.entity.player_mob.hurt"
+    },
+    "player_mob.death": {
+        "category": "hostile",
+        "sounds": [
+            "minecraft:damage/hit1",
+            "minecraft:damage/hit2",
+            "minecraft:damage/hit3"
+        ],
+        "subtitle": "player_mobs.subtitles.entity.player_mob.death"
+    }
+}
