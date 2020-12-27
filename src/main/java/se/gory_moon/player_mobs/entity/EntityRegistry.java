@@ -28,7 +28,7 @@ public class EntityRegistry {
             .lang("Player Mob")
             .renderer(() -> PlayerMobRenderer::new)
             .spawnPlacement(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MonsterEntity::canMonsterSpawnInLight)
-            .properties(builder -> builder.size(0.6F, 1.8F).trackingRange(8).func_233608_b_(5))
+            .properties(builder -> builder.size(0.6F, 1.8F).trackingRange(8))
             .defaultSpawnEgg(0xFFF144, 0x69DFDA)
             .loot((register, entityType) ->
                     register.registerLootTable(entityType, LootTable.builder()

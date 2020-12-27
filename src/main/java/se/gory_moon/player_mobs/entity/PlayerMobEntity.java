@@ -22,8 +22,6 @@ import net.minecraft.entity.ai.goal.HurtByTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.ai.goal.LookRandomlyGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.ai.goal.MoveThroughVillageGoal;
-import net.minecraft.entity.ai.goal.MoveTowardsRestrictionGoal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.entity.ai.goal.RandomWalkingGoal;
@@ -136,11 +134,9 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         goalSelector.addGoal(0, new SwimGoal(this));
         if(Configs.COMMON.openDoors.get() && world.getDifficulty() == Configs.COMMON.openDoorsDifficulty.get())
             goalSelector.addGoal(1, new OpenDoorGoal(this, true));
-        goalSelector.addGoal(3, new MoveTowardsRestrictionGoal(this, 1.0D));
-        goalSelector.addGoal(6, new MoveThroughVillageGoal(this, 1.0D, false, 4, () -> false));
-        goalSelector.addGoal(7, new RandomWalkingGoal(this, 1.0D));
-        goalSelector.addGoal(5, new LookAtGoal(this, PlayerEntity.class, 8.0F));
-        goalSelector.addGoal(6, new LookRandomlyGoal(this));
+        goalSelector.addGoal(3, new RandomWalkingGoal(this, 1.0D));
+        goalSelector.addGoal(4, new LookAtGoal(this, PlayerEntity.class, 8.0F));
+        goalSelector.addGoal(5, new LookRandomlyGoal(this));
         targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombifiedPiglinEntity.class));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::targetTwin));
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
@@ -446,7 +442,6 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     protected SoundEvent getDeathSound() {
         return SoundRegistry.PLAYER_MOB_DEATH.get();
     }
-
 
     public GameProfile getProfile() {
         if (profile == null && !getUsername().isEmpty()) {

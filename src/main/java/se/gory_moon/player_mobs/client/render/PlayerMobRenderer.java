@@ -4,9 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.BipedRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.layers.ArrowLayer;
 import net.minecraft.client.renderer.entity.layers.BipedArmorLayer;
-import net.minecraft.client.renderer.entity.layers.HeadLayer;
 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.client.renderer.entity.model.PlayerModel;
 import net.minecraft.item.BowItem;
@@ -24,41 +22,33 @@ public class PlayerMobRenderer extends BipedRenderer<PlayerMobEntity, PlayerMode
     public PlayerMobRenderer(EntityRendererManager renderManager) {
         super(renderManager, STEVE, 0.5F);
         this.addLayer(new BipedArmorLayer<>(this, new BipedModel<>(0.5F), new BipedModel<>(1.0F)));
-        this.addLayer(new ArrowLayer<>(this));
         this.addLayer(new PlayerMobCapeLayer(this));
-        this.addLayer(new HeadLayer<>(this));
     }
 
     @Override
     public void render(PlayerMobEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn) {
-        entityModel = "slim".equals(TextureUtils.getPlayerSkinType(entity.getProfile())) ? ALEX: STEVE;
-        PlayerModel<PlayerMobEntity> model = getEntityModel();
+        entityModel = TextureUtils.getPlayerSkinType(entity.getProfile()) == TextureUtils.SkinType.SLIM ? ALEX: STEVE;
 
-        model.leftArmPose = BipedModel.ArmPose.EMPTY;
-        model.rightArmPose = BipedModel.ArmPose.EMPTY;
+        entityModel.leftArmPose = BipedModel.ArmPose.EMPTY;
+        entityModel.rightArmPose = BipedModel.ArmPose.EMPTY;
         ItemStack stack = entity.getHeldItemMainhand();
         if (!stack.isEmpty()) {
             if (stack.getItem() instanceof BowItem && entity.isAggressive()) {
-                setHandPose(model, entity, BipedModel.ArmPose.BOW_AND_ARROW);
+                setHandPose(entity, BipedModel.ArmPose.BOW_AND_ARROW);
             } else {
-                setHandPose(model, entity, BipedModel.ArmPose.ITEM);
+                setHandPose(entity, BipedModel.ArmPose.ITEM);
             }
         }
 
         super.render(entity, entityYaw, partialTicks, matrixStack, buffer, packedLightIn);
     }
 
-    private void setHandPose(PlayerModel<PlayerMobEntity> model, PlayerMobEntity entity, BipedModel.ArmPose pose) {
+    private void setHandPose(PlayerMobEntity entity, BipedModel.ArmPose pose) {
         if (entity.getPrimaryHand() == HandSide.RIGHT) {
-            model.rightArmPose = pose;
+            entityModel.rightArmPose = pose;
         } else {
-            model.leftArmPose = pose;
+            entityModel.leftArmPose = pose;
         }
-    }
-
-    @Override
-    public PlayerModel<PlayerMobEntity> getEntityModel() {
-        return super.getEntityModel();
     }
 
     @Override
