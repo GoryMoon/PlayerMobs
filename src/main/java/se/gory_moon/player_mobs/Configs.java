@@ -1,10 +1,7 @@
 package se.gory_moon.player_mobs;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.DynamicRegistries;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DimensionType;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -30,6 +27,7 @@ public class Configs {
     }
 
     public static class Common {
+        private static final DynamicRegistries.Impl dynamicRegistries = DynamicRegistries.func_239770_b_();
 
         public ForgeConfigSpec.BooleanValue attackTwin;
         public ForgeConfigSpec.BooleanValue openDoors;
@@ -108,7 +106,7 @@ public class Configs {
                     .comment("The id of the dimensions to block spawning in.",
                             "The player mobs spawn where Zombies spawn, so no need to block dimensions that doesn't contain Zombies.",
                             "Example id: \"minecraft:overworld\"")
-                    .defineList("Dimension Blocklist", ImmutableList.of(), Common::verifyDimension);
+                    .defineList("Dimension Blocklist", ImmutableList.of(), Common::validString);
 
             mainItems = builder
                     .comment("A list of items that the player mobs can spawn with.",
@@ -157,28 +155,7 @@ public class Configs {
 
         @SuppressWarnings("ConstantConditions")
         public boolean isDimensionBlocked(DimensionType type) {
-            if (dynamicRegistries == null) {
-                dynamicRegistries = DynamicRegistries.func_239770_b_();
-            }
-            return dimensionBlockList.get().contains(dynamicRegistries.getRegistry(Registry.DIMENSION_TYPE_KEY).getKey(type).toString());
-        }
-
-        private static DynamicRegistries.Impl dynamicRegistries;
-
-        private static boolean verifyDimension(Object v) {
-            if (v instanceof String) {
-                ResourceLocation location = ResourceLocation.tryCreate((String) v);
-                if (location == null) return false;
-
-                if (dynamicRegistries == null) {
-                    dynamicRegistries = DynamicRegistries.func_239770_b_();
-                }
-
-                return dynamicRegistries.getRegistry(Registry.DIMENSION_TYPE_KEY)
-                                        .getOptionalValue(RegistryKey.getOrCreateKey(Registry.DIMENSION_TYPE_KEY, location))
-                                        .isPresent();
-            }
-            return false;
+            return dimensionBlockList.get().contains(dynamicRegistries.func_230520_a_().getKey(type).toString());
         }
 
         @SubscribeEvent
@@ -192,7 +169,6 @@ public class Configs {
         }
 
         private static void configReload() {
-            dynamicRegistries = null;
             SpawnHandler.invalidateSpawner();
             NameManager.INSTANCE.configLoad();
             ItemManager.INSTANCE.configLoad();
