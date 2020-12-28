@@ -98,17 +98,6 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     private boolean canBreakDoor;
     private final BreakDoorGoal breakDoor = new BreakDoorGoal(this, (difficulty) -> difficulty == Difficulty.HARD);
     private final RangedBowAttackGoal<PlayerMobEntity> aiArrowAttack = new RangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
-    private final MeleeAttackGoal aiAttackOnCollide = new MeleeAttackGoal(this, 1.2D, false) {
-        public void resetTask() {
-            super.resetTask();
-            PlayerMobEntity.this.setAggroed(false);
-        }
-
-        public void startExecuting() {
-            super.startExecuting();
-            PlayerMobEntity.this.setAggroed(true);
-        }
-    };
 
     public PlayerMobEntity(World worldIn) {
         this(EntityRegistry.PLAYER_MOB_ENTITY.get(), worldIn);
@@ -135,8 +124,9 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         goalSelector.addGoal(0, new SwimGoal(this));
         if(Configs.COMMON.openDoors.get() && world.getDifficulty() == Configs.COMMON.openDoorsDifficulty.get())
             goalSelector.addGoal(1, new OpenDoorGoal(this, true));
-        goalSelector.addGoal(3, new RandomWalkingGoal(this, 1.0D));
-        goalSelector.addGoal(4, new LookAtGoal(this, PlayerEntity.class, 8.0F));
+        goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2D, false));
+        goalSelector.addGoal(4, new RandomWalkingGoal(this, 1.0D));
+        goalSelector.addGoal(5, new LookAtGoal(this, PlayerEntity.class, 8.0F));
         goalSelector.addGoal(5, new LookRandomlyGoal(this));
         targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombifiedPiglinEntity.class));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::targetTwin));
@@ -350,14 +340,12 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     public void setCombatTask() {
         if (world != null && !world.isRemote) {
             goalSelector.removeGoal(aiArrowAttack);
-            goalSelector.removeGoal(aiAttackOnCollide);
 
             ItemStack itemstack = getHeldItem(ProjectileHelper.getHandWith(this, Items.BOW));
             if (itemstack.getItem() instanceof BowItem) {
                 aiArrowAttack.setAttackCooldown(world.getDifficulty() != Difficulty.HARD ? 20: 40);
                 goalSelector.addGoal(2, aiArrowAttack);
             }
-            goalSelector.addGoal(3, aiAttackOnCollide);
         }
     }
 
