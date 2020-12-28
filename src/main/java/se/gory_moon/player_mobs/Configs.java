@@ -1,9 +1,12 @@
 package se.gory_moon.player_mobs;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.util.registry.DynamicRegistries;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.DimensionType;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.config.ModConfig;
@@ -14,6 +17,8 @@ import se.gory_moon.player_mobs.utils.ItemManager;
 import se.gory_moon.player_mobs.utils.SpawnHandler;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Configs {
 
@@ -27,8 +32,6 @@ public class Configs {
     }
 
     public static class Common {
-        private static final DynamicRegistries.Impl dynamicRegistries = DynamicRegistries.func_239770_b_();
-
         public ForgeConfigSpec.BooleanValue attackTwin;
         public ForgeConfigSpec.BooleanValue openDoors;
         public ForgeConfigSpec.EnumValue<Difficulty> openDoorsDifficulty;
@@ -40,7 +43,8 @@ public class Configs {
         public ForgeConfigSpec.IntValue spawnMinSize;
         public ForgeConfigSpec.IntValue spawnMaxSize;
         public ForgeConfigSpec.DoubleValue babySpawnChance;
-        public ForgeConfigSpec.ConfigValue<List<? extends String>> dimensionBlockList;
+        public ForgeConfigSpec.ConfigValue<List<? extends String>> dimensionBlockListStrings;
+        public final List<RegistryKey<World>> dimensionBlockList = new ObjectArrayList<>();
         public ForgeConfigSpec.ConfigValue<List<? extends String>> mainItems;
         public ForgeConfigSpec.ConfigValue<List<? extends String>> offhandItems;
 
@@ -102,11 +106,11 @@ public class Configs {
                             "Set to -1 to disable.")
                     .defineInRange("Baby Spawn Chance", 0.1D, -1D, 1D);
 
-            dimensionBlockList = builder
+            dimensionBlockListStrings = builder
                     .comment("The id of the dimensions to block spawning in.",
                             "The player mobs spawn where Zombies spawn, so no need to block dimensions that doesn't contain Zombies.",
                             "Example id: \"minecraft:overworld\"")
-                    .defineList("Dimension Blocklist", ImmutableList.of(), Common::validString);
+                    .defineList("Dimension Blocklist", ImmutableList.of(), Common::validResourceLocation);
 
             mainItems = builder
                     .comment("A list of items that the player mobs can spawn with.",
@@ -153,9 +157,12 @@ public class Configs {
             return o instanceof String && !StringUtils.isEmpty((String) o);
         }
 
-        @SuppressWarnings("ConstantConditions")
-        public boolean isDimensionBlocked(DimensionType type) {
-            return dimensionBlockList.get().contains(dynamicRegistries.func_230520_a_().getKey(type).toString());
+        private static boolean validResourceLocation(Object o) {
+            return validString(o) && ResourceLocation.tryCreate((String) o) != null;
+        }
+
+        public boolean isDimensionBlocked(RegistryKey<World> type) {
+            return dimensionBlockList.contains(type);
         }
 
         @SubscribeEvent
@@ -168,7 +175,13 @@ public class Configs {
             configReload();
         }
 
-        private static void configReload() {
+        private void configReload() {
+            dimensionBlockList.clear();
+            dimensionBlockList.addAll(dimensionBlockListStrings.get().stream()
+                    .map(ResourceLocation::tryCreate)
+                    .filter(Objects::nonNull)
+                    .map(s -> RegistryKey.getOrCreateKey(Registry.WORLD_KEY, s))
+                    .collect(Collectors.toList()));
             SpawnHandler.invalidateSpawner();
             NameManager.INSTANCE.configLoad();
             ItemManager.INSTANCE.configLoad();

@@ -2,6 +2,9 @@ package se.gory_moon.player_mobs.utils;
 
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.world.IServerWorld;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
@@ -70,7 +73,14 @@ public class SpawnHandler {
     @SubscribeEvent
     public static void onCheckSpawn(LivingSpawnEvent.CheckSpawn event) {
         if (event.getEntityLiving() instanceof PlayerMobEntity) {
-            if (Configs.COMMON.isDimensionBlocked(event.getWorld().getDimensionType())) {
+            RegistryKey<World> worldKey = World.OVERWORLD;
+            if (event.getWorld() instanceof IServerWorld) {
+                worldKey = ((IServerWorld) event.getWorld()).getWorld().getDimensionKey();
+            } else if (event.getWorld() instanceof World) {
+                worldKey = ((World) event.getWorld()).getDimensionKey();
+            }
+
+            if (Configs.COMMON.isDimensionBlocked(worldKey)) {
                 event.setResult(Event.Result.DENY);
             }
         }
