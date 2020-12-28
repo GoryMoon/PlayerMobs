@@ -39,6 +39,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShootableItem;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -60,6 +61,7 @@ import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.registries.ForgeRegistries;
 import se.gory_moon.player_mobs.Configs;
 import se.gory_moon.player_mobs.names.NameManager;
@@ -79,7 +81,6 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     private ResourceLocation cape;
     private boolean skinAvailable;
     private boolean capeAvailable;
-    private boolean profileReady;
 
     public double prevChasingPosX;
     public double prevChasingPosY;
@@ -394,6 +395,9 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         }
         compound.putBoolean("CanBreakDoors", canBreakDoor);
         compound.putBoolean("IsBaby", isChild());
+        if (profile != null && profile.isComplete()) {
+            compound.put("Profile", NBTUtil.writeGameProfile(new CompoundNBT(), profile));
+        }
     }
 
     @Override
@@ -408,6 +412,10 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         setUsername(username);
         setChild(compound.getBoolean("IsBaby"));
         setBreakDoorsAItask(compound.getBoolean("CanBreakDoors"));
+
+        if (compound.contains("Profile", Constants.NBT.TAG_COMPOUND)) {
+            profile = NBTUtil.readGameProfile(compound.getCompound("Profile"));
+        }
 
         setCombatTask();
     }
@@ -453,7 +461,6 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
 
     public void setProfile(@Nullable GameProfile profile) {
         this.profile = profile;
-        profileReady = true;
     }
 
     public String getUsername() {
@@ -471,6 +478,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         }
 
         if (!Objects.equals(oldName, name)) {
+            setProfile(null);
             getProfile();
         }
     }
@@ -489,10 +497,6 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
                     break;
             }
         };
-    }
-
-    public boolean isProfileReady() {
-        return profileReady;
     }
 
     @OnlyIn(Dist.CLIENT)

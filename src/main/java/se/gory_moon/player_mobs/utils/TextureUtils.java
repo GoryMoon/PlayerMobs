@@ -48,7 +48,7 @@ public class TextureUtils {
         }
 
         GameProfile profile = entity.getProfile();
-        if (!entity.isProfileReady()) {
+        if (profile != null && !profile.isComplete()) {
             return getDefault(profile, type);
         }
 
