@@ -11,9 +11,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import se.gory_moon.player_mobs.names.NameManager;
+import se.gory_moon.player_mobs.utils.NameManager;
 import se.gory_moon.player_mobs.utils.ItemManager;
-import se.gory_moon.player_mobs.utils.SpawnHandler;
 import se.gory_moon.player_mobs.utils.ThreadUtils;
 
 import java.util.List;

@@ -64,8 +64,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.registries.ForgeRegistries;
 import se.gory_moon.player_mobs.Configs;
-import se.gory_moon.player_mobs.names.NameManager;
-import se.gory_moon.player_mobs.names.ProfileUpdater;
+import se.gory_moon.player_mobs.utils.NameManager;
+import se.gory_moon.player_mobs.utils.ProfileUpdater;
 import se.gory_moon.player_mobs.sound.SoundRegistry;
 import se.gory_moon.player_mobs.utils.ItemManager;
 

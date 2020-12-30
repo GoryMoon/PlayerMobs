@@ -13,7 +13,7 @@ import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import se.gory_moon.player_mobs.entity.EntityRegistry;
-import se.gory_moon.player_mobs.names.NameManager;
+import se.gory_moon.player_mobs.utils.NameManager;
 import se.gory_moon.player_mobs.sound.SoundRegistry;
 import se.gory_moon.player_mobs.utils.CustomRegistrate;
 

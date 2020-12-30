@@ -1,4 +1,4 @@
-package se.gory_moon.player_mobs.names;
+package se.gory_moon.player_mobs.utils;
 
 import net.minecraft.tileentity.SkullTileEntity;
 import se.gory_moon.player_mobs.entity.PlayerMobEntity;

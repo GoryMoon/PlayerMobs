@@ -1,4 +1,4 @@
-package se.gory_moon.player_mobs.names;
+package se.gory_moon.player_mobs.utils;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -10,7 +10,6 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import se.gory_moon.player_mobs.Configs;
-import se.gory_moon.player_mobs.utils.ThreadUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

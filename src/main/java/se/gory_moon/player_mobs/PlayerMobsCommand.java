@@ -14,7 +14,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import se.gory_moon.player_mobs.entity.EntityRegistry;
 import se.gory_moon.player_mobs.entity.PlayerMobEntity;
-import se.gory_moon.player_mobs.names.NameManager;
+import se.gory_moon.player_mobs.utils.NameManager;
 
 public class PlayerMobsCommand {
 
