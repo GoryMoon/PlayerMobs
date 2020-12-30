@@ -4,41 +4,38 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
-import net.minecraft.util.concurrent.ThreadTaskExecutor;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.LogicalSidedProvider;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import se.gory_moon.player_mobs.Configs;
+import se.gory_moon.player_mobs.utils.ThreadUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.Collections;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class NameManager {
 
     public static final NameManager INSTANCE = new NameManager();
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Set<String> remoteNames = new ObjectOpenHashSet<>();
-    private final Set<String> usedNames = new ObjectOpenHashSet<>();
-    private final List<String> namePool = new ObjectArrayList<>();
+    private final Set<String> remoteNames = ConcurrentHashMap.newKeySet();
+    private final Set<String> usedNames = ConcurrentHashMap.newKeySet();
+    private final Queue<String> namePool = new ConcurrentLinkedQueue<>();
 
     private boolean firstSync = true;
     private int tickTime = 0;
     private int syncTime = 0;
     private CompletableFuture<Integer> syncFuture = null;
-    private final Random rand = new Random();
     private boolean setup = false;
 
     private NameManager() {
@@ -53,7 +50,7 @@ public class NameManager {
     }
 
     public String getRandomName() {
-        String name = namePool.get(rand.nextInt(namePool.size()));
+        String name = namePool.poll();
         useName(name);
         return name;
     }
@@ -61,7 +58,7 @@ public class NameManager {
     public void useName(String name) {
         namePool.remove(name);
         usedNames.add(name);
-        if (namePool.size() <= 0) {
+        if (namePool.isEmpty()) {
             updateNameList();
         }
     }
@@ -81,7 +78,9 @@ public class NameManager {
         } else {
             usedNames.clear();
         }
-        namePool.addAll(allNames);
+        ObjectArrayList<String> names = new ObjectArrayList<>(allNames);
+        Collections.shuffle(names);
+        namePool.addAll(names);
     }
 
     // SubscribeEvent
@@ -122,17 +121,12 @@ public class NameManager {
             }
 
             int diff = nameList.size();
-            ThreadTaskExecutor<?> executor = LogicalSidedProvider.WORKQUEUE.get(EffectiveSide.get());
-            Runnable updateTask = () -> {
+
+            ThreadUtils.tryRunOnMain(() -> {
                 this.remoteNames.clear();
                 this.remoteNames.addAll(nameList);
                 updateNameList();
-            };
-            if (!executor.isOnExecutionThread()) {
-                executor.deferTask(updateTask);
-            } else {
-                updateTask.run();
-            }
+            });
             return diff;
         }, Util.getServerExecutor());
         return syncFuture;

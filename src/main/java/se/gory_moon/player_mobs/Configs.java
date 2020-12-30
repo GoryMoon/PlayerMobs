@@ -1,7 +1,6 @@
 package se.gory_moon.player_mobs;
 
 import com.google.common.collect.ImmutableList;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
@@ -15,9 +14,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import se.gory_moon.player_mobs.names.NameManager;
 import se.gory_moon.player_mobs.utils.ItemManager;
 import se.gory_moon.player_mobs.utils.SpawnHandler;
+import se.gory_moon.player_mobs.utils.ThreadUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class Configs {
@@ -44,7 +45,7 @@ public class Configs {
         public ForgeConfigSpec.IntValue spawnMaxSize;
         public ForgeConfigSpec.DoubleValue babySpawnChance;
         public ForgeConfigSpec.ConfigValue<List<? extends String>> dimensionBlockListStrings;
-        public final List<RegistryKey<World>> dimensionBlockList = new ObjectArrayList<>();
+        public final List<RegistryKey<World>> dimensionBlockList = new CopyOnWriteArrayList<>();
         public ForgeConfigSpec.ConfigValue<List<? extends String>> mainItems;
         public ForgeConfigSpec.ConfigValue<List<? extends String>> offhandItems;
 
@@ -166,25 +167,22 @@ public class Configs {
         }
 
         @SubscribeEvent
-        void onLoad(ModConfig.Reloading event) {
-            configReload();
-        }
-
-        @SubscribeEvent
-        void onLoad(ModConfig.Loading event) {
+        void onReload(ModConfig.Reloading event) {
             configReload();
         }
 
         private void configReload() {
-            dimensionBlockList.clear();
-            dimensionBlockList.addAll(dimensionBlockListStrings.get().stream()
-                    .map(ResourceLocation::tryCreate)
-                    .filter(Objects::nonNull)
-                    .map(s -> RegistryKey.getOrCreateKey(Registry.WORLD_KEY, s))
-                    .collect(Collectors.toList()));
-            SpawnHandler.invalidateSpawner();
-            NameManager.INSTANCE.configLoad();
-            ItemManager.INSTANCE.configLoad();
+            ThreadUtils.tryRunOnMain(() -> {
+                dimensionBlockList.clear();
+                dimensionBlockList.addAll(dimensionBlockListStrings.get().stream()
+                        .map(ResourceLocation::tryCreate)
+                        .filter(Objects::nonNull)
+                        .map(s -> RegistryKey.getOrCreateKey(Registry.WORLD_KEY, s))
+                        .collect(Collectors.toList()));
+                SpawnHandler.invalidateSpawner();
+                NameManager.INSTANCE.configLoad();
+                ItemManager.INSTANCE.configLoad();
+            });
         }
 
         private static final List<String> DEFAULT_MAIN_HAND_ITEMS = ImmutableList.of(

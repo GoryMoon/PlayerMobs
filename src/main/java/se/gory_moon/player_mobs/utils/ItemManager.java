@@ -1,6 +1,5 @@
 package se.gory_moon.player_mobs.utils;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
@@ -13,6 +12,7 @@ import se.gory_moon.player_mobs.Configs;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class ItemManager {
@@ -20,8 +20,8 @@ public class ItemManager {
     public static final ItemManager INSTANCE = new ItemManager();
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final List<WeightedItem> weightedMainItems = new ObjectArrayList<>();
-    private final List<WeightedItem> weightedOffItems = new ObjectArrayList<>();
+    private final List<WeightedItem> weightedMainItems = new CopyOnWriteArrayList<>();
+    private final List<WeightedItem> weightedOffItems = new CopyOnWriteArrayList<>();
 
     private ItemManager() {
     }
