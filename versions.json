@@ -1,12 +1,13 @@
 {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/player-mobs",
     "promos": {
-        "1.16.4-recommended": "1.0.4.5",
-        "1.16.4-latest": "1.0.4.5",
-        "1.16.3-recommended": "1.0.4.5",
-        "1.16.3-latest": "1.0.4.5"
+        "1.16.4-recommended": "1.0.5.7",
+        "1.16.4-latest": "1.0.5.7",
+        "1.16.3-recommended": "1.0.5.7",
+        "1.16.3-latest": "1.0.5.7"
     },
     "1.16.4": {
+        "1.0.5.7": "Fixed threadsafety regarding the name list\nPre randomize the names and not each time on is requested\nClean and refactored some internal code",
         "1.0.4.5": "Fixed forgotten version bump",
         "1.0.2.4": "Fix crashing from dynamic registries, changed to world key\nFix rendering with Carry On\nTweaked AI priority and cleaned up goals",
         "1.0.2.3": "Removed double head render, decreased update interval, removed unneeded AI goals",
@@ -14,6 +15,7 @@
         "1.0.0.1": "Initial release"
     },
     "1.16.3": {
+        "1.0.5.7": "Fixed threadsafety regarding the name list\nPre randomize the names and not each time on is requested\nClean and refactored some internal code",
         "1.0.4.5": "Fixed forgotten version bump",
         "1.0.2.4": "Fix crashing from dynamic registries, changed to world key\nFix rendering with Carry On\nTweaked AI priority and cleaned up goals",
         "1.0.2.3": "Removed double head render, decreased update interval, removed unneeded AI goals",
