@@ -21,39 +21,9 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = Constants.MOD_ID)
 public class SpawnHandler {
 
-    //private static MobSpawnInfo.Spawners PLAYER_MOB_SPAWNER;
-
     private static MobSpawnInfo.Spawners getPlayerMobSpawner() {
         return new MobSpawnInfo.Spawners(EntityRegistry.PLAYER_MOB_ENTITY.get(), Configs.COMMON.spawnWeight.get(), Configs.COMMON.spawnMinSize.get(), Configs.COMMON.spawnMaxSize.get());
     }
-
-    public static void invalidateSpawner() {
-        //Util.getServerExecutor().execute(() -> PLAYER_MOB_SPAWNER = null);
-    }
-
-    // Not fully ported from 1.15.x -> 1.16.x in Forge, requires #7555 to not require the events below
-    /*@SubscribeEvent(priority = EventPriority.LOW)
-    public static void potentialSpawns(WorldEvent.PotentialSpawns event) {
-        if (event.getType() == EntityClassification.MONSTER) {
-
-            boolean hasZombies = false;
-            for (MobSpawnInfo.Spawners spawners : event.getList()) {
-                if (spawners.type == EntityType.ZOMBIE) {
-                    hasZombies = true;
-                    break;
-                }
-            }
-            if (hasZombies) {
-                if (Configs.COMMON.isDimensionBlocked(event.getWorld().getDimensionType())) {
-                    return;
-                }
-                if (PLAYER_MOB_SPAWNER == null) {
-                    PLAYER_MOB_SPAWNER = getPlayerMobSpawner();
-                }
-                event.getList().add(PLAYER_MOB_SPAWNER);
-            }
-        }
-    }*/
 
     @SubscribeEvent
     public static void onBiomeLoad(BiomeLoadingEvent event) {

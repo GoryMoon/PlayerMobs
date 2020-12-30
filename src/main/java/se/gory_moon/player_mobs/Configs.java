@@ -179,7 +179,6 @@ public class Configs {
                         .filter(Objects::nonNull)
                         .map(s -> RegistryKey.getOrCreateKey(Registry.WORLD_KEY, s))
                         .collect(Collectors.toList()));
-                SpawnHandler.invalidateSpawner();
                 NameManager.INSTANCE.configLoad();
                 ItemManager.INSTANCE.configLoad();
             });
