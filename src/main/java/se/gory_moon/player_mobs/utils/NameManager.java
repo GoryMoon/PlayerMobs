@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Queue;
 import java.util.Set;
@@ -64,9 +63,9 @@ public class NameManager {
 
     private void updateNameList() {
         Set<PlayerName> allNames = new ObjectOpenHashSet<>();
-		for (String name : Configs.COMMON.mobNames.get()) {
-			allNames.add(new PlayerName(name));
-		}
+        for (String name : Configs.COMMON.mobNames.get()) {
+            allNames.add(new PlayerName(name));
+        }
         allNames.addAll(remoteNames);
 
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
