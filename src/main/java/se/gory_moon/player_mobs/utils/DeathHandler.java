@@ -14,6 +14,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.GameRules;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -69,6 +70,14 @@ public class DeathHandler {
             GameProfile gameprofile = entity instanceof PlayerMobEntity ?
                     ((PlayerMobEntity) entity).getProfile():
                     ((PlayerEntity) entity).getGameProfile();
+            if (entity instanceof PlayerMobEntity) {
+                PlayerMobEntity pmentity = (PlayerMobEntity) entity;
+                String skinName = pmentity.getUsername().getSkinName();
+                String displayName = pmentity.getUsername().getDisplayName();
+                if (!skinName.equals(displayName)) {
+                    stack.setDisplayName(new StringTextComponent(displayName + "'s Head"));
+                }
+            }
             stack.getOrCreateTag().put("SkullOwner", NBTUtil.writeGameProfile(new CompoundNBT(), gameprofile));
             return stack;
         }

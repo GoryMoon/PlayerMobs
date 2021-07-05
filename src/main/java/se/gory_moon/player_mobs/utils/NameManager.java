@@ -27,9 +27,9 @@ public class NameManager {
 
     public static final NameManager INSTANCE = new NameManager();
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Set<String> remoteNames = ConcurrentHashMap.newKeySet();
-    private final Set<String> usedNames = ConcurrentHashMap.newKeySet();
-    private final Queue<String> namePool = new ConcurrentLinkedQueue<>();
+    private final Set<PlayerName> remoteNames = ConcurrentHashMap.newKeySet();
+    private final Set<PlayerName> usedNames = ConcurrentHashMap.newKeySet();
+    private final Queue<PlayerName> namePool = new ConcurrentLinkedQueue<>();
 
     private boolean firstSync = true;
     private int tickTime = 0;
@@ -48,13 +48,13 @@ public class NameManager {
         }
     }
 
-    public String getRandomName() {
-        String name = namePool.poll();
+    public PlayerName getRandomName() {
+        PlayerName name = namePool.poll();
         useName(name);
         return name;
     }
 
-    public void useName(String name) {
+    public void useName(PlayerName name) {
         namePool.remove(name);
         usedNames.add(name);
         if (namePool.isEmpty()) {
@@ -63,12 +63,17 @@ public class NameManager {
     }
 
     private void updateNameList() {
-        Set<String> allNames = new ObjectOpenHashSet<>(Configs.COMMON.mobNames.get());
+        Set<PlayerName> allNames = new ObjectOpenHashSet<>();
+		for (String name : Configs.COMMON.mobNames.get()) {
+			allNames.add(new PlayerName(name));
+		}
         allNames.addAll(remoteNames);
 
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (setup && Configs.COMMON.useWhitelist.get() && server != null) {
-            allNames.addAll(Arrays.asList(server.getPlayerList().getWhitelistedPlayerNames()));
+            for (String name : server.getPlayerList().getWhitelistedPlayerNames()) {
+                allNames.add(new PlayerName(name));
+            }
         }
 
         if (namePool.size() > 0) {
@@ -77,7 +82,7 @@ public class NameManager {
         } else {
             usedNames.clear();
         }
-        ObjectArrayList<String> names = new ObjectArrayList<>(allNames);
+        ObjectArrayList<PlayerName> names = new ObjectArrayList<>(allNames);
         Collections.shuffle(names);
         namePool.addAll(names);
     }
@@ -104,14 +109,14 @@ public class NameManager {
             return null;
 
         syncFuture = CompletableFuture.supplyAsync(() -> {
-            Set<String> nameList = new ObjectOpenHashSet<>();
+            Set<PlayerName> nameList = new ObjectOpenHashSet<>();
             for (String link : Configs.COMMON.nameLinks.get()) {
                 try {
                     URL url = new URL(link);
                     try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
                         String line;
                         while ((line = reader.readLine()) != null) {
-                            nameList.add(line);
+                            nameList.add(new PlayerName(line));
                         }
                     }
                 } catch (IOException e) {
