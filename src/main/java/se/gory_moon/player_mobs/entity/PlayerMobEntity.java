@@ -68,6 +68,7 @@ import se.gory_moon.player_mobs.utils.NameManager;
 import se.gory_moon.player_mobs.utils.ProfileUpdater;
 import se.gory_moon.player_mobs.sound.SoundRegistry;
 import se.gory_moon.player_mobs.utils.ItemManager;
+import se.gory_moon.player_mobs.utils.PlayerName;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -117,7 +118,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     private boolean targetTwin(LivingEntity livingEntity) {
-        return Configs.COMMON.attackTwin.get() || !(livingEntity instanceof PlayerEntity && livingEntity.getName().getString().equals(getUsername()));
+        return Configs.COMMON.attackTwin.get() || !(livingEntity instanceof PlayerEntity && livingEntity.getName().getString().equals(getUsername().getDisplayName()));
     }
 
     protected void registerGoals() {
@@ -377,7 +378,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     @Override
     public void writeAdditional(CompoundNBT compound) {
         super.writeAdditional(compound);
-        String username = getUsername();
+        String username = getUsername().getCombinedNames();
         if (!StringUtils.isNullOrEmpty(username)) {
             compound.putString("Username", username);
         }
@@ -391,13 +392,15 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     @Override
     public void readAdditional(CompoundNBT compound) {
         super.readAdditional(compound);
+        PlayerName playerName;
         String username = compound.getString("Username");
         if (!StringUtils.isNullOrEmpty(username)) {
-            NameManager.INSTANCE.useName(username);
+            playerName = new PlayerName(username);
+            NameManager.INSTANCE.useName(playerName);
         } else {
-            username = NameManager.INSTANCE.getRandomName();
+            playerName = NameManager.INSTANCE.getRandomName();
         }
-        setUsername(username);
+        setUsername(playerName);
         setChild(compound.getBoolean("IsBaby"));
         setBreakDoorsAItask(compound.getBoolean("CanBreakDoors"));
 
@@ -411,7 +414,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     @Override
     public ITextComponent getName() {
         ITextComponent customName = getCustomName();
-        return customName != null ? customName: new StringTextComponent(getUsername());
+        return customName != null ? customName: new StringTextComponent(getUsername().getDisplayName());
     }
 
     @Override
@@ -440,8 +443,8 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     public GameProfile getProfile() {
-        if (profile == null && !getUsername().isEmpty()) {
-            profile = new GameProfile(null, getUsername());
+        if (profile == null && getUsername() != null && !getUsername().getSkinName().isEmpty()) {
+            profile = new GameProfile(null, getUsername().getSkinName());
             ProfileUpdater.updateProfile(this);
         }
         return profile;
@@ -451,16 +454,19 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         this.profile = profile;
     }
 
-    public String getUsername() {
-        return getDataManager().get(NAME);
+    public PlayerName getUsername() {
+        return new PlayerName(getDataManager().get(NAME));
     }
 
     public void setUsername(String name) {
-        String oldName = getUsername();
-        getDataManager().set(NAME, name);
-        setCustomName(new StringTextComponent(name));
+        this.setUsername(new PlayerName(name));
+    }
+    public void setUsername(PlayerName name) {
+        PlayerName oldName = getUsername();
+        getDataManager().set(NAME, name.getCombinedNames());
+        setCustomName(new StringTextComponent(name.getDisplayName()));
 
-        if("Herobrine".equals(name)){
+        if("Herobrine".equals(name.getDisplayName())){
             getAttribute(Attributes.ATTACK_DAMAGE).applyPersistentModifier(new AttributeModifier("Herobrine Damage Bonus", 1, AttributeModifier.Operation.MULTIPLY_TOTAL));
             getAttribute(Attributes.MOVEMENT_SPEED).applyPersistentModifier(new AttributeModifier("Herobrine Speed Bonus", 0.5, AttributeModifier.Operation.MULTIPLY_TOTAL));
         }
