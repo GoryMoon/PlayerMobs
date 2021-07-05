@@ -55,7 +55,7 @@ public class PlayerMobsCommand {
                 entity.onInitialSpawn(source.getWorld(), source.getWorld().getDifficultyForLocation(entity.getPosition()), SpawnReason.COMMAND, null, null);
                 entity.setUsername(username);
 
-                if (!source.getWorld().func_242106_g(entity)) {
+                if (!source.getWorld().addEntityAndUniquePassengers(entity)) {
                     throw DUPLICATE_UUID.create();
                 }
                 source.sendFeedback(new TranslationTextComponent(LangKeys.COMMANDS_SPAWN_SUCCESS.key(), entity.getDisplayName()), true);

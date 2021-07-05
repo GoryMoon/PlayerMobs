@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
     }
 }
 
@@ -21,7 +21,7 @@ version = mod_version
 group = 'se.gory_moon'
 archivesBaseName = 'PlayerMobs'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8
 
 if (System.getenv().GITHUB_RUN_NUMBER  != null) {//adds the build number to the end of the version string if on a build server
     version += ".${System.getenv().GITHUB_RUN_NUMBER}"
@@ -106,7 +106,7 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    def registrate = "com.tterrag.registrate:Registrate:MC1.16.2-${registrate_version}"
+    def registrate = "com.tterrag.registrate:Registrate:MC1.16.5-${registrate_version}"
     implementation fg.deobf(registrate)
     shade registrate
 }
