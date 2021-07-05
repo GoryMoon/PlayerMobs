@@ -1,7 +1,9 @@
 package se.gory_moon.player_mobs.utils;
 
+import com.google.common.hash.Hashing;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
@@ -42,6 +44,7 @@ public class TextureUtils {
         return getTexture(entity, MinecraftProfileTexture.Type.CAPE);
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     private static ResourceLocation getTexture(PlayerMobEntity entity, MinecraftProfileTexture.Type type) {
         if (entity.isTextureAvailable(type)) {
             return entity.getTexture(type);
@@ -56,8 +59,18 @@ public class TextureUtils {
             Minecraft mc = Minecraft.getInstance();
             Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = mc.getSkinManager().loadSkinFromCache(profile);
             if (map.containsKey(type)) {
-                return mc.getSkinManager().loadSkin(map.get(type), type, entity.getSkinCallback());
+                MinecraftProfileTexture profileTexture = map.get(type);
+                String s = Hashing.sha1().hashUnencodedChars(profileTexture.getHash()).toString();
+                ResourceLocation location = new ResourceLocation("skins/" + s);
+                if (mc.textureManager.getTexture(location) != null) {
+                    return location;
+                } else {
+                    RenderSystem.recordRenderCall(() -> {
+                        mc.getSkinManager().loadSkin(profileTexture, type, entity.getSkinCallback());
+                    });
+                }
             }
+
         }
         return getDefault(profile, type);
     }

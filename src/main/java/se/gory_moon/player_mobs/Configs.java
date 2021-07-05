@@ -69,7 +69,7 @@ public class Configs {
                     .defineEnum("Open Doors Difficulty", Difficulty.HARD);
 
             pickupItemsChance = builder
-                    .comment("The chance to use when spawned if a player mob can pickup items.",
+                    .comment("The chance of the mob getting the ability to pickup items, it's used on mob spawn.",
                             "Set to -1 to disable.")
                     .defineInRange("Pickup Item Chance", 0.55D, -1D, 1D);
 
