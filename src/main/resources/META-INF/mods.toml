@@ -1,6 +1,6 @@
 modLoader="javafml"
-loaderVersion="[34,)"
-license="LGPL v.3"
+loaderVersion="[36,)"
+license="LGPLv.3"
 issueTrackerURL="https://github.com/GoryMoon/PlayerMobs/issues"
 
 [[mods]]
@@ -14,16 +14,16 @@ issueTrackerURL="https://github.com/GoryMoon/PlayerMobs/issues"
     description='''
 Adds a mob that has other players skin.
 '''
-[[dependencies.examplemod]]
+[[dependencies.player_mobs]]
     modId="forge"
     mandatory=true
-    versionRange="[34,)"
+    versionRange="[36,)"
     ordering="NONE"
     side="BOTH"
 
-[[dependencies.examplemod]]
+[[dependencies.player_mobs]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.3,1.17)"
+    versionRange="[1.16.5,1.17)"
     ordering="NONE"
     side="BOTH"
