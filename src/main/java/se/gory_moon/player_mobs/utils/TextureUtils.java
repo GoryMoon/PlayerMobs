@@ -6,6 +6,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.util.ResourceLocation;
 import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 
@@ -29,11 +30,17 @@ public class TextureUtils {
                 Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = mc.getSkinManager().loadSkinFromCache(profile);
                 if (map.containsKey(MinecraftProfileTexture.Type.SKIN)) {
                     String stringType = map.get(MinecraftProfileTexture.Type.SKIN).getMetadata("model");
-                    SKIN_TYPE_CACHE.put(profile.getId(), "slim".equals(stringType) ? SkinType.SLIM: SkinType.DEFAULT);
+                    SKIN_TYPE_CACHE.put(profile.getId(), type = getType(stringType));
+                } else {
+                    type = getType(DefaultPlayerSkin.getSkinType(profile.getId()));
                 }
             }
         }
         return type;
+    }
+
+    private static SkinType getType(String stringType) {
+        return "slim".equals(stringType) ? SkinType.SLIM: SkinType.DEFAULT;
     }
 
     public static ResourceLocation getPlayerSkin(PlayerMobEntity entity) {
