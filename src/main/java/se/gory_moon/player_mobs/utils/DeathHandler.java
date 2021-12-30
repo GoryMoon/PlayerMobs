@@ -32,16 +32,16 @@ public class DeathHandler {
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         LivingEntity entity = event.getEntityLiving();
-        if (entity instanceof PlayerEntity && entity.getEntityWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+        if (entity instanceof PlayerEntity && entity.getCommandSenderWorld().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
             DamageSource source = event.getSource();
             if (source instanceof EntityDamageSource) {
-                Entity trueSource = source.getTrueSource();
+                Entity trueSource = source.getEntity();
                 if (trueSource instanceof PlayerEntity) {
-                    ItemStack stack = ((PlayerEntity) trueSource).getActiveItemStack();
-                    int looting = EnchantmentHelper.getEnchantmentLevel(Enchantments.LOOTING, stack);
+                    ItemStack stack = ((PlayerEntity) trueSource).getUseItem();
+                    int looting = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MOB_LOOTING, stack);
                     ItemStack drop = getDrop(entity, source, looting);
                     if (!drop.isEmpty()) {
-                        ((PlayerEntity) entity).dropItem(drop, true);
+                        ((PlayerEntity) entity).drop(drop, true);
                     }
                 }
             }
@@ -54,18 +54,18 @@ public class DeathHandler {
         if (entity instanceof PlayerEntity || entity instanceof PlayerMobEntity) {
             ItemStack drop = getDrop(entity, event.getSource(), event.getLootingLevel());
             if (!drop.isEmpty()) {
-                event.getDrops().add(new ItemEntity(entity.getEntityWorld(), entity.getPosX(), entity.getPosY(), entity.getPosZ(), drop));
+                event.getDrops().add(new ItemEntity(entity.getCommandSenderWorld(), entity.getX(), entity.getY(), entity.getZ(), drop));
             }
         }
     }
 
     private static ItemStack getDrop(LivingEntity entity, DamageSource source, int looting) {
-        if (entity.getEntityWorld().isRemote() || entity.getHealth() > 0) return ItemStack.EMPTY;
-        if (entity.isChild()) return ItemStack.EMPTY;
+        if (entity.getCommandSenderWorld().isClientSide() || entity.getHealth() > 0) return ItemStack.EMPTY;
+        if (entity.isBaby()) return ItemStack.EMPTY;
         double baseChance = entity instanceof PlayerMobEntity ? Configs.COMMON.mobHeadDropChance.get(): Configs.COMMON.playerHeadDropChance.get();
         if (baseChance <= 0) return ItemStack.EMPTY;
 
-        if (poweredCreeper(source) || randomDrop(entity.getEntityWorld().getRandom(), baseChance, looting)) {
+        if (poweredCreeper(source) || randomDrop(entity.getCommandSenderWorld().getRandom(), baseChance, looting)) {
             ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
             GameProfile gameprofile = entity instanceof PlayerMobEntity ?
                     ((PlayerMobEntity) entity).getProfile():
@@ -75,7 +75,7 @@ public class DeathHandler {
                 String skinName = pmentity.getUsername().getSkinName();
                 String displayName = pmentity.getUsername().getDisplayName();
                 if (!skinName.equals(displayName)) {
-                    stack.setDisplayName(new StringTextComponent(displayName + "'s Head"));
+                    stack.setHoverName(new StringTextComponent(displayName + "'s Head"));
                 }
             }
             stack.getOrCreateTag().put("SkullOwner", NBTUtil.writeGameProfile(new CompoundNBT(), gameprofile));
@@ -86,9 +86,9 @@ public class DeathHandler {
 
     private static boolean poweredCreeper(DamageSource source) {
         if (source.isExplosion() && source instanceof EntityDamageSource) {
-            Entity entity = source.getTrueSource();
+            Entity entity = source.getEntity();
             if (entity instanceof CreeperEntity)
-                return ((CreeperEntity) entity).isCharged();
+                return ((CreeperEntity) entity).isPowered();
         }
         return false;
     }

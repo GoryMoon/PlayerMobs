@@ -44,7 +44,7 @@ public class ItemManager {
                     LOGGER.error(String.format("Failed to parse item weight: %s", parts[1]), e);
                 }
             }
-            ResourceLocation location = ResourceLocation.tryCreate(parts[0]);
+            ResourceLocation location = ResourceLocation.tryParse(parts[0]);
             if (location == null || !ForgeRegistries.ITEMS.containsKey(location)) {
                 LOGGER.error(String.format("Failed to parse item id: %s", parts[0]));
                 return null;

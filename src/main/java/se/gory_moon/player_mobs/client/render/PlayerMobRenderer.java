@@ -30,11 +30,11 @@ public class PlayerMobRenderer extends BipedRenderer<PlayerMobEntity, PlayerMode
 
     @Override
     public void render(PlayerMobEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn) {
-        entityModel = TextureUtils.getPlayerSkinType(entity.getProfile()) == TextureUtils.SkinType.SLIM ? ALEX: STEVE;
+        model = TextureUtils.getPlayerSkinType(entity.getProfile()) == TextureUtils.SkinType.SLIM ? ALEX: STEVE;
 
-        entityModel.leftArmPose = BipedModel.ArmPose.EMPTY;
-        entityModel.rightArmPose = BipedModel.ArmPose.EMPTY;
-        ItemStack stack = entity.getHeldItemMainhand();
+        model.leftArmPose = BipedModel.ArmPose.EMPTY;
+        model.rightArmPose = BipedModel.ArmPose.EMPTY;
+        ItemStack stack = entity.getMainHandItem();
         if (!stack.isEmpty()) {
             if (stack.getItem() instanceof BowItem && entity.isAggressive()) {
                 setHandPose(entity, BipedModel.ArmPose.BOW_AND_ARROW);
@@ -47,20 +47,20 @@ public class PlayerMobRenderer extends BipedRenderer<PlayerMobEntity, PlayerMode
     }
 
     private void setHandPose(PlayerMobEntity entity, BipedModel.ArmPose pose) {
-        if (entity.getPrimaryHand() == HandSide.RIGHT) {
-            entityModel.rightArmPose = pose;
+        if (entity.getMainArm() == HandSide.RIGHT) {
+            model.rightArmPose = pose;
         } else {
-            entityModel.leftArmPose = pose;
+            model.leftArmPose = pose;
         }
     }
 
     @Override
-    protected void preRenderCallback(PlayerMobEntity entity, MatrixStack matrix, float partialTickTime) {
+    protected void scale(PlayerMobEntity entity, MatrixStack matrix, float partialTickTime) {
         matrix.scale(0.9375F, 0.9375F, 0.9375F);
     }
 
     @Override
-    public ResourceLocation getEntityTexture(PlayerMobEntity entity) {
+    public ResourceLocation getTextureLocation(PlayerMobEntity entity) {
         return TextureUtils.getPlayerSkin(entity);
     }
 }

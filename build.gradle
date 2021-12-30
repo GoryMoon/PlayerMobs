@@ -4,12 +4,12 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
     }
 }
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 apply plugin: 'net.minecraftforge.gradle'
@@ -91,14 +91,14 @@ shadowJar {
     classifier = ''
 }
 
-build.dependsOn shadowJar
-
+jar.finalizedBy('shadowJar', 'signJar')
 shadowJar.finalizedBy('reobfJar')
 
 repositories {
     mavenCentral()
-    maven { // Registrate
-        url "http://maven.tterrag.com/"
+    maven {
+        // Registrate
+        url "https://maven.tterrag.com/"
     }
 }
 
@@ -156,7 +156,7 @@ jar {
 }
 
 // Jar Signing
-import net.minecraftforge.gradle.common.task.SignJar
+import net.minecraftforge.gradle.common.tasks.SignJar
 task signJar(type: SignJar, dependsOn: shadowJar) {
 
     onlyIf {
@@ -178,5 +178,3 @@ task signJar(type: SignJar, dependsOn: shadowJar) {
         project.logger.warn('Could not sign ' + jar.archivePath.getName() + '. No keyStore property could be found')
     }
 }
-
-build.dependsOn signJar

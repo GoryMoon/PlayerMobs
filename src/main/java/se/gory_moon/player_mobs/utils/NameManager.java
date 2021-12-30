@@ -70,7 +70,7 @@ public class NameManager {
 
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (setup && Configs.COMMON.useWhitelist.get() && server != null) {
-            for (String name : server.getPlayerList().getWhitelistedPlayerNames()) {
+            for (String name : server.getPlayerList().getWhiteListNames()) {
                 allNames.add(new PlayerName(name));
             }
         }
@@ -131,7 +131,7 @@ public class NameManager {
                 updateNameList();
             });
             return diff;
-        }, Util.getServerExecutor());
+        }, Util.backgroundExecutor());
         return syncFuture;
     }
 }

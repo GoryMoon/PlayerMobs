@@ -28,19 +28,19 @@ public class EntityRegistry {
             .<PlayerMobEntity>entity(PlayerMobEntity::new, EntityClassification.MONSTER)
             .lang("Player Mob")
             .renderer(() -> PlayerMobRenderer::new)
-            .spawnPlacement(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MonsterEntity::canMonsterSpawnInLight)
-            .properties(builder -> builder.size(0.6F, 1.8F).trackingRange(8))
+            .spawnPlacement(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MonsterEntity::checkMonsterSpawnRules)
+            .properties(builder -> builder.sized(0.6F, 1.8F).clientTrackingRange(8))
             .defaultSpawnEgg(0xFFF144, 0x69DFDA)
             .loot((register, entityType) ->
-                    register.registerLootTable(entityType, LootTable.builder()
-                            .addLootPool(LootPool.builder().rolls(ConstantRange.of(1)).addEntry(ItemLootEntry.builder(Items.BONE)).acceptFunction(SetCount.builder(RandomValueRange.of(0, 3))).acceptFunction(LootingEnchantBonus.builder(RandomValueRange.of(0.0F, 1.0F))))
-                            .addLootPool(LootPool.builder().rolls(ConstantRange.of(1)).addEntry(ItemLootEntry.builder(Items.ROTTEN_FLESH)).acceptFunction(SetCount.builder(RandomValueRange.of(0, 3))).acceptFunction(LootingEnchantBonus.builder(RandomValueRange.of(0.0F, 1.0F))))
+                    register.add(entityType, LootTable.lootTable()
+                            .withPool(LootPool.lootPool().setRolls(ConstantRange.exactly(1)).add(ItemLootEntry.lootTableItem(Items.BONE)).apply(SetCount.setCount(RandomValueRange.between(0, 3))).apply(LootingEnchantBonus.lootingMultiplier(RandomValueRange.between(0.0F, 1.0F))))
+                            .withPool(LootPool.lootPool().setRolls(ConstantRange.exactly(1)).add(ItemLootEntry.lootTableItem(Items.ROTTEN_FLESH)).apply(SetCount.setCount(RandomValueRange.between(0, 3))).apply(LootingEnchantBonus.lootingMultiplier(RandomValueRange.between(0.0F, 1.0F))))
                     )
             )
             .register();
 
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
-        event.put(PLAYER_MOB_ENTITY.get(), PlayerMobEntity.registerAttributes().create());
+        event.put(PLAYER_MOB_ENTITY.get(), PlayerMobEntity.registerAttributes().build());
     }
 
     public static void init() {}

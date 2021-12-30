@@ -27,12 +27,12 @@ public class TextureUtils {
                 type = SKIN_TYPE_CACHE.get(profile.getId());
             } else {
                 Minecraft mc = Minecraft.getInstance();
-                Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = mc.getSkinManager().loadSkinFromCache(profile);
+                Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = mc.getSkinManager().getInsecureSkinInformation(profile);
                 if (map.containsKey(MinecraftProfileTexture.Type.SKIN)) {
                     String stringType = map.get(MinecraftProfileTexture.Type.SKIN).getMetadata("model");
                     SKIN_TYPE_CACHE.put(profile.getId(), type = getType(stringType));
                 } else {
-                    type = getType(DefaultPlayerSkin.getSkinType(profile.getId()));
+                    type = getType(DefaultPlayerSkin.getSkinModelName(profile.getId()));
                 }
             }
         }
@@ -64,7 +64,7 @@ public class TextureUtils {
 
         if (profile != null && profile.getName() != null) {
             Minecraft mc = Minecraft.getInstance();
-            Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = mc.getSkinManager().loadSkinFromCache(profile);
+            Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = mc.getSkinManager().getInsecureSkinInformation(profile);
             if (map.containsKey(type)) {
                 MinecraftProfileTexture profileTexture = map.get(type);
                 String s = Hashing.sha1().hashUnencodedChars(profileTexture.getHash()).toString();
@@ -73,7 +73,7 @@ public class TextureUtils {
                     return location;
                 } else {
                     RenderSystem.recordRenderCall(() -> {
-                        mc.getSkinManager().loadSkin(profileTexture, type, entity.getSkinCallback());
+                        mc.getSkinManager().registerTexture(profileTexture, type, entity.getSkinCallback());
                     });
                 }
             }

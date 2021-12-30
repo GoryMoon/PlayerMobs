@@ -17,9 +17,9 @@ public class ThreadUtils {
             () -> ClientThreadUtils::getExecutor,
             () -> ServerLifecycleHooks::getCurrentServer);
         if (executor != null) {
-            executor.deferTask(runnable);
+            executor.submitAsync(runnable);
         } else {
-            Util.getServerExecutor().execute(runnable);
+            Util.backgroundExecutor().execute(runnable);
         }
     }
 
