@@ -24,7 +24,7 @@ public class PlayerMobs {
 
     public PlayerMobs() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modBus.addListener(this::setup);
+        modBus.addListener(EntityRegistry::registerEntityAttributes);
         modBus.addListener(this::gatherData);
         IEventBus eventBus = MinecraftForge.EVENT_BUS;
         eventBus.addListener(this::registerCommands);
@@ -37,11 +37,7 @@ public class PlayerMobs {
     }
 
     public static CustomRegistrate getRegistrate() {
-        return REGISTRATE.get();
-    }
-
-    private void setup(FMLCommonSetupEvent event) {
-        EntityRegistry.registerEntityAttributes();
+        return REGISTRATE.getValue();
     }
 
     private void gatherData(GatherDataEvent event) {

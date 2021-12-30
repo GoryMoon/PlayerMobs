@@ -14,6 +14,7 @@ import net.minecraft.loot.RandomValueRange;
 import net.minecraft.loot.functions.LootingEnchantBonus;
 import net.minecraft.loot.functions.SetCount;
 import net.minecraft.world.gen.Heightmap;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import se.gory_moon.player_mobs.Constants;
 import se.gory_moon.player_mobs.PlayerMobs;
 import se.gory_moon.player_mobs.client.render.PlayerMobRenderer;
@@ -38,8 +39,8 @@ public class EntityRegistry {
             )
             .register();
 
-    public static void registerEntityAttributes() {
-        GlobalEntityTypeAttributes.put(PLAYER_MOB_ENTITY.get(), PlayerMobEntity.registerAttributes().create());
+    public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
+        event.put(PLAYER_MOB_ENTITY.get(), PlayerMobEntity.registerAttributes().create());
     }
 
     public static void init() {}
