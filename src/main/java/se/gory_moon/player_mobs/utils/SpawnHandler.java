@@ -45,9 +45,9 @@ public class SpawnHandler {
         if (event.getEntityLiving() instanceof PlayerMobEntity) {
             RegistryKey<World> worldKey = World.OVERWORLD;
             if (event.getWorld() instanceof IServerWorld) {
-                worldKey = ((IServerWorld) event.getWorld()).getWorld().getDimensionKey();
+                worldKey = ((IServerWorld) event.getWorld()).getLevel().dimension();
             } else if (event.getWorld() instanceof World) {
-                worldKey = ((World) event.getWorld()).getDimensionKey();
+                worldKey = ((World) event.getWorld()).dimension();
             }
 
             if (Configs.COMMON.isDimensionBlocked(worldKey)) {

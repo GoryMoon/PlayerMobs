@@ -1,26 +1,25 @@
 package se.gory_moon.player_mobs;
 
 import com.tterrag.registrate.providers.ProviderType;
-import com.tterrag.registrate.util.NonNullLazyValue;
+import net.minecraft.util.LazyValue;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import se.gory_moon.player_mobs.entity.EntityRegistry;
-import se.gory_moon.player_mobs.utils.NameManager;
 import se.gory_moon.player_mobs.sound.SoundRegistry;
 import se.gory_moon.player_mobs.utils.CustomRegistrate;
+import se.gory_moon.player_mobs.utils.NameManager;
 
 @Mod(Constants.MOD_ID)
 public class PlayerMobs {
 
-    public static final NonNullLazyValue<CustomRegistrate> REGISTRATE = new NonNullLazyValue<>(() -> CustomRegistrate.create(Constants.MOD_ID));
+    public static final LazyValue<CustomRegistrate> REGISTRATE = new LazyValue<>(() -> CustomRegistrate.create(Constants.MOD_ID));
 
     public PlayerMobs() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -37,7 +36,7 @@ public class PlayerMobs {
     }
 
     public static CustomRegistrate getRegistrate() {
-        return REGISTRATE.getValue();
+        return REGISTRATE.get();
     }
 
     private void gatherData(GatherDataEvent event) {

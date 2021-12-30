@@ -158,7 +158,7 @@ public class Configs {
         }
 
         private static boolean validResourceLocation(Object o) {
-            return validString(o) && ResourceLocation.tryCreate((String) o) != null;
+            return validString(o) && ResourceLocation.tryParse((String) o) != null;
         }
 
         public boolean isDimensionBlocked(RegistryKey<World> type) {
@@ -174,9 +174,9 @@ public class Configs {
             ThreadUtils.tryRunOnMain(() -> {
                 dimensionBlockList.clear();
                 dimensionBlockList.addAll(dimensionBlockListStrings.get().stream()
-                        .map(ResourceLocation::tryCreate)
+                        .map(ResourceLocation::tryParse)
                         .filter(Objects::nonNull)
-                        .map(s -> RegistryKey.getOrCreateKey(Registry.WORLD_KEY, s))
+                        .map(s -> RegistryKey.create(Registry.DIMENSION_REGISTRY, s))
                         .collect(Collectors.toList()));
                 NameManager.INSTANCE.configLoad();
                 ItemManager.INSTANCE.configLoad();

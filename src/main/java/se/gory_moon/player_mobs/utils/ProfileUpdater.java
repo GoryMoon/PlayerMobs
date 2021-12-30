@@ -19,7 +19,7 @@ public class ProfileUpdater {
                 while (!entities.isEmpty()) {
                     PlayerMobEntity mob = entities.remove();
                     if (mob != null) {
-                        mob.setProfile(SkullTileEntity.updateGameProfile(mob.getProfile()));
+                        mob.setProfile(SkullTileEntity.updateGameprofile(mob.getProfile()));
                     }
                 }
             });

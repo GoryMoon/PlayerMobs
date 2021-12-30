@@ -83,18 +83,18 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     private boolean skinAvailable;
     private boolean capeAvailable;
 
-    public double prevChasingPosX;
-    public double prevChasingPosY;
-    public double prevChasingPosZ;
-    public double chasingPosX;
-    public double chasingPosY;
-    public double chasingPosZ;
+    public double xCloakO;
+    public double yCloakO;
+    public double zCloakO;
+    public double xCloak;
+    public double yCloak;
+    public double zCloak;
 
     private static final UUID BABY_SPEED_BOOST_ID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
     private static final AttributeModifier BABY_SPEED_BOOST = new AttributeModifier(BABY_SPEED_BOOST_ID, "Baby speed boost", 0.5D, AttributeModifier.Operation.MULTIPLY_BASE);
 
-    private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.createKey(PlayerMobEntity.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<String> NAME = EntityDataManager.createKey(PlayerMobEntity.class, DataSerializers.STRING);
+    private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.defineId(PlayerMobEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<String> NAME = EntityDataManager.defineId(PlayerMobEntity.class, DataSerializers.STRING);
 
     private boolean canBreakDoor;
     private final BreakDoorGoal breakDoor = new BreakDoorGoal(this, (difficulty) -> difficulty == Difficulty.HARD);
@@ -110,11 +110,11 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
-        return LivingEntity.registerAttributes()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 35D)
-                .createMutableAttribute(Attributes.ATTACK_KNOCKBACK)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 3.5D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.24D);
+        return LivingEntity.createLivingAttributes()
+                .add(Attributes.FOLLOW_RANGE, 35D)
+                .add(Attributes.ATTACK_KNOCKBACK)
+                .add(Attributes.ATTACK_DAMAGE, 3.5D)
+                .add(Attributes.MOVEMENT_SPEED, 0.24D);
     }
 
     private boolean targetTwin(LivingEntity livingEntity) {
@@ -123,7 +123,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
 
     protected void registerGoals() {
         goalSelector.addGoal(0, new SwimGoal(this));
-        if(Configs.COMMON.openDoors.get() && world.getDifficulty() == Configs.COMMON.openDoorsDifficulty.get())
+        if(Configs.COMMON.openDoors.get() && level.getDifficulty() == Configs.COMMON.openDoorsDifficulty.get())
             goalSelector.addGoal(1, new OpenDoorGoal(this, true));
         goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2D, false));
         goalSelector.addGoal(4, new RandomWalkingGoal(this, 1.0D));
@@ -135,39 +135,39 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     @Override
-    protected void registerData() {
-        super.registerData();
-        getDataManager().register(NAME, "");
-        getDataManager().register(IS_CHILD, false);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        getEntityData().define(NAME, "");
+        getEntityData().define(IS_CHILD, false);
     }
 
     @Override
-    public void updateRidden() {
-    super.updateRidden();
-        if (getRidingEntity() instanceof CreatureEntity) {
-            CreatureEntity creatureentity = (CreatureEntity)getRidingEntity();
-            renderYawOffset = creatureentity.renderYawOffset;
+    public void rideTick() {
+    super.rideTick();
+        if (getVehicle() instanceof CreatureEntity) {
+            CreatureEntity creatureentity = (CreatureEntity)getVehicle();
+            yBodyRot = creatureentity.yBodyRot;
         }
     }
 
     @Override
-    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-        super.setEquipmentBasedOnDifficulty(difficulty);
-        if (rand.nextFloat() < (difficulty.getDifficulty() == Difficulty.HARD ? 0.1F: 0.5F)) {
-            int i = rand.nextInt(3);
+    protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+        super.populateDefaultEquipmentSlots(difficulty);
+        if (random.nextFloat() < (difficulty.getDifficulty() == Difficulty.HARD ? 0.1F: 0.5F)) {
+            int i = random.nextInt(3);
 
             if (i <= 1) {
-                ItemStack stack = ItemManager.INSTANCE.getRandomMainHand(rand);
-                setItemStackToSlot(EquipmentSlotType.MAINHAND, stack);
-                if (rand.nextFloat() > 0.5f) {
+                ItemStack stack = ItemManager.INSTANCE.getRandomMainHand(random);
+                setItemSlot(EquipmentSlotType.MAINHAND, stack);
+                if (random.nextFloat() > 0.5f) {
                     if (stack.getItem() instanceof ShootableItem) {
                         ArrayList<ResourceLocation> potions = new ArrayList<>(ForgeRegistries.POTION_TYPES.getKeys());
-                        Potion potion = ForgeRegistries.POTION_TYPES.getValue(potions.get(rand.nextInt(potions.size())));
-                        setItemStackToSlot(EquipmentSlotType.OFFHAND, PotionUtils.addPotionToItemStack(new ItemStack(Items.TIPPED_ARROW), potion));
+                        Potion potion = ForgeRegistries.POTION_TYPES.getValue(potions.get(random.nextInt(potions.size())));
+                        setItemSlot(EquipmentSlotType.OFFHAND, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), potion));
                     } else {
                         if (difficulty.getDifficulty() == Difficulty.HARD) {
-                            setItemStackToSlot(EquipmentSlotType.OFFHAND, ItemManager.INSTANCE.getRandomOffHand(rand));
-                            getAttribute(Attributes.MAX_HEALTH).applyPersistentModifier(new AttributeModifier("Shield Bonus", rand.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.MULTIPLY_TOTAL));
+                            setItemSlot(EquipmentSlotType.OFFHAND, ItemManager.INSTANCE.getRandomOffHand(random));
+                            getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("Shield Bonus", random.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.MULTIPLY_TOTAL));
                         }
                     }
                 }
@@ -176,129 +176,129 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     @Override
-    public void setItemStackToSlot(EquipmentSlotType slotIn, ItemStack stack) {
-        super.setItemStackToSlot(slotIn, stack);
-        if (!this.world.isRemote) {
+    public void setItemSlot(EquipmentSlotType slotIn, ItemStack stack) {
+        super.setItemSlot(slotIn, stack);
+        if (!this.level.isClientSide) {
             this.setCombatTask();
         }
     }
 
     @Override
-    public void notifyDataManagerChange(DataParameter<?> key) {
+    public void onSyncedDataUpdated(DataParameter<?> key) {
         if (IS_CHILD.equals(key)) {
-            this.recalculateSize();
+            this.refreshDimensions();
         }
 
-        super.notifyDataManagerChange(key);
+        super.onSyncedDataUpdated(key);
     }
 
     @Override
-    protected int getExperiencePoints(PlayerEntity player) {
-        if (this.isChild()) {
-            this.experienceValue = (int)((float)this.experienceValue * 2.5F);
+    protected int getExperienceReward(PlayerEntity player) {
+        if (this.isBaby()) {
+            this.xpReward = (int)((float)this.xpReward * 2.5F);
         }
 
-        return super.getExperiencePoints(player);
+        return super.getExperienceReward(player);
     }
 
     @Override
     public float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn) {
-        return this.isChild() ? 0.93F: 1.62F;
+        return this.isBaby() ? 0.93F: 1.62F;
     }
 
     @Override
-    public boolean canPassengerSteer() {
+    public boolean isControlledByLocalInstance() {
         return false;
     }
 
     @Override
-    public boolean isElytraFlying() {
+    public boolean isFallFlying() {
         return false;
     }
 
     @Override
-    public double getYOffset() {
-        return this.isChild() ? 0.0D : -0.45D;
+    public double getMyRidingOffset() {
+        return this.isBaby() ? 0.0D : -0.45D;
     }
 
     @Override
-    public boolean canEquipItem(ItemStack stack) {
-        return (stack.getItem() != Items.EGG || !this.isChild() || !this.isPassenger()) && super.canEquipItem(stack);
+    public boolean canHoldItem(ItemStack stack) {
+        return (stack.getItem() != Items.EGG || !this.isBaby() || !this.isPassenger()) && super.canHoldItem(stack);
     }
 
     @Override
     public void tick() {
         super.tick();
-        this.prevChasingPosX = this.chasingPosX;
-        this.prevChasingPosY = this.chasingPosY;
-        this.prevChasingPosZ = this.chasingPosZ;
-        double x = this.getPosX() - this.chasingPosX;
-        double y = this.getPosY() - this.chasingPosY;
-        double z = this.getPosZ() - this.chasingPosZ;
+        this.xCloakO = this.xCloak;
+        this.yCloakO = this.yCloak;
+        this.zCloakO = this.zCloak;
+        double x = this.getX() - this.xCloak;
+        double y = this.getY() - this.yCloak;
+        double z = this.getZ() - this.zCloak;
         double maxCapeAngle = 10.0D;
         if (x > maxCapeAngle) {
-            this.chasingPosX = this.getPosX();
-            this.prevChasingPosX = this.chasingPosX;
+            this.xCloak = this.getX();
+            this.xCloakO = this.xCloak;
         }
 
         if (z > maxCapeAngle) {
-            this.chasingPosZ = this.getPosZ();
-            this.prevChasingPosZ = this.chasingPosZ;
+            this.zCloak = this.getZ();
+            this.zCloakO = this.zCloak;
         }
 
         if (y > maxCapeAngle) {
-            this.chasingPosY = this.getPosY();
-            this.prevChasingPosY = this.chasingPosY;
+            this.yCloak = this.getY();
+            this.yCloakO = this.yCloak;
         }
 
         if (x < -maxCapeAngle) {
-            this.chasingPosX = this.getPosX();
-            this.prevChasingPosX = this.chasingPosX;
+            this.xCloak = this.getX();
+            this.xCloakO = this.xCloak;
         }
 
         if (z < -maxCapeAngle) {
-            this.chasingPosZ = this.getPosZ();
-            this.prevChasingPosZ = this.chasingPosZ;
+            this.zCloak = this.getZ();
+            this.zCloakO = this.zCloak;
         }
 
         if (y < -maxCapeAngle) {
-            this.chasingPosY = this.getPosY();
-            this.prevChasingPosY = this.chasingPosY;
+            this.yCloak = this.getY();
+            this.yCloakO = this.yCloak;
         }
 
-        this.chasingPosX += x * 0.25D;
-        this.chasingPosZ += z * 0.25D;
-        this.chasingPosY += y * 0.25D;
+        this.xCloak += x * 0.25D;
+        this.zCloak += z * 0.25D;
+        this.yCloak += y * 0.25D;
     }
 
     @Override
-    public boolean attackEntityAsMob(Entity entityIn) {
-        boolean result = super.attackEntityAsMob(entityIn);
+    public boolean doHurtTarget(Entity entityIn) {
+        boolean result = super.doHurtTarget(entityIn);
         if (result)
-            swingArm(Hand.MAIN_HAND);
+            swing(Hand.MAIN_HAND);
         return result;
     }
 
     @Override
-    public boolean isChild() {
-        return getDataManager().get(IS_CHILD);
+    public boolean isBaby() {
+        return getEntityData().get(IS_CHILD);
     }
 
     @Override
-    public void setChild(boolean isChild) {
-        super.setChild(isChild);
-        this.getDataManager().set(IS_CHILD, isChild);
-        if (this.world != null && !this.world.isRemote) {
+    public void setBaby(boolean isChild) {
+        super.setBaby(isChild);
+        this.getEntityData().set(IS_CHILD, isChild);
+        if (this.level != null && !this.level.isClientSide) {
             ModifiableAttributeInstance attribute = this.getAttribute(Attributes.MOVEMENT_SPEED);
             attribute.removeModifier(BABY_SPEED_BOOST);
             if (isChild) {
-                attribute.applyNonPersistentModifier(BABY_SPEED_BOOST);
+                attribute.addTransientModifier(BABY_SPEED_BOOST);
             }
         }
     }
 
     @Override
-    protected void onChildSpawnFromEgg(PlayerEntity player, MobEntity child) {
+    protected void onOffspringSpawnedFromEgg(PlayerEntity player, MobEntity child) {
         if (child instanceof PlayerMobEntity) {
             ((PlayerMobEntity) child).setUsername(getUsername());
         }
@@ -306,45 +306,45 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
 
     @Nullable
     @Override
-    public ILivingEntityData onInitialSpawn(IServerWorld world, DifficultyInstance difficulty, SpawnReason reason, @Nullable ILivingEntityData spawnData, @Nullable CompoundNBT dataTag) {
-        spawnData = super.onInitialSpawn(world, difficulty, reason, spawnData, dataTag);
-        this.setEquipmentBasedOnDifficulty(difficulty);
-        this.setEnchantmentBasedOnDifficulty(difficulty);
+    public ILivingEntityData finalizeSpawn(IServerWorld world, DifficultyInstance difficulty, SpawnReason reason, @Nullable ILivingEntityData spawnData, @Nullable CompoundNBT dataTag) {
+        spawnData = super.finalizeSpawn(world, difficulty, reason, spawnData, dataTag);
+        this.populateDefaultEquipmentSlots(difficulty);
+        this.populateDefaultEquipmentEnchantments(difficulty);
 
         setUsername(NameManager.INSTANCE.getRandomName());
         this.setCombatTask();
-        float additionalDifficulty = difficulty.getClampedAdditionalDifficulty();
-        this.setCanPickUpLoot(this.rand.nextFloat() < Configs.COMMON.pickupItemsChance.get() * additionalDifficulty);
+        float additionalDifficulty = difficulty.getSpecialMultiplier();
+        this.setCanPickUpLoot(this.random.nextFloat() < Configs.COMMON.pickupItemsChance.get() * additionalDifficulty);
 
-        double rangeBonus = rand.nextDouble() * 1.5 * additionalDifficulty;
+        double rangeBonus = random.nextDouble() * 1.5 * additionalDifficulty;
         if(rangeBonus > 1.0)
-            getAttribute(Attributes.FOLLOW_RANGE).applyPersistentModifier(new AttributeModifier("Range Bonus", rangeBonus,  AttributeModifier.Operation.MULTIPLY_TOTAL));
+            getAttribute(Attributes.FOLLOW_RANGE).addPermanentModifier(new AttributeModifier("Range Bonus", rangeBonus,  AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if(rand.nextFloat() < additionalDifficulty * 0.05F)
-            getAttribute(Attributes.MAX_HEALTH).applyPersistentModifier(new AttributeModifier("Health Bonus", rand.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if(random.nextFloat() < additionalDifficulty * 0.05F)
+            getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("Health Bonus", random.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if(rand.nextFloat() < additionalDifficulty * 0.15F)
-            getAttribute(Attributes.ATTACK_DAMAGE).applyPersistentModifier(new AttributeModifier("Damage Bonus", rand.nextDouble() + 0.5, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if(random.nextFloat() < additionalDifficulty * 0.15F)
+            getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier("Damage Bonus", random.nextDouble() + 0.5, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if(rand.nextFloat() < additionalDifficulty * 0.2F)
-            getAttribute(Attributes.MOVEMENT_SPEED).applyPersistentModifier(new AttributeModifier("Speed Bonus", rand.nextDouble() * 2.0 * 0.24 + 0.01, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if(random.nextFloat() < additionalDifficulty * 0.2F)
+            getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier("Speed Bonus", random.nextDouble() * 2.0 * 0.24 + 0.01, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if(rand.nextDouble() < Configs.COMMON.babySpawnChance.get())
-            setChild(true);
+        if(random.nextDouble() < Configs.COMMON.babySpawnChance.get())
+            setBaby(true);
 
-        if(rand.nextFloat() < additionalDifficulty * 0.1F)
+        if(random.nextFloat() < additionalDifficulty * 0.1F)
             setBreakDoorsAItask(true);
 
         return spawnData;
     }
 
     public void setCombatTask() {
-        if (world != null && !world.isRemote) {
+        if (level != null && !level.isClientSide) {
             goalSelector.removeGoal(aiArrowAttack);
 
-            ItemStack itemstack = getHeldItem(ProjectileHelper.getHandWith(this, Items.BOW));
+            ItemStack itemstack = getItemInHand(ProjectileHelper.getWeaponHoldingHand(this, Items.BOW));
             if (itemstack.getItem() instanceof BowItem) {
-                aiArrowAttack.setAttackCooldown(world.getDifficulty() != Difficulty.HARD ? 20: 40);
+                aiArrowAttack.setMinAttackInterval(level.getDifficulty() != Difficulty.HARD ? 20: 40);
                 goalSelector.addGoal(2, aiArrowAttack);
             }
         }
@@ -352,7 +352,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
 
     public void setBreakDoorsAItask(boolean enabled) {
         canBreakDoor = enabled;
-        ((GroundPathNavigator) getNavigator()).setBreakDoors(enabled);
+        ((GroundPathNavigator) getNavigation()).setCanOpenDoors(enabled);
         if (enabled) {
             goalSelector.addGoal(1, breakDoor);
         } else {
@@ -361,37 +361,37 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     @Override
-    public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
-        ItemStack itemstack = findAmmo(getHeldItem(ProjectileHelper.getHandWith(this, Items.BOW)));
-        AbstractArrowEntity abstractarrowentity = ProjectileHelper.fireArrow(this, itemstack, distanceFactor);
-        if (getHeldItemMainhand().getItem() instanceof BowItem)
-            abstractarrowentity = ((BowItem) getHeldItemMainhand().getItem()).customArrow(abstractarrowentity);
-        double x = target.getPosX() - getPosX();
-        double y = target.getPosYHeight(0.3333333333333333D) - abstractarrowentity.getPosY();
-        double z = target.getPosZ() - getPosZ();
+    public void performRangedAttack(LivingEntity target, float distanceFactor) {
+        ItemStack itemstack = getProjectile(getItemInHand(ProjectileHelper.getWeaponHoldingHand(this, Items.BOW)));
+        AbstractArrowEntity abstractarrowentity = ProjectileHelper.getMobArrow(this, itemstack, distanceFactor);
+        if (getMainHandItem().getItem() instanceof BowItem)
+            abstractarrowentity = ((BowItem) getMainHandItem().getItem()).customArrow(abstractarrowentity);
+        double x = target.getX() - getX();
+        double y = target.getY(1D / 3D) - abstractarrowentity.getY();
+        double z = target.getZ() - getZ();
         double d3 = MathHelper.sqrt(x * x + z * z);
-        abstractarrowentity.shoot(x, y + d3 * 0.2F, z, 1.6F, 14 - world.getDifficulty().getId() * 4);
-        this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (getRNG().nextFloat() * 0.4F + 0.8F));
-        this.world.addEntity(abstractarrowentity);
+        abstractarrowentity.shoot(x, y + d3 * 0.2F, z, 1.6F, 14 - level.getDifficulty().getId() * 4);
+        this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (getRandom().nextFloat() * 0.4F + 0.8F));
+        this.level.addFreshEntity(abstractarrowentity);
     }
 
     @Override
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         String username = getUsername().getCombinedNames();
         if (!StringUtils.isNullOrEmpty(username)) {
             compound.putString("Username", username);
         }
         compound.putBoolean("CanBreakDoors", canBreakDoor);
-        compound.putBoolean("IsBaby", isChild());
+        compound.putBoolean("IsBaby", isBaby());
         if (profile != null && profile.isComplete()) {
             compound.put("Profile", NBTUtil.writeGameProfile(new CompoundNBT(), profile));
         }
     }
 
     @Override
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         PlayerName playerName;
         String username = compound.getString("Username");
         if (!StringUtils.isNullOrEmpty(username)) {
@@ -401,7 +401,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
             playerName = NameManager.INSTANCE.getRandomName();
         }
         setUsername(playerName);
-        setChild(compound.getBoolean("IsBaby"));
+        setBaby(compound.getBoolean("IsBaby"));
         setBreakDoorsAItask(compound.getBoolean("CanBreakDoors"));
 
         if (compound.contains("Profile", Constants.NBT.TAG_COMPOUND)) {
@@ -455,7 +455,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     public PlayerName getUsername() {
-        return new PlayerName(getDataManager().get(NAME));
+        return new PlayerName(getEntityData().get(NAME));
     }
 
     public void setUsername(String name) {
@@ -463,12 +463,12 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
     public void setUsername(PlayerName name) {
         PlayerName oldName = getUsername();
-        getDataManager().set(NAME, name.getCombinedNames());
+        getEntityData().set(NAME, name.getCombinedNames());
         setCustomName(new StringTextComponent(name.getDisplayName()));
 
         if("Herobrine".equals(name.getDisplayName())){
-            getAttribute(Attributes.ATTACK_DAMAGE).applyPersistentModifier(new AttributeModifier("Herobrine Damage Bonus", 1, AttributeModifier.Operation.MULTIPLY_TOTAL));
-            getAttribute(Attributes.MOVEMENT_SPEED).applyPersistentModifier(new AttributeModifier("Herobrine Speed Bonus", 0.5, AttributeModifier.Operation.MULTIPLY_TOTAL));
+            getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier("Herobrine Damage Bonus", 1, AttributeModifier.Operation.MULTIPLY_TOTAL));
+            getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier("Herobrine Speed Bonus", 0.5, AttributeModifier.Operation.MULTIPLY_TOTAL));
         }
 
         if (!Objects.equals(oldName, name)) {
