@@ -1,12 +1,17 @@
 {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/player-mobs",
     "promos": {
+        "1.18.1-recommended": "2.0.0.11",
+        "1.18.1-latest": "2.0.0.11",
         "1.16.5-recommended": "1.1.1.10",
         "1.16.5-latest": "1.1.1.10",
         "1.16.4-recommended": "1.1.0.9",
         "1.16.4-latest": "1.1.0.9",
         "1.16.3-recommended": "1.0.5.7",
         "1.16.3-latest": "1.0.5.7"
+    },
+    "1.18.1": {
+        "2.0.0.11": "Updated to MC 1.18.1"
     },
     "1.16.5": {
         "1.1.1.10": "Added support for deadmau5 ears.\nImproved determining default player model.\nClean and refactored some internal code.",
