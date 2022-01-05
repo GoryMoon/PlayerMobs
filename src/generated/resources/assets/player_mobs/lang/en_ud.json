@@ -7,6 +7,6 @@
   "player_mobs.commands.spawn.invalid_position": "u\u028D\u0250ds \u0279o\u025F uo\u0131\u0287\u0131sod p\u0131\u05DF\u0250\u028CuI ]sqoW\u0279\u01DD\u028E\u0250\u05DF\u0500[",
   "player_mobs.commands.spawn.success": "%s p\u01DDu\u028D\u0250dS ]sqoW\u0279\u01DD\u028E\u0250\u05DF\u0500[",
   "player_mobs.commands.spawn.uuid": "s\u15E1I\u2229\u2229 \u01DD\u0287\u0250\u0254\u0131\u05DFdnp o\u0287 \u01DDnp \u028E\u0287\u0131\u0287u\u01DD u\u028D\u0250ds o\u0287 \u01DD\u05DFq\u0250u\u2229 ]sqoW\u0279\u01DD\u028E\u0250\u05DF\u0500[",
-  "player_mobs.subtitles.entity.player_mob.death": "s\u0287\u0279n\u0265 qoW \u0279\u01DD\u028E\u0250\u05DF\u0500",
-  "player_mobs.subtitles.entity.player_mob.hurt": "s\u01DD\u0131p qoW \u0279\u01DD\u028E\u0250\u05DF\u0500"
+  "player_mobs.subtitles.entity.player_mob.death": "s\u01DD\u0131p qoW \u0279\u01DD\u028E\u0250\u05DF\u0500",
+  "player_mobs.subtitles.entity.player_mob.hurt": "s\u0287\u0279n\u0265 qoW \u0279\u01DD\u028E\u0250\u05DF\u0500"
 }

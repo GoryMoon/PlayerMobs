@@ -431,7 +431,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundRegistry.PLAYER_MOB_LIVING.get();
+        return SoundRegistry.PLAYER_MOB_AMBIENT.get();
     }
 
     @Override

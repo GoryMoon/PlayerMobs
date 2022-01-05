@@ -1,0 +1,23 @@
+{
+  "player_mob.ambient": {
+    "sounds": [
+      "player_mobs:mob/ambient"
+    ]
+  },
+  "player_mob.hurt": {
+    "subtitle": "player_mobs.subtitles.entity.player_mob.hurt",
+    "sounds": [
+      "damage/hit1",
+      "damage/hit2",
+      "damage/hit3"
+    ]
+  },
+  "player_mob.death": {
+    "subtitle": "player_mobs.subtitles.entity.player_mob.death",
+    "sounds": [
+      "damage/hit1",
+      "damage/hit2",
+      "damage/hit3"
+    ]
+  }
+}

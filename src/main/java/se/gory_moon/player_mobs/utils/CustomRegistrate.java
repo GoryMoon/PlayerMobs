@@ -1,17 +1,21 @@
 package se.gory_moon.player_mobs.utils;
 
 import com.tterrag.registrate.AbstractRegistrate;
+import com.tterrag.registrate.providers.ProviderType;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import se.gory_moon.player_mobs.sound.SoundBuilder;
+import se.gory_moon.player_mobs.sound.SoundProvider;
 
 public class CustomRegistrate extends AbstractRegistrate<CustomRegistrate> {
 
-    public static CustomRegistrate create(String modid) {
-        return new CustomRegistrate(modid).registerEventListeners(FMLJavaModLoadingContext.get().getModEventBus());
+    public static final ProviderType<SoundProvider> SOUND = ProviderType.register("sound", (r, e) -> new SoundProvider(r, e.getGenerator(), e.getExistingFileHelper()));
+
+    public static CustomRegistrate create(String modId) {
+        return new CustomRegistrate(modId).registerEventListeners(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-    protected CustomRegistrate(String modid) {
-        super(modid);
+    protected CustomRegistrate(String modId) {
+        super(modId);
     }
 
     public SoundBuilder<CustomRegistrate> sound() {

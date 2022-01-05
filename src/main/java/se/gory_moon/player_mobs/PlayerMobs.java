@@ -47,9 +47,6 @@ public class PlayerMobs {
             prov.add(LangKeys.COMMANDS_SPAWN_FAILED.key(), "[PlayerMobs] Unable to spawn entity");
             prov.add(LangKeys.COMMANDS_SPAWN_UUID.key(), "[PlayerMobs] Unable to spawn entity due to duplicate UUIDs");
             prov.add(LangKeys.COMMANDS_SPAWN_INVALID_POS.key(), "[PlayerMobs] Invalid position for spawn");
-
-            prov.add(LangKeys.MOB_SUBTITLE_DIES.key(), "Player Mob dies");
-            prov.add(LangKeys.MOB_SUBTITLE_HURT.key(), "Player Mob hurts");
         });
     }
 
