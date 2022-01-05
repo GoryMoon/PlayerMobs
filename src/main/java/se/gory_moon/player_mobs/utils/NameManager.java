@@ -3,14 +3,15 @@ package se.gory_moon.player_mobs.utils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import se.gory_moon.player_mobs.Configs;
 
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,6 +34,7 @@ public class NameManager {
     private boolean firstSync = true;
     private int tickTime = 0;
     private int syncTime = 0;
+    @Nullable
     private CompletableFuture<Integer> syncFuture = null;
     private boolean setup = false;
 
@@ -49,6 +51,8 @@ public class NameManager {
 
     public PlayerName getRandomName() {
         PlayerName name = namePool.poll();
+        if (name == null)
+            name = new PlayerName("Gory_Moon");
         useName(name);
         return name;
     }
@@ -105,7 +109,7 @@ public class NameManager {
 
     public CompletableFuture<Integer> reloadRemoteLinks() {
         if (syncFuture != null && !syncFuture.isDone())
-            return null;
+            return CompletableFuture.completedFuture(0);
 
         syncFuture = CompletableFuture.supplyAsync(() -> {
             Set<PlayerName> nameList = new ObjectOpenHashSet<>();

@@ -1,11 +1,11 @@
 package se.gory_moon.player_mobs.utils;
 
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.MobSpawnInfo;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -21,15 +21,15 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = Constants.MOD_ID)
 public class SpawnHandler {
 
-    private static MobSpawnInfo.Spawners getPlayerMobSpawner() {
-        return new MobSpawnInfo.Spawners(EntityRegistry.PLAYER_MOB_ENTITY.get(), Configs.COMMON.spawnWeight.get(), Configs.COMMON.spawnMinSize.get(), Configs.COMMON.spawnMaxSize.get());
+    private static MobSpawnSettings.SpawnerData getPlayerMobSpawner() {
+        return new MobSpawnSettings.SpawnerData(EntityRegistry.PLAYER_MOB_ENTITY.get(), Configs.COMMON.spawnWeight.get(), Configs.COMMON.spawnMinSize.get(), Configs.COMMON.spawnMaxSize.get());
     }
 
     @SubscribeEvent
     public static void onBiomeLoad(BiomeLoadingEvent event) {
-        List<MobSpawnInfo.Spawners> spawnersList = event.getSpawns().getSpawner(EntityClassification.MONSTER);
+        List<MobSpawnSettings.SpawnerData> spawnersList = event.getSpawns().getSpawner(MobCategory.MONSTER);
         boolean hasZombies = false;
-        for (MobSpawnInfo.Spawners spawners : spawnersList) {
+        for (MobSpawnSettings.SpawnerData spawners : spawnersList) {
             if (spawners.type == EntityType.ZOMBIE) {
                 hasZombies = true;
                 break;
@@ -43,11 +43,11 @@ public class SpawnHandler {
     @SubscribeEvent
     public static void onCheckSpawn(LivingSpawnEvent.CheckSpawn event) {
         if (event.getEntityLiving() instanceof PlayerMobEntity) {
-            RegistryKey<World> worldKey = World.OVERWORLD;
-            if (event.getWorld() instanceof IServerWorld) {
-                worldKey = ((IServerWorld) event.getWorld()).getLevel().dimension();
-            } else if (event.getWorld() instanceof World) {
-                worldKey = ((World) event.getWorld()).dimension();
+            ResourceKey<Level> worldKey = Level.OVERWORLD;
+            if (event.getWorld() instanceof ServerLevelAccessor) {
+                worldKey = ((ServerLevelAccessor) event.getWorld()).getLevel().dimension();
+            } else if (event.getWorld() instanceof Level) {
+                worldKey = ((Level) event.getWorld()).dimension();
             }
 
             if (Configs.COMMON.isDimensionBlocked(worldKey)) {

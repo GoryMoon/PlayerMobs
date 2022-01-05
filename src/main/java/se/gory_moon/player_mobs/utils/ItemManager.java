@@ -1,8 +1,9 @@
 package se.gory_moon.player_mobs.utils;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.WeightedRandom;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.random.WeightedEntry;
+import net.minecraft.util.random.WeightedRandom;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
@@ -20,8 +21,8 @@ public class ItemManager {
     public static final ItemManager INSTANCE = new ItemManager();
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final List<WeightedItem> weightedMainItems = new CopyOnWriteArrayList<>();
-    private final List<WeightedItem> weightedOffItems = new CopyOnWriteArrayList<>();
+    private final List<WeightedEntry.Wrapper<ResourceLocation>> weightedMainItems = new CopyOnWriteArrayList<>();
+    private final List<WeightedEntry.Wrapper<ResourceLocation>> weightedOffItems = new CopyOnWriteArrayList<>();
 
     private ItemManager() {
     }
@@ -33,8 +34,8 @@ public class ItemManager {
         weightedOffItems.addAll(parseItems(Configs.COMMON.offhandItems));
     }
 
-    private List<WeightedItem> parseItems(ForgeConfigSpec.ConfigValue<List<? extends String>> offhandItems) {
-        return offhandItems.get().stream().map(item -> {
+    private List<WeightedEntry.Wrapper<ResourceLocation>> parseItems(ForgeConfigSpec.ConfigValue<List<? extends String>> items) {
+        return items.get().stream().map(item -> {
             String[] parts = item.split("-");
             int weight = 1;
             if (parts.length == 2) {
@@ -49,7 +50,7 @@ public class ItemManager {
                 LOGGER.error(String.format("Failed to parse item id: %s", parts[0]));
                 return null;
             }
-            return new WeightedItem(location, weight);
+            return WeightedEntry.wrap(location, weight);
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
@@ -61,21 +62,13 @@ public class ItemManager {
         return getRandomItem(weightedOffItems, rand);
     }
 
-    private ItemStack getRandomItem(List<WeightedItem> items, Random rand) {
-        if (items.size() <= 0) {
+    private ItemStack getRandomItem(List<WeightedEntry.Wrapper<ResourceLocation>> items, Random rand) {
+        if (items.size() <= 0)
             return ItemStack.EMPTY;
-        }
-        WeightedItem item = WeightedRandom.getRandomItem(rand, items);
-        return new ItemStack(ForgeRegistries.ITEMS.getValue(item.id));
-    }
 
-    private static class WeightedItem extends WeightedRandom.Item {
-
-        private final ResourceLocation id;
-
-        public WeightedItem(ResourceLocation id, int itemWeightIn) {
-            super(itemWeightIn);
-            this.id = id;
-        }
+        return WeightedRandom
+                .getRandomItem(rand, items)
+                .map(resourceLocationWrapper -> new ItemStack(ForgeRegistries.ITEMS.getValue(resourceLocationWrapper.getData())))
+                .orElse(ItemStack.EMPTY);
     }
 }

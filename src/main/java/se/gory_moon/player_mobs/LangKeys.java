@@ -6,9 +6,7 @@ public enum  LangKeys {
     COMMANDS_SPAWN_SUCCESS("commands.spawn.success"),
     COMMANDS_SPAWN_FAILED("commands.spawn.failed"),
     COMMANDS_SPAWN_UUID("commands.spawn.uuid"),
-    COMMANDS_SPAWN_INVALID_POS("commands.spawn.invalid_position"),
-    MOB_SUBTITLE_DIES("subtitles.entity.player_mob.hurt"),
-    MOB_SUBTITLE_HURT("subtitles.entity.player_mob.death");
+    COMMANDS_SPAWN_INVALID_POS("commands.spawn.invalid_position");
 
     private final String key;
 
