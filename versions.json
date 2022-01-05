@@ -1,15 +1,16 @@
 {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/player-mobs",
     "promos": {
-        "1.16.5-recommended": "1.1.0.9",
-        "1.16.5-latest": "1.1.0.9",
+        "1.16.5-recommended": "1.1.1.10",
+        "1.16.5-latest": "1.1.1.10",
         "1.16.4-recommended": "1.1.0.9",
         "1.16.4-latest": "1.1.0.9",
         "1.16.3-recommended": "1.0.5.7",
         "1.16.3-latest": "1.0.5.7"
     },
     "1.16.5": {
-        "1.1.0.9": "Tweaked skin loading\nAllow PlayerMobs to have a different display name than their skin name\nClean and refactored some internal code",
+        "1.1.1.10": "Added support for deadmau5 ears.\nImproved determining default player model.\nClean and refactored some internal code.",
+        "1.1.0.9": "Tweaked skin loading\nAllow PlayerMobs to have a different display name than their skin name\nClean and refactored some internal code"
     },
     "1.16.4": {
         "1.1.0.9": "Tweaked skin loading\nAllow PlayerMobs to have a different display name than their skin name\nClean and refactored some internal code",
