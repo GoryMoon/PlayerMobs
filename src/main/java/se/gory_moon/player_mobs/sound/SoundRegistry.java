@@ -1,7 +1,7 @@
 package se.gory_moon.player_mobs.sound;
 
 import com.tterrag.registrate.util.entry.RegistryEntry;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.sounds.SoundEvent;
 import se.gory_moon.player_mobs.PlayerMobs;
 import se.gory_moon.player_mobs.utils.CustomRegistrate;
 

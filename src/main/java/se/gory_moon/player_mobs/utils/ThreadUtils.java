@@ -1,9 +1,9 @@
 package se.gory_moon.player_mobs.utils;
 
-import net.minecraft.util.Util;
-import net.minecraft.util.concurrent.ThreadTaskExecutor;
+import net.minecraft.Util;
+import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class ThreadUtils {
 
@@ -13,7 +13,7 @@ public class ThreadUtils {
      * @param runnable The runnable task that should be run
      */
     public static void tryRunOnMain(Runnable runnable) {
-        ThreadTaskExecutor<? extends Runnable> executor = DistExecutor.safeRunForDist(
+        BlockableEventLoop<? extends Runnable> executor = DistExecutor.safeRunForDist(
             () -> ClientThreadUtils::getExecutor,
             () -> ServerLifecycleHooks::getCurrentServer);
         if (executor != null) {

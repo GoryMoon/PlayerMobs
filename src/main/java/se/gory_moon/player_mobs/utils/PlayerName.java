@@ -1,9 +1,11 @@
 package se.gory_moon.player_mobs.utils;
 
-import net.minecraft.util.StringUtils;
+import net.minecraft.util.StringUtil;
+import javax.annotation.Nullable;
 
 public class PlayerName {
     private String skinName;
+    @Nullable
     private String displayName;
 
     public PlayerName(String combined) {
@@ -14,15 +16,15 @@ public class PlayerName {
         }
     }
 
-    public PlayerName(String skin, String display) {
+    public PlayerName(String skin, @Nullable String display) {
         skinName = skin;
-        if (!StringUtils.isNullOrEmpty(display)) {
+        if (!StringUtil.isNullOrEmpty(display)) {
             displayName = display;
         }
     }
 
     public String getCombinedNames() {
-        if (StringUtils.isNullOrEmpty(displayName) || skinName.equals(displayName)) {
+        if (StringUtil.isNullOrEmpty(displayName) || skinName.equals(displayName)) {
             return skinName;
         } else {
             return skinName + ":" + displayName;
@@ -46,7 +48,7 @@ public class PlayerName {
     }
 
     public String getDisplayName() {
-        if (!StringUtils.isNullOrEmpty(displayName)) {
+        if (!StringUtil.isNullOrEmpty(displayName)) {
             return displayName;
         } else {
             return skinName;
@@ -55,8 +57,7 @@ public class PlayerName {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof PlayerName) {
-            PlayerName other = (PlayerName) o;
+        if (o instanceof PlayerName other) {
             return this.getCombinedNames().equals(other.getCombinedNames());
         }
         return false;

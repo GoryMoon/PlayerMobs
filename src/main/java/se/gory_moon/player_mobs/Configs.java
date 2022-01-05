@@ -1,14 +1,15 @@
 package se.gory_moon.player_mobs;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import se.gory_moon.player_mobs.utils.NameManager;
@@ -44,7 +45,7 @@ public class Configs {
         public ForgeConfigSpec.IntValue spawnMaxSize;
         public ForgeConfigSpec.DoubleValue babySpawnChance;
         public ForgeConfigSpec.ConfigValue<List<? extends String>> dimensionBlockListStrings;
-        public final List<RegistryKey<World>> dimensionBlockList = new CopyOnWriteArrayList<>();
+        public final List<ResourceKey<Level>> dimensionBlockList = new CopyOnWriteArrayList<>();
         public ForgeConfigSpec.ConfigValue<List<? extends String>> mainItems;
         public ForgeConfigSpec.ConfigValue<List<? extends String>> offhandItems;
 
@@ -161,12 +162,12 @@ public class Configs {
             return validString(o) && ResourceLocation.tryParse((String) o) != null;
         }
 
-        public boolean isDimensionBlocked(RegistryKey<World> type) {
+        public boolean isDimensionBlocked(ResourceKey<Level> type) {
             return dimensionBlockList.contains(type);
         }
 
         @SubscribeEvent
-        void onReload(ModConfig.Reloading event) {
+        void onReload(ModConfigEvent.Reloading event) {
             configReload();
         }
 
@@ -176,8 +177,8 @@ public class Configs {
                 dimensionBlockList.addAll(dimensionBlockListStrings.get().stream()
                         .map(ResourceLocation::tryParse)
                         .filter(Objects::nonNull)
-                        .map(s -> RegistryKey.create(Registry.DIMENSION_REGISTRY, s))
-                        .collect(Collectors.toList()));
+                        .map(s -> ResourceKey.create(Registry.DIMENSION_REGISTRY, s))
+                        .toList());
                 NameManager.INSTANCE.configLoad();
                 ItemManager.INSTANCE.configLoad();
             });

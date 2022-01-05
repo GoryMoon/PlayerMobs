@@ -3,82 +3,85 @@ package se.gory_moon.player_mobs.entity;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.resources.SkinManager;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntitySize;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ILivingEntityData;
-import net.minecraft.entity.IRangedAttackMob;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.Pose;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.goal.BreakDoorGoal;
-import net.minecraft.entity.ai.goal.HurtByTargetGoal;
-import net.minecraft.entity.ai.goal.LookAtGoal;
-import net.minecraft.entity.ai.goal.LookRandomlyGoal;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
-import net.minecraft.entity.ai.goal.OpenDoorGoal;
-import net.minecraft.entity.ai.goal.RandomWalkingGoal;
-import net.minecraft.entity.ai.goal.RangedBowAttackGoal;
-import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.monster.ZombifiedPiglinEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.ShootableItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.pathfinding.GroundPathNavigator;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.StringUtils;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.util.StringUtil;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.BreakDoorGoal;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ProjectileWeaponItem;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.registries.ForgeRegistries;
 import se.gory_moon.player_mobs.Configs;
-import se.gory_moon.player_mobs.utils.NameManager;
-import se.gory_moon.player_mobs.utils.ProfileUpdater;
 import se.gory_moon.player_mobs.sound.SoundRegistry;
 import se.gory_moon.player_mobs.utils.ItemManager;
+import se.gory_moon.player_mobs.utils.NameManager;
 import se.gory_moon.player_mobs.utils.PlayerName;
+import se.gory_moon.player_mobs.utils.ProfileUpdater;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
-public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
+public class PlayerMobEntity extends Monster implements RangedAttackMob {
 
+    @Nullable
     private GameProfile profile;
+    @Nullable
     private ResourceLocation skin;
+    @Nullable
     private ResourceLocation cape;
     private boolean skinAvailable;
     private boolean capeAvailable;
@@ -93,23 +96,23 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     private static final UUID BABY_SPEED_BOOST_ID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
     private static final AttributeModifier BABY_SPEED_BOOST = new AttributeModifier(BABY_SPEED_BOOST_ID, "Baby speed boost", 0.5D, AttributeModifier.Operation.MULTIPLY_BASE);
 
-    private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.defineId(PlayerMobEntity.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<String> NAME = EntityDataManager.defineId(PlayerMobEntity.class, DataSerializers.STRING);
+    private static final EntityDataAccessor<Boolean> IS_CHILD = SynchedEntityData.defineId(PlayerMobEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<String> NAME = SynchedEntityData.defineId(PlayerMobEntity.class, EntityDataSerializers.STRING);
 
     private boolean canBreakDoor;
     private final BreakDoorGoal breakDoor = new BreakDoorGoal(this, (difficulty) -> difficulty == Difficulty.HARD);
     private final RangedBowAttackGoal<PlayerMobEntity> aiArrowAttack = new RangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
 
-    public PlayerMobEntity(World worldIn) {
+    public PlayerMobEntity(Level worldIn) {
         this(EntityRegistry.PLAYER_MOB_ENTITY.get(), worldIn);
     }
 
-    public PlayerMobEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
+    public PlayerMobEntity(EntityType<? extends Monster> type, Level worldIn) {
         super(type, worldIn);
         this.setCombatTask();
     }
 
-    public static AttributeModifierMap.MutableAttribute registerAttributes() {
+    public static AttributeSupplier.Builder registerAttributes() {
         return LivingEntity.createLivingAttributes()
                 .add(Attributes.FOLLOW_RANGE, 35D)
                 .add(Attributes.ATTACK_KNOCKBACK)
@@ -118,20 +121,20 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     private boolean targetTwin(LivingEntity livingEntity) {
-        return Configs.COMMON.attackTwin.get() || !(livingEntity instanceof PlayerEntity && livingEntity.getName().getString().equals(getUsername().getDisplayName()));
+        return Configs.COMMON.attackTwin.get() || !(livingEntity instanceof Player && livingEntity.getName().getString().equals(getUsername().getDisplayName()));
     }
 
     protected void registerGoals() {
-        goalSelector.addGoal(0, new SwimGoal(this));
+        goalSelector.addGoal(0, new FloatGoal(this));
         if(Configs.COMMON.openDoors.get() && level.getDifficulty() == Configs.COMMON.openDoorsDifficulty.get())
             goalSelector.addGoal(1, new OpenDoorGoal(this, true));
         goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2D, false));
-        goalSelector.addGoal(4, new RandomWalkingGoal(this, 1.0D));
-        goalSelector.addGoal(5, new LookAtGoal(this, PlayerEntity.class, 8.0F));
-        goalSelector.addGoal(5, new LookRandomlyGoal(this));
-        targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombifiedPiglinEntity.class));
-        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::targetTwin));
-        targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
+        goalSelector.addGoal(4, new RandomStrollGoal(this, 1.0D));
+        goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 8.0F));
+        goalSelector.addGoal(5, new RandomLookAroundGoal(this));
+        targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombifiedPiglin.class));
+        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::targetTwin));
+        targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
     }
 
     @Override
@@ -144,9 +147,8 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     @Override
     public void rideTick() {
     super.rideTick();
-        if (getVehicle() instanceof CreatureEntity) {
-            CreatureEntity creatureentity = (CreatureEntity)getVehicle();
-            yBodyRot = creatureentity.yBodyRot;
+        if (getVehicle() instanceof PathfinderMob mob) {
+            yBodyRot = mob.yBodyRot;
         }
     }
 
@@ -158,15 +160,15 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
 
             if (i <= 1) {
                 ItemStack stack = ItemManager.INSTANCE.getRandomMainHand(random);
-                setItemSlot(EquipmentSlotType.MAINHAND, stack);
+                setItemSlot(EquipmentSlot.MAINHAND, stack);
                 if (random.nextFloat() > 0.5f) {
-                    if (stack.getItem() instanceof ShootableItem) {
-                        ArrayList<ResourceLocation> potions = new ArrayList<>(ForgeRegistries.POTION_TYPES.getKeys());
-                        Potion potion = ForgeRegistries.POTION_TYPES.getValue(potions.get(random.nextInt(potions.size())));
-                        setItemSlot(EquipmentSlotType.OFFHAND, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), potion));
+                    if (stack.getItem() instanceof ProjectileWeaponItem) {
+                        ArrayList<ResourceLocation> potions = new ArrayList<>(ForgeRegistries.POTIONS.getKeys());
+                        Potion potion = ForgeRegistries.POTIONS.getValue(potions.get(random.nextInt(potions.size())));
+                        setItemSlot(EquipmentSlot.OFFHAND, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), potion));
                     } else {
                         if (difficulty.getDifficulty() == Difficulty.HARD) {
-                            setItemSlot(EquipmentSlotType.OFFHAND, ItemManager.INSTANCE.getRandomOffHand(random));
+                            setItemSlot(EquipmentSlot.OFFHAND, ItemManager.INSTANCE.getRandomOffHand(random));
                             getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("Shield Bonus", random.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.MULTIPLY_TOTAL));
                         }
                     }
@@ -176,7 +178,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     @Override
-    public void setItemSlot(EquipmentSlotType slotIn, ItemStack stack) {
+    public void setItemSlot(EquipmentSlot slotIn, ItemStack stack) {
         super.setItemSlot(slotIn, stack);
         if (!this.level.isClientSide) {
             this.setCombatTask();
@@ -184,7 +186,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     @Override
-    public void onSyncedDataUpdated(DataParameter<?> key) {
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         if (IS_CHILD.equals(key)) {
             this.refreshDimensions();
         }
@@ -193,7 +195,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     @Override
-    protected int getExperienceReward(PlayerEntity player) {
+    protected int getExperienceReward(Player player) {
         if (this.isBaby()) {
             this.xpReward = (int)((float)this.xpReward * 2.5F);
         }
@@ -202,7 +204,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     @Override
-    public float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn) {
+    public float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn) {
         return this.isBaby() ? 0.93F: 1.62F;
     }
 
@@ -275,7 +277,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     public boolean doHurtTarget(Entity entityIn) {
         boolean result = super.doHurtTarget(entityIn);
         if (result)
-            swing(Hand.MAIN_HAND);
+            swing(InteractionHand.MAIN_HAND);
         return result;
     }
 
@@ -284,12 +286,13 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         return getEntityData().get(IS_CHILD);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void setBaby(boolean isChild) {
         super.setBaby(isChild);
         this.getEntityData().set(IS_CHILD, isChild);
-        if (this.level != null && !this.level.isClientSide) {
-            ModifiableAttributeInstance attribute = this.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (!this.level.isClientSide) {
+            AttributeInstance attribute = this.getAttribute(Attributes.MOVEMENT_SPEED);
             attribute.removeModifier(BABY_SPEED_BOOST);
             if (isChild) {
                 attribute.addTransientModifier(BABY_SPEED_BOOST);
@@ -298,15 +301,16 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     @Override
-    protected void onOffspringSpawnedFromEgg(PlayerEntity player, MobEntity child) {
+    protected void onOffspringSpawnedFromEgg(Player player, Mob child) {
         if (child instanceof PlayerMobEntity) {
             ((PlayerMobEntity) child).setUsername(getUsername());
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Nullable
     @Override
-    public ILivingEntityData finalizeSpawn(IServerWorld world, DifficultyInstance difficulty, SpawnReason reason, @Nullable ILivingEntityData spawnData, @Nullable CompoundNBT dataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag dataTag) {
         spawnData = super.finalizeSpawn(world, difficulty, reason, spawnData, dataTag);
         this.populateDefaultEquipmentSlots(difficulty);
         this.populateDefaultEquipmentEnchantments(difficulty);
@@ -333,16 +337,16 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
             setBaby(true);
 
         if(random.nextFloat() < additionalDifficulty * 0.1F)
-            setBreakDoorsAItask(true);
+            setBreakDoorsAITask(true);
 
         return spawnData;
     }
 
     public void setCombatTask() {
-        if (level != null && !level.isClientSide) {
+        if (!level.isClientSide) {
             goalSelector.removeGoal(aiArrowAttack);
 
-            ItemStack itemstack = getItemInHand(ProjectileHelper.getWeaponHoldingHand(this, Items.BOW));
+            ItemStack itemstack = getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem));
             if (itemstack.getItem() instanceof BowItem) {
                 aiArrowAttack.setMinAttackInterval(level.getDifficulty() != Difficulty.HARD ? 20: 40);
                 goalSelector.addGoal(2, aiArrowAttack);
@@ -350,51 +354,49 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         }
     }
 
-    public void setBreakDoorsAItask(boolean enabled) {
+    public void setBreakDoorsAITask(boolean enabled) {
         canBreakDoor = enabled;
-        ((GroundPathNavigator) getNavigation()).setCanOpenDoors(enabled);
-        if (enabled) {
+        ((GroundPathNavigation) getNavigation()).setCanOpenDoors(enabled);
+        if (enabled)
             goalSelector.addGoal(1, breakDoor);
-        } else {
+        else
             goalSelector.removeGoal(breakDoor);
-        }
     }
 
     @Override
     public void performRangedAttack(LivingEntity target, float distanceFactor) {
-        ItemStack itemstack = getProjectile(getItemInHand(ProjectileHelper.getWeaponHoldingHand(this, Items.BOW)));
-        AbstractArrowEntity abstractarrowentity = ProjectileHelper.getMobArrow(this, itemstack, distanceFactor);
+        ItemStack itemstack = getProjectile(getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
+        AbstractArrow mobArrow = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
         if (getMainHandItem().getItem() instanceof BowItem)
-            abstractarrowentity = ((BowItem) getMainHandItem().getItem()).customArrow(abstractarrowentity);
+            mobArrow = ((BowItem) getMainHandItem().getItem()).customArrow(mobArrow);
         double x = target.getX() - getX();
-        double y = target.getY(1D / 3D) - abstractarrowentity.getY();
+        double y = target.getY(1D / 3D) - mobArrow.getY();
         double z = target.getZ() - getZ();
-        double d3 = MathHelper.sqrt(x * x + z * z);
-        abstractarrowentity.shoot(x, y + d3 * 0.2F, z, 1.6F, 14 - level.getDifficulty().getId() * 4);
+        double d3 = Mth.square(x * x + z * z);
+        mobArrow.shoot(x, y + d3 * 0.2F, z, 1.6F, 14 - level.getDifficulty().getId() * 4);
         this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (getRandom().nextFloat() * 0.4F + 0.8F));
-        this.level.addFreshEntity(abstractarrowentity);
+        this.level.addFreshEntity(mobArrow);
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         String username = getUsername().getCombinedNames();
-        if (!StringUtils.isNullOrEmpty(username)) {
+        if (!StringUtil.isNullOrEmpty(username))
             compound.putString("Username", username);
-        }
+
         compound.putBoolean("CanBreakDoors", canBreakDoor);
         compound.putBoolean("IsBaby", isBaby());
-        if (profile != null && profile.isComplete()) {
-            compound.put("Profile", NBTUtil.writeGameProfile(new CompoundNBT(), profile));
-        }
+        if (profile != null && profile.isComplete())
+            compound.put("Profile", NbtUtils.writeGameProfile(new CompoundTag(), profile));
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         PlayerName playerName;
         String username = compound.getString("Username");
-        if (!StringUtils.isNullOrEmpty(username)) {
+        if (!StringUtil.isNullOrEmpty(username)) {
             playerName = new PlayerName(username);
             NameManager.INSTANCE.useName(playerName);
         } else {
@@ -402,23 +404,23 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         }
         setUsername(playerName);
         setBaby(compound.getBoolean("IsBaby"));
-        setBreakDoorsAItask(compound.getBoolean("CanBreakDoors"));
+        setBreakDoorsAITask(compound.getBoolean("CanBreakDoors"));
 
-        if (compound.contains("Profile", Constants.NBT.TAG_COMPOUND)) {
-            profile = NBTUtil.readGameProfile(compound.getCompound("Profile"));
+        if (compound.contains("Profile", Tag.TAG_COMPOUND)) {
+            profile = NbtUtils.readGameProfile(compound.getCompound("Profile"));
         }
 
         setCombatTask();
     }
 
     @Override
-    public ITextComponent getName() {
-        ITextComponent customName = getCustomName();
-        return customName != null ? customName: new StringTextComponent(getUsername().getDisplayName());
+    public Component getName() {
+        Component customName = getCustomName();
+        return customName != null ? customName: new TextComponent(getUsername().getDisplayName());
     }
 
     @Override
-    public ITextComponent getDisplayName() {
+    public Component getDisplayName() {
         return getName();
     }
 
@@ -442,8 +444,9 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
         return SoundRegistry.PLAYER_MOB_DEATH.get();
     }
 
+    @Nullable
     public GameProfile getProfile() {
-        if (profile == null && getUsername() != null && !getUsername().getSkinName().isEmpty()) {
+        if (profile == null && !getUsername().getSkinName().isEmpty()) {
             profile = new GameProfile(null, getUsername().getSkinName());
             ProfileUpdater.updateProfile(this);
         }
@@ -464,7 +467,7 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     public void setUsername(PlayerName name) {
         PlayerName oldName = getUsername();
         getEntityData().set(NAME, name.getCombinedNames());
-        setCustomName(new StringTextComponent(name.getDisplayName()));
+        setCustomName(new TextComponent(name.getDisplayName()));
 
         if("Herobrine".equals(name.getDisplayName())){
             getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier("Herobrine Damage Bonus", 1, AttributeModifier.Operation.MULTIPLY_TOTAL));
@@ -478,40 +481,33 @@ public class PlayerMobEntity extends MonsterEntity implements IRangedAttackMob {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public SkinManager.ISkinAvailableCallback getSkinCallback() {
+    public SkinManager.SkinTextureCallback getSkinCallback() {
         return (type, location, profileTexture) -> {
             switch (type) {
-                case SKIN:
+                case SKIN -> {
                     skin = location;
                     skinAvailable = true;
-                    break;
-                case CAPE:
+                }
+                case CAPE -> {
                     cape = location;
                     capeAvailable = true;
-                    break;
+                }
             }
         };
     }
 
     @OnlyIn(Dist.CLIENT)
     public boolean isTextureAvailable(MinecraftProfileTexture.Type type) {
-        switch (type) {
-            case SKIN:
-                return skinAvailable;
-            case CAPE:
-            default:
-                return capeAvailable;
-        }
+        if (type == MinecraftProfileTexture.Type.SKIN)
+            return skinAvailable;
+        return capeAvailable;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @OnlyIn(Dist.CLIENT)
     public ResourceLocation getTexture(MinecraftProfileTexture.Type type) {
-        switch (type) {
-            case SKIN:
-                return skin;
-            case CAPE:
-            default:
-                return cape;
-        }
+        if (type == MinecraftProfileTexture.Type.SKIN)
+            return skin;
+        return cape;
     }
 }

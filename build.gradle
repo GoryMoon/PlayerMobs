@@ -1,10 +1,12 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://maven.parchmentmc.org' }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'org.parchmentmc', name: 'librarian', version: '1.+'
     }
 }
 
@@ -13,23 +15,25 @@ plugins {
 }
 
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 version = mod_version
 group = 'se.gory_moon'
-archivesBaseName = 'PlayerMobs'
+archivesBaseName = "PlayerMobs-$mc_version"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8
+// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-if (System.getenv().GITHUB_RUN_NUMBER  != null) {//adds the build number to the end of the version string if on a build server
+if (System.getenv().GITHUB_RUN_NUMBER  != null) { //adds the build number to the end of the version string if on a build server
     version += ".${System.getenv().GITHUB_RUN_NUMBER}"
 }
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
 
-    mappings channel: mcp_channel, version: mcp_mappings
+    mappings channel: mappings_channel, version: mappings_version
     
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -37,8 +41,15 @@ minecraft {
         client {
             workingDirectory project.file('run')
 
+            // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'CORE,LOADING,REGISTRIES'
+
+            // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
+
+            // Make mixins work on dependencies
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
             mods {
                 player_mobs {
@@ -50,8 +61,15 @@ minecraft {
         server {
             workingDirectory project.file('run')
 
+            // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'CORE,LOADING,REGISTRIES'
+
+            // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
+
+            // Make mixins work on dependencies
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
             mods {
                 player_mobs {
@@ -63,8 +81,15 @@ minecraft {
         data {
             workingDirectory project.file('run')
 
+            // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'CORE,LOADING,REGISTRIES'
+
+            // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
+
+            // Make mixins work on dependencies
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
             args '--mod', 'player_mobs', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
@@ -91,7 +116,7 @@ shadowJar {
     classifier = ''
 }
 
-jar.finalizedBy('shadowJar', 'signJar')
+jar.finalizedBy('signJar', 'shadowJar')
 shadowJar.finalizedBy('reobfJar')
 
 repositories {
@@ -105,7 +130,7 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    def registrate = "com.tterrag.registrate:Registrate:MC1.16.5-${registrate_version}"
+    def registrate = "com.tterrag.registrate:Registrate:${registrate_version}"
     implementation fg.deobf(registrate)
     shade registrate
 }
@@ -148,7 +173,7 @@ jar {
             "Specification-Vendor": "GoryMoon",
             "Specification-Version": "1", // We are version 1 of ourselves
             "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
+            "Implementation-Version": project.jar.archiveVersion,
             "Implementation-Vendor" :"GoryMoon",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
