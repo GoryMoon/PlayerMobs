@@ -52,7 +52,7 @@ public class NameManager {
     public PlayerName getRandomName() {
         PlayerName name = namePool.poll();
         if (name == null)
-            name = new PlayerName("");
+            name = new PlayerName("Gory_Moon");
         useName(name);
         return name;
     }
