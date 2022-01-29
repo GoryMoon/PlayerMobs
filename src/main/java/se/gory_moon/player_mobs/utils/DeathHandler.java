@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.Entity;
@@ -22,6 +23,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import se.gory_moon.player_mobs.Configs;
 import se.gory_moon.player_mobs.Constants;
+import se.gory_moon.player_mobs.LangKeys;
 import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 
 import java.util.Random;
@@ -77,7 +79,7 @@ public class DeathHandler {
                 String skinName = playerMob.getUsername().getSkinName();
                 String displayName = playerMob.getUsername().getDisplayName();
                 if (!skinName.equals(displayName)) {
-                    stack.setHoverName(new TextComponent(displayName + "'s Head"));
+                    stack.setHoverName(new TranslatableComponent("block.minecraft.player_head.named", displayName));
                 }
             }
             if (profile != null)
