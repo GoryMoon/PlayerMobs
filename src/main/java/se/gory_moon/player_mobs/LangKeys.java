@@ -1,6 +1,6 @@
 package se.gory_moon.player_mobs;
 
-public enum  LangKeys {
+public enum LangKeys {
     COMMANDS_RELOAD_START("commands.reload.start"),
     COMMANDS_RELOAD_DONE("commands.reload.done"),
     COMMANDS_SPAWN_SUCCESS("commands.spawn.success"),

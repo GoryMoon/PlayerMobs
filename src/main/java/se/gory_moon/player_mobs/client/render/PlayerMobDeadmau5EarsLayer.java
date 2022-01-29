@@ -2,14 +2,14 @@ package se.gory_moon.player_mobs.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.model.PlayerModel;
 import net.minecraft.util.Mth;
-import com.mojang.math.Vector3f;
 import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 import se.gory_moon.player_mobs.utils.TextureUtils;
 
@@ -41,7 +41,7 @@ public class PlayerMobDeadmau5EarsLayer extends RenderLayer<PlayerMobEntity, Pla
                     matrixStackIn.translate(0.0F, 1.05F, 0.0F);
                 }
 
-                matrixStackIn.translate(0.375F * (float)(j * 2 - 1), 0.0D, 0.0D);
+                matrixStackIn.translate(0.375F * (float) (j * 2 - 1), 0.0D, 0.0D);
                 matrixStackIn.translate(0.0D, -0.375D, 0.0D);
 
                 matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-pitch));

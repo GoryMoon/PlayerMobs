@@ -55,13 +55,11 @@ public class SoundProvider extends SoundDefinitionsProvider implements Registrat
         return SoundDefinitionsProvider.sound(new ResourceLocation(owner.getModid(), name));
     }
 
-    protected SoundDefinition subtitle(String subtitle)
-    {
+    protected SoundDefinition subtitle(String subtitle) {
         return SoundDefinitionsProvider.definition().subtitle(subtitle);
     }
 
-    public SoundDefinition noSubtitle()
-    {
+    public SoundDefinition noSubtitle() {
         return SoundDefinitionsProvider.definition();
     }
 
