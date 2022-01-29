@@ -191,6 +191,7 @@ public class Configs {
 
         private static final List<String> DEFAULT_MAIN_HAND_ITEMS = ImmutableList.of(
                 "minecraft:bow-100",
+                "minecraft:crossbow-20",
                 "minecraft:stone_sword-64",
                 "minecraft:iron_sword-20",
                 "minecraft:golden_sword-10",
