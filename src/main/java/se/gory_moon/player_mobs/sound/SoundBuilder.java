@@ -43,7 +43,7 @@ public class SoundBuilder<P> extends AbstractBuilder<SoundEvent, SoundEvent, P, 
      * Create a new {@link SoundBuilder} with a block sound subtitle. Configure sound in the definition provider.
      *
      * @param definitionProvider A function to add sounds to the definition
-     * @param subtitle The english sound subtitle
+     * @param subtitle           The english sound subtitle
      * @return this {@link SoundBuilder}
      */
     public SoundBuilder<P> blockSound(NonNullBiFunction<SoundDefinition, SoundProvider, SoundDefinition> definitionProvider, String subtitle) {
@@ -55,7 +55,7 @@ public class SoundBuilder<P> extends AbstractBuilder<SoundEvent, SoundEvent, P, 
      * Create a new {@link SoundBuilder} with a entity sound subtitle. Configure sound in the definition provider.
      *
      * @param definitionProvider A function to add sounds to the definition
-     * @param subtitle The english sound subtitle
+     * @param subtitle           The english sound subtitle
      * @return this {@link SoundBuilder}
      */
     public SoundBuilder<P> entitySound(NonNullBiFunction<SoundDefinition, SoundProvider, SoundDefinition> definitionProvider, String subtitle) {

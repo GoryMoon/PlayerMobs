@@ -1,25 +1,23 @@
 package se.gory_moon.player_mobs;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.Registry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import se.gory_moon.player_mobs.utils.NameManager;
 import se.gory_moon.player_mobs.utils.ItemManager;
+import se.gory_moon.player_mobs.utils.NameManager;
 import se.gory_moon.player_mobs.utils.ThreadUtils;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 public class Configs {
 

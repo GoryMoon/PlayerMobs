@@ -14,8 +14,8 @@ public class ThreadUtils {
      */
     public static void tryRunOnMain(Runnable runnable) {
         BlockableEventLoop<? extends Runnable> executor = DistExecutor.safeRunForDist(
-            () -> ClientThreadUtils::getExecutor,
-            () -> ServerLifecycleHooks::getCurrentServer);
+                () -> ClientThreadUtils::getExecutor,
+                () -> ServerLifecycleHooks::getCurrentServer);
         if (executor != null) {
             executor.submitAsync(runnable);
         } else {

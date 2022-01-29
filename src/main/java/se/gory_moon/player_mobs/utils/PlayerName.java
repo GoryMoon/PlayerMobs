@@ -1,6 +1,7 @@
 package se.gory_moon.player_mobs.utils;
 
 import net.minecraft.util.StringUtil;
+
 import javax.annotation.Nullable;
 
 public class PlayerName {

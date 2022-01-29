@@ -1,8 +1,11 @@
 package se.gory_moon.player_mobs.utils;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -10,11 +13,8 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.EntityDamageSource;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameRules;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -60,10 +60,13 @@ public class DeathHandler {
     }
 
     private static ItemStack getDrop(LivingEntity entity, DamageSource source, int looting) {
-        if (entity.getCommandSenderWorld().isClientSide() || entity.getHealth() > 0) return ItemStack.EMPTY;
-        if (entity.isBaby()) return ItemStack.EMPTY;
+        if (entity.getCommandSenderWorld().isClientSide() || entity.getHealth() > 0)
+            return ItemStack.EMPTY;
+        if (entity.isBaby())
+            return ItemStack.EMPTY;
         double baseChance = entity instanceof PlayerMobEntity ? Configs.COMMON.mobHeadDropChance.get(): Configs.COMMON.playerHeadDropChance.get();
-        if (baseChance <= 0) return ItemStack.EMPTY;
+        if (baseChance <= 0)
+            return ItemStack.EMPTY;
 
         if (poweredCreeper(source) || randomDrop(entity.getCommandSenderWorld().getRandom(), baseChance, looting)) {
             ItemStack stack = new ItemStack(Items.PLAYER_HEAD);

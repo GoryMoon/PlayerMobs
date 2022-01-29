@@ -1,10 +1,10 @@
 package se.gory_moon.player_mobs.utils;
 
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;

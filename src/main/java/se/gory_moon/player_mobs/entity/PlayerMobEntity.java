@@ -134,7 +134,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
-        if(Configs.COMMON.openDoors.get() && level.getDifficulty() == Configs.COMMON.openDoorsDifficulty.get())
+        if (Configs.COMMON.openDoors.get() && level.getDifficulty() == Configs.COMMON.openDoorsDifficulty.get())
             goalSelector.addGoal(1, new OpenDoorGoal(this, true));
         goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2D, false));
         goalSelector.addGoal(4, new RandomStrollGoal(this, 1.0D));
@@ -155,7 +155,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     @Override
     public void rideTick() {
-    super.rideTick();
+        super.rideTick();
         if (getVehicle() instanceof PathfinderMob mob) {
             yBodyRot = mob.yBodyRot;
         }
@@ -164,7 +164,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     @Override
     protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
         super.populateDefaultEquipmentSlots(difficulty);
-         boolean force = Configs.COMMON.forceSpawnItem.get();
+        boolean force = Configs.COMMON.forceSpawnItem.get();
         if (force || random.nextFloat() < (difficulty.getDifficulty() == Difficulty.HARD ? 0.1F: 0.5F)) {
             int i = random.nextInt(3);
 
@@ -207,7 +207,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     @Override
     protected int getExperienceReward(Player player) {
         if (this.isBaby()) {
-            this.xpReward = (int)((float)this.xpReward * 2.5F);
+            this.xpReward = (int) ((float) this.xpReward * 2.5F);
         }
 
         return super.getExperienceReward(player);
@@ -230,7 +230,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     @Override
     public double getMyRidingOffset() {
-        return this.isBaby() ? 0.0D : -0.45D;
+        return this.isBaby() ? 0.0D: -0.45D;
     }
 
     @Override
@@ -332,19 +332,19 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
         setCanBreakDoors(random.nextFloat() < additionalDifficulty * 0.1F);
 
         double rangeBonus = random.nextDouble() * 1.5 * additionalDifficulty;
-        if(rangeBonus > 1.0)
-            getAttribute(Attributes.FOLLOW_RANGE).addPermanentModifier(new AttributeModifier("Range Bonus", rangeBonus,  AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if (rangeBonus > 1.0)
+            getAttribute(Attributes.FOLLOW_RANGE).addPermanentModifier(new AttributeModifier("Range Bonus", rangeBonus, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if(random.nextFloat() < additionalDifficulty * 0.05F)
+        if (random.nextFloat() < additionalDifficulty * 0.05F)
             getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("Health Bonus", random.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if(random.nextFloat() < additionalDifficulty * 0.15F)
+        if (random.nextFloat() < additionalDifficulty * 0.15F)
             getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier("Damage Bonus", random.nextDouble() + 0.5, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if(random.nextFloat() < additionalDifficulty * 0.2F)
+        if (random.nextFloat() < additionalDifficulty * 0.2F)
             getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier("Speed Bonus", random.nextDouble() * 2.0 * 0.24 + 0.01, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if(random.nextDouble() < Configs.COMMON.babySpawnChance.get())
+        if (random.nextDouble() < Configs.COMMON.babySpawnChance.get())
             setBaby(true);
 
         return spawnData;
@@ -515,12 +515,13 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     public void setUsername(String name) {
         this.setUsername(new PlayerName(name));
     }
+
     public void setUsername(PlayerName name) {
         PlayerName oldName = getUsername();
         getEntityData().set(NAME, name.getCombinedNames());
         setCustomName(new TextComponent(name.getDisplayName()));
 
-        if("Herobrine".equals(name.getDisplayName())){
+        if ("Herobrine".equals(name.getDisplayName())) {
             getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier("Herobrine Damage Bonus", 1, AttributeModifier.Operation.MULTIPLY_TOTAL));
             getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier("Herobrine Speed Bonus", 0.5, AttributeModifier.Operation.MULTIPLY_TOTAL));
         }
