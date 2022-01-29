@@ -42,17 +42,23 @@ import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
+import net.minecraft.world.entity.ai.goal.RangedCrossbowAttackGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.ai.util.GoalUtils;
 import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.monster.CrossbowAttackMob;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ProjectileWeaponItem;
@@ -75,7 +81,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
-public class PlayerMobEntity extends Monster implements RangedAttackMob {
+public class PlayerMobEntity extends Monster implements RangedAttackMob, CrossbowAttackMob {
 
     @Nullable
     private GameProfile profile;
@@ -98,10 +104,12 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob {
 
     private static final EntityDataAccessor<Boolean> IS_CHILD = SynchedEntityData.defineId(PlayerMobEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<String> NAME = SynchedEntityData.defineId(PlayerMobEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Boolean> IS_CHARGING_CROSSBOW = SynchedEntityData.defineId(PlayerMobEntity.class, EntityDataSerializers.BOOLEAN);
 
     private boolean canBreakDoors;
     private final BreakDoorGoal breakDoorGoal = new BreakDoorGoal(this, (difficulty) -> difficulty == Difficulty.HARD);
-    private final RangedBowAttackGoal<PlayerMobEntity> aiArrowAttack = new RangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
+    private final RangedBowAttackGoal<PlayerMobEntity> bowAttackGoal = new RangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
+    private final RangedCrossbowAttackGoal<PlayerMobEntity> crossbowAttackGoal = new RangedCrossbowAttackGoal<>(this, 1.0D, 15.0F);
 
     public PlayerMobEntity(Level worldIn) {
         this(EntityRegistry.PLAYER_MOB_ENTITY.get(), worldIn);
@@ -142,6 +150,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob {
         super.defineSynchedData();
         getEntityData().define(NAME, "");
         getEntityData().define(IS_CHILD, false);
+        getEntityData().define(IS_CHARGING_CROSSBOW, false);
     }
 
     @Override
@@ -343,12 +352,15 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob {
 
     public void setCombatTask() {
         if (!level.isClientSide) {
-            goalSelector.removeGoal(aiArrowAttack);
+            goalSelector.removeGoal(bowAttackGoal);
+            goalSelector.removeGoal(crossbowAttackGoal);
 
-            ItemStack itemstack = getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem));
-            if (itemstack.getItem() instanceof BowItem) {
-                aiArrowAttack.setMinAttackInterval(level.getDifficulty() != Difficulty.HARD ? 20: 40);
-                goalSelector.addGoal(2, aiArrowAttack);
+            ItemStack itemstack = getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, this::canFireProjectileWeapon));
+            if (itemstack.getItem() instanceof CrossbowItem) {
+                goalSelector.addGoal(2, crossbowAttackGoal);
+            } else if (itemstack.getItem() instanceof BowItem) {
+                bowAttackGoal.setMinAttackInterval(level.getDifficulty() != Difficulty.HARD ? 20: 40);
+                goalSelector.addGoal(2, bowAttackGoal);
             }
         }
     }
@@ -369,19 +381,52 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob {
         }
     }
 
+    public boolean canFireProjectileWeapon(Item item) {
+        return item instanceof ProjectileWeaponItem weaponItem && canFireProjectileWeapon(weaponItem);
+    }
+
+    @Override
+    public boolean canFireProjectileWeapon(ProjectileWeaponItem item) {
+        return item instanceof BowItem || item instanceof CrossbowItem;
+    }
+
+    @Override
+    public void shootCrossbowProjectile(LivingEntity target, ItemStack crossbow, Projectile projectile, float angle) {
+        this.shootCrossbowProjectile(this, target, projectile, angle, 1.6F);
+    }
+
+    public boolean isChargingCrossbow() {
+        return this.entityData.get(IS_CHARGING_CROSSBOW);
+    }
+
+    @Override
+    public void setChargingCrossbow(boolean pIsCharging) {
+        this.entityData.set(IS_CHARGING_CROSSBOW, pIsCharging);
+    }
+
+    @Override
+    public void onCrossbowAttackPerformed() {
+        this.noActionTime = 0;
+    }
+
     @Override
     public void performRangedAttack(LivingEntity target, float distanceFactor) {
-        ItemStack itemstack = getProjectile(getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem)));
-        AbstractArrow mobArrow = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
-        if (getMainHandItem().getItem() instanceof BowItem)
-            mobArrow = ((BowItem) getMainHandItem().getItem()).customArrow(mobArrow);
-        double x = target.getX() - getX();
-        double y = target.getY(1D / 3D) - mobArrow.getY();
-        double z = target.getZ() - getZ();
-        double d3 = Mth.square(x * x + z * z);
-        mobArrow.shoot(x, y + d3 * 0.2F, z, 1.6F, 14 - level.getDifficulty().getId() * 4);
-        this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (getRandom().nextFloat() * 0.4F + 0.8F));
-        this.level.addFreshEntity(mobArrow);
+        ItemStack weaponStack = getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, this::canFireProjectileWeapon));
+        if (weaponStack.getItem() instanceof CrossbowItem) {
+            this.performCrossbowAttack(this, 1.6F);
+        } else {
+            ItemStack itemstack = getProjectile(weaponStack);
+            AbstractArrow mobArrow = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
+            if (getMainHandItem().getItem() instanceof BowItem)
+                mobArrow = ((BowItem) getMainHandItem().getItem()).customArrow(mobArrow);
+            double x = target.getX() - getX();
+            double y = target.getY(1D / 3D) - mobArrow.getY();
+            double z = target.getZ() - getZ();
+            double d3 = Mth.square(x * x + z * z);
+            mobArrow.shoot(x, y + d3 * 0.2F, z, 1.6F, 14 - level.getDifficulty().getId() * 4);
+            this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (getRandom().nextFloat() * 0.4F + 0.8F));
+            this.level.addFreshEntity(mobArrow);
+        }
     }
 
     @Override

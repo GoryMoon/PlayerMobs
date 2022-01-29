@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 import se.gory_moon.player_mobs.utils.TextureUtils;
@@ -48,11 +49,15 @@ public class PlayerMobRenderer extends HumanoidMobRenderer<PlayerMobEntity, Play
         model.rightArmPose = HumanoidModel.ArmPose.EMPTY;
         ItemStack stack = pEntity.getMainHandItem();
         if (!stack.isEmpty()) {
-            if (stack.getItem() instanceof BowItem && pEntity.isAggressive()) {
+            if (stack.getItem() instanceof CrossbowItem) {
+                if (pEntity.isChargingCrossbow())
+                    setHandPose(pEntity, HumanoidModel.ArmPose.CROSSBOW_CHARGE);
+                else
+                    setHandPose(pEntity, HumanoidModel.ArmPose.CROSSBOW_HOLD);
+            } else if (stack.getItem() instanceof BowItem && pEntity.isAggressive())
                 setHandPose(pEntity, HumanoidModel.ArmPose.BOW_AND_ARROW);
-            } else {
+            else
                 setHandPose(pEntity, HumanoidModel.ArmPose.ITEM);
-            }
         }
 
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
