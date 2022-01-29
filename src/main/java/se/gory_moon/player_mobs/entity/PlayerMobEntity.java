@@ -99,8 +99,8 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob {
     private static final EntityDataAccessor<Boolean> IS_CHILD = SynchedEntityData.defineId(PlayerMobEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<String> NAME = SynchedEntityData.defineId(PlayerMobEntity.class, EntityDataSerializers.STRING);
 
-    private boolean canBreakDoor;
-    private final BreakDoorGoal breakDoor = new BreakDoorGoal(this, (difficulty) -> difficulty == Difficulty.HARD);
+    private boolean canBreakDoors;
+    private final BreakDoorGoal breakDoorGoal = new BreakDoorGoal(this, (difficulty) -> difficulty == Difficulty.HARD);
     private final RangedBowAttackGoal<PlayerMobEntity> aiArrowAttack = new RangedBowAttackGoal<>(this, 1.0D, 20, 15.0F);
 
     public PlayerMobEntity(Level worldIn) {
@@ -155,10 +155,11 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob {
     @Override
     protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
         super.populateDefaultEquipmentSlots(difficulty);
-        if (random.nextFloat() < (difficulty.getDifficulty() == Difficulty.HARD ? 0.1F: 0.5F)) {
+         boolean force = Configs.COMMON.forceSpawnItem.get();
+        if (force || random.nextFloat() < (difficulty.getDifficulty() == Difficulty.HARD ? 0.1F: 0.5F)) {
             int i = random.nextInt(3);
 
-            if (i <= 1) {
+            if (force || i <= 1) {
                 ItemStack stack = ItemManager.INSTANCE.getRandomMainHand(random);
                 setItemSlot(EquipmentSlot.MAINHAND, stack);
                 if (random.nextFloat() > 0.5f) {
@@ -318,7 +319,8 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob {
         setUsername(NameManager.INSTANCE.getRandomName());
         this.setCombatTask();
         float additionalDifficulty = difficulty.getSpecialMultiplier();
-        this.setCanPickUpLoot(this.random.nextFloat() < Configs.COMMON.pickupItemsChance.get() * additionalDifficulty);
+        setCanPickUpLoot(this.random.nextFloat() < Configs.COMMON.pickupItemsChance.get() * additionalDifficulty);
+        setCanBreakDoors(random.nextFloat() < additionalDifficulty * 0.1F);
 
         double rangeBonus = random.nextDouble() * 1.5 * additionalDifficulty;
         if(rangeBonus > 1.0)
@@ -336,9 +338,6 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob {
         if(random.nextDouble() < Configs.COMMON.babySpawnChance.get())
             setBaby(true);
 
-        if(random.nextFloat() < additionalDifficulty * 0.1F)
-            setBreakDoorsAITask(true);
-
         return spawnData;
     }
 
@@ -354,13 +353,20 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob {
         }
     }
 
-    public void setBreakDoorsAITask(boolean enabled) {
-        canBreakDoor = enabled;
-        ((GroundPathNavigation) getNavigation()).setCanOpenDoors(enabled);
-        if (enabled)
-            goalSelector.addGoal(1, breakDoor);
-        else
-            goalSelector.removeGoal(breakDoor);
+    public void setCanBreakDoors(boolean enabled) {
+        if (GoalUtils.hasGroundPathNavigation(this)) {
+            if (canBreakDoors != enabled) {
+                canBreakDoors = enabled;
+                ((GroundPathNavigation) getNavigation()).setCanOpenDoors(enabled);
+                if (enabled)
+                    goalSelector.addGoal(1, breakDoorGoal);
+                else
+                    goalSelector.removeGoal(breakDoorGoal);
+            }
+        } else if (canBreakDoors) {
+            this.goalSelector.removeGoal(breakDoorGoal);
+            canBreakDoors = false;
+        }
     }
 
     @Override
@@ -385,7 +391,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob {
         if (!StringUtil.isNullOrEmpty(username))
             compound.putString("Username", username);
 
-        compound.putBoolean("CanBreakDoors", canBreakDoor);
+        compound.putBoolean("CanBreakDoors", canBreakDoors);
         compound.putBoolean("IsBaby", isBaby());
         if (profile != null && profile.isComplete())
             compound.put("Profile", NbtUtils.writeGameProfile(new CompoundTag(), profile));
@@ -404,7 +410,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob {
         }
         setUsername(playerName);
         setBaby(compound.getBoolean("IsBaby"));
-        setBreakDoorsAITask(compound.getBoolean("CanBreakDoors"));
+        setCanBreakDoors(compound.getBoolean("CanBreakDoors"));
 
         if (compound.contains("Profile", Tag.TAG_COMPOUND)) {
             profile = NbtUtils.readGameProfile(compound.getCompound("Profile"));
