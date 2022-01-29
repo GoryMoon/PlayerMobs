@@ -1,19 +1,19 @@
 package se.gory_moon.player_mobs.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.layers.ArrowLayer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.resources.ResourceLocation;
 import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 import se.gory_moon.player_mobs.utils.TextureUtils;
 
@@ -28,8 +28,8 @@ public class PlayerMobRenderer extends HumanoidMobRenderer<PlayerMobEntity, Play
         super(context, new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER), false), 0.5F);
         steveModel = this.model;
         alexModel = new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER_SLIM), true);
-        steveArmorModel = new HumanoidArmorLayer<>(this, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER)), new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER)));
-        alexArmorModel = new HumanoidArmorLayer<>(this, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_SLIM)), new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_SLIM)));
+        steveArmorModel = new HumanoidArmorLayer<>(this, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)), new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)));
+        alexArmorModel = new HumanoidArmorLayer<>(this, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_SLIM_INNER_ARMOR)), new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_SLIM_OUTER_ARMOR)));
 
         this.addLayer(new ArrowLayer<>(context, this));
         this.addLayer(new PlayerMobDeadmau5EarsLayer(this));
