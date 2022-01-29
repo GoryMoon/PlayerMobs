@@ -34,7 +34,6 @@ public class Configs {
         public ForgeConfigSpec.BooleanValue attackTwin;
         public ForgeConfigSpec.BooleanValue openDoors;
         public ForgeConfigSpec.EnumValue<Difficulty> openDoorsDifficulty;
-        public ForgeConfigSpec.BooleanValue forceSpawnItem;
         public ForgeConfigSpec.DoubleValue pickupItemsChance;
         public ForgeConfigSpec.DoubleValue playerHeadDropChance;
         public ForgeConfigSpec.DoubleValue mobHeadDropChance;
@@ -47,6 +46,7 @@ public class Configs {
         public final List<ResourceKey<Level>> dimensionBlockList = new CopyOnWriteArrayList<>();
         public ForgeConfigSpec.ConfigValue<List<? extends String>> mainItems;
         public ForgeConfigSpec.ConfigValue<List<? extends String>> offhandItems;
+        public ForgeConfigSpec.BooleanValue forceSpawnItem;
 
         public ForgeConfigSpec.ConfigValue<List<? extends String>> mobNames;
         public ForgeConfigSpec.ConfigValue<List<? extends String>> nameLinks;
@@ -67,10 +67,6 @@ public class Configs {
             openDoorsDifficulty = builder
                     .comment("The difficulty and above that player mobs can open doors, if enabled above.")
                     .defineEnum("Open Doors Difficulty", Difficulty.HARD);
-
-            forceSpawnItem = builder
-                    .comment("Force the mobs to spawn holding items.")
-                    .define("Force Items Spawn", false);
 
             pickupItemsChance = builder
                     .comment("The chance of the mob getting the ability to pickup items, it's used on mob spawn.",
@@ -129,6 +125,10 @@ public class Configs {
                             "There is a separated chance to spawn with an item at all, this is to pick what it to spawn when it does",
                             "Syntax is 'namespace:id-weight'")
                     .defineList("Spawn Items Offhand", DEFAULT_OFFHAND_ITEMS, Common::validString);
+
+            forceSpawnItem = builder
+                    .comment("Force the mobs to spawn holding items.")
+                    .define("Force Items Spawn", false);
 
             builder.pop()
                     .comment("Configs related to the names of the mobs.")
