@@ -36,6 +36,7 @@ public class Configs {
         public ForgeConfigSpec.BooleanValue attackTwin;
         public ForgeConfigSpec.BooleanValue openDoors;
         public ForgeConfigSpec.EnumValue<Difficulty> openDoorsDifficulty;
+        public ForgeConfigSpec.BooleanValue forceSpawnItem;
         public ForgeConfigSpec.DoubleValue pickupItemsChance;
         public ForgeConfigSpec.DoubleValue playerHeadDropChance;
         public ForgeConfigSpec.DoubleValue mobHeadDropChance;
@@ -69,10 +70,14 @@ public class Configs {
                     .comment("The difficulty and above that player mobs can open doors, if enabled above.")
                     .defineEnum("Open Doors Difficulty", Difficulty.HARD);
 
+            forceSpawnItem = builder
+                    .comment("Force the mobs to spawn holding items.")
+                    .define("Force Items Spawn", false);
+
             pickupItemsChance = builder
                     .comment("The chance of the mob getting the ability to pickup items, it's used on mob spawn.",
                             "Set to -1 to disable.")
-                    .defineInRange("Pickup Item Chance", 0.55D, -1D, 1D);
+                    .defineInRange("Pickup Item Chance", 0.55D, -1D, 256D);
 
             playerHeadDropChance = builder
                     .comment("The chance of players dropping a head with their texture.",
