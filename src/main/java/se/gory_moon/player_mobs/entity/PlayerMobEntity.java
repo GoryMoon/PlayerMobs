@@ -79,6 +79,7 @@ import se.gory_moon.player_mobs.utils.ProfileUpdater;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PlayerMobEntity extends Monster implements RangedAttackMob, CrossbowAttackMob {
@@ -449,6 +450,11 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
         String username = compound.getString("Username");
         if (!StringUtil.isNullOrEmpty(username)) {
             playerName = new PlayerName(username);
+            if (!playerName.hasDisplayName()) {
+                Optional<PlayerName> name = NameManager.INSTANCE.findName(username);
+                if (name.isPresent())
+                    playerName = name.get();
+            }
             NameManager.INSTANCE.useName(playerName);
         } else {
             playerName = NameManager.INSTANCE.getRandomName();
