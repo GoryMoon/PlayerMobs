@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -27,6 +28,7 @@ public class NameManager {
 
     public static final NameManager INSTANCE = new NameManager();
     private static final Logger LOGGER = LogManager.getLogger();
+    private final Set<PlayerName> allNames = ConcurrentHashMap.newKeySet();
     private final Set<PlayerName> remoteNames = ConcurrentHashMap.newKeySet();
     private final Set<PlayerName> usedNames = ConcurrentHashMap.newKeySet();
     private final Queue<PlayerName> namePool = new ConcurrentLinkedQueue<>();
@@ -65,6 +67,14 @@ public class NameManager {
         }
     }
 
+    public Optional<PlayerName> findName(String name) {
+        for (PlayerName playerName : allNames) {
+            if (playerName.getDisplayName().equalsIgnoreCase(name))
+                return Optional.of(playerName);
+        }
+        return Optional.empty();
+    }
+
     private void updateNameList() {
         Set<PlayerName> allNames = new ObjectOpenHashSet<>();
         for (String name : Configs.COMMON.mobNames.get()) {
@@ -78,6 +88,8 @@ public class NameManager {
                 allNames.add(new PlayerName(name));
             }
         }
+        this.allNames.clear();
+        this.allNames.addAll(allNames);
 
         if (namePool.size() > 0) {
             allNames.removeAll(usedNames);

@@ -48,6 +48,10 @@ public class PlayerName {
         displayName = display;
     }
 
+    public boolean hasDisplayName() {
+        return displayName != null;
+    }
+
     public String getDisplayName() {
         if (!StringUtil.isNullOrEmpty(displayName)) {
             return displayName;
