@@ -35,7 +35,7 @@ public class PlayerMobsCommand {
                         })
                 ).then(Commands.literal("spawn")
                         .then(Commands
-                                .argument("username", StringArgumentType.word())
+                                .argument("username", StringArgumentType.string())
                                 .executes(context -> spawnPlayerMob(context.getSource(), StringArgumentType.getString(context, "username"), context.getSource().getPosition()))
                                 .then(Commands.argument("pos", Vec3Argument.vec3())
                                         .executes(context -> spawnPlayerMob(context.getSource(), StringArgumentType.getString(context, "username"), Vec3Argument.getVec3(context, "pos"))))))

@@ -446,20 +446,12 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        PlayerName playerName;
         String username = compound.getString("Username");
         if (!StringUtil.isNullOrEmpty(username)) {
-            playerName = new PlayerName(username);
-            if (!playerName.hasDisplayName()) {
-                Optional<PlayerName> name = NameManager.INSTANCE.findName(username);
-                if (name.isPresent())
-                    playerName = name.get();
-            }
-            NameManager.INSTANCE.useName(playerName);
+            setUsername(username);
         } else {
-            playerName = NameManager.INSTANCE.getRandomName();
+            setUsername(NameManager.INSTANCE.getRandomName());
         }
-        setUsername(playerName);
         setBaby(compound.getBoolean("IsBaby"));
         setCanBreakDoors(compound.getBoolean("CanBreakDoors"));
 
@@ -518,8 +510,15 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
         return new PlayerName(getEntityData().get(NAME));
     }
 
-    public void setUsername(String name) {
-        this.setUsername(new PlayerName(name));
+    public void setUsername(String username) {
+        PlayerName playerName = new PlayerName(username);
+        if (playerName.noDisplayName()) {
+            Optional<PlayerName> name = NameManager.INSTANCE.findName(username);
+            if (name.isPresent())
+                playerName = name.get();
+        }
+        NameManager.INSTANCE.useName(playerName);
+        this.setUsername(playerName);
     }
 
     public void setUsername(PlayerName name) {
