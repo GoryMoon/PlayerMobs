@@ -474,11 +474,6 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     }
 
     @Override
-    public boolean hasCustomName() {
-        return true;
-    }
-
-    @Override
     protected SoundEvent getAmbientSound() {
         return SoundRegistry.PLAYER_MOB_AMBIENT.get();
     }
