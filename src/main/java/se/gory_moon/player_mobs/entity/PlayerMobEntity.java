@@ -463,9 +463,14 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     }
 
     @Override
-    public Component getName() {
-        Component customName = getCustomName();
+    public Component getCustomName() {
+        Component customName = super.getCustomName();
         return customName != null ? customName: new TextComponent(getUsername().getDisplayName());
+    }
+
+    @Override
+    public boolean hasCustomName() {
+        return true;
     }
 
     @Override
@@ -519,7 +524,6 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     public void setUsername(PlayerName name) {
         PlayerName oldName = getUsername();
         getEntityData().set(NAME, name.getCombinedNames());
-        setCustomName(new TextComponent(name.getDisplayName()));
 
         if ("Herobrine".equals(name.getDisplayName())) {
             getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier("Herobrine Damage Bonus", 1, AttributeModifier.Operation.MULTIPLY_TOTAL));
