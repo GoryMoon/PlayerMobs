@@ -1,0 +1,10 @@
+{
+    "type": "player_mobs:add_spawn_as_other",
+    "entity": "minecraft:zombie",
+    "spawners": {
+        "type": "player_mobs:player_mob",
+        "weight": 95,
+        "minCount": 4,
+        "maxCount": 4
+    }
+}

@@ -1,6 +1,7 @@
 package se.gory_moon.player_mobs.utils;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.item.ItemStack;
@@ -12,7 +13,6 @@ import se.gory_moon.player_mobs.Configs;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -54,20 +54,20 @@ public class ItemManager {
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    public ItemStack getRandomMainHand(Random rand) {
-        return getRandomItem(weightedMainItems, rand);
+    public ItemStack getRandomMainHand(RandomSource randomSource) {
+        return getRandomItem(weightedMainItems, randomSource);
     }
 
-    public ItemStack getRandomOffHand(Random rand) {
-        return getRandomItem(weightedOffItems, rand);
+    public ItemStack getRandomOffHand(RandomSource randomSource) {
+        return getRandomItem(weightedOffItems, randomSource);
     }
 
-    private ItemStack getRandomItem(List<WeightedEntry.Wrapper<ResourceLocation>> items, Random rand) {
-        if (items.size() <= 0)
+    private ItemStack getRandomItem(List<WeightedEntry.Wrapper<ResourceLocation>> items, RandomSource randomSource) {
+        if (items.size() == 0)
             return ItemStack.EMPTY;
 
         return WeightedRandom
-                .getRandomItem(rand, items)
+                .getRandomItem(randomSource, items)
                 .map(resourceLocationWrapper -> new ItemStack(ForgeRegistries.ITEMS.getValue(resourceLocationWrapper.getData())))
                 .orElse(ItemStack.EMPTY);
     }

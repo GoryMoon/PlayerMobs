@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.Entity;
@@ -14,7 +14,6 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameRules;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -25,21 +24,19 @@ import se.gory_moon.player_mobs.Configs;
 import se.gory_moon.player_mobs.Constants;
 import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 
-import java.util.Random;
-
 @Mod.EventBusSubscriber(modid = Constants.MOD_ID)
 public class DeathHandler {
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
-        LivingEntity entity = event.getEntityLiving();
+        LivingEntity entity = event.getEntity();
         if (entity instanceof Player && entity.getCommandSenderWorld().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
             DamageSource source = event.getSource();
             if (source instanceof EntityDamageSource) {
                 Entity trueSource = source.getEntity();
                 if (trueSource instanceof Player) {
                     ItemStack stack = ((Player) trueSource).getUseItem();
-                    int looting = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MOB_LOOTING, stack);
+                    int looting = stack.getEnchantmentLevel(Enchantments.MOB_LOOTING);
                     ItemStack drop = getDrop(entity, source, looting);
                     if (!drop.isEmpty()) {
                         ((Player) entity).drop(drop, true);
@@ -51,7 +48,7 @@ public class DeathHandler {
 
     @SubscribeEvent
     public static void onLivingDrop(LivingDropsEvent event) {
-        LivingEntity entity = event.getEntityLiving();
+        LivingEntity entity = event.getEntity();
         if (entity instanceof Player || entity instanceof PlayerMobEntity) {
             ItemStack drop = getDrop(entity, event.getSource(), event.getLootingLevel());
             if (!drop.isEmpty()) {
@@ -82,7 +79,7 @@ public class DeathHandler {
                     displayName = customName;
 
                 if (!skinName.equals(displayName)) {
-                    stack.setHoverName(new TranslatableComponent("block.minecraft.player_head.named", displayName));
+                    stack.setHoverName(Component.translatable("block.minecraft.player_head.named", displayName));
                 }
             }
             if (profile != null)
@@ -101,7 +98,7 @@ public class DeathHandler {
         return false;
     }
 
-    private static boolean randomDrop(Random rand, double baseChance, int looting) {
+    private static boolean randomDrop(RandomSource rand, double baseChance, int looting) {
         return rand.nextDouble() <= Math.max(0, baseChance * Math.max(looting + 1, 1));
     }
 }
