@@ -37,10 +37,6 @@ public class Configs {
         public ForgeConfigSpec.DoubleValue pickupItemsChance;
         public ForgeConfigSpec.DoubleValue playerHeadDropChance;
         public ForgeConfigSpec.DoubleValue mobHeadDropChance;
-
-        public ForgeConfigSpec.IntValue spawnWeight;
-        public ForgeConfigSpec.IntValue spawnMinSize;
-        public ForgeConfigSpec.IntValue spawnMaxSize;
         public ForgeConfigSpec.DoubleValue babySpawnChance;
         public ForgeConfigSpec.ConfigValue<List<? extends String>> dimensionBlockListStrings;
         public final List<ResourceKey<Level>> dimensionBlockList = new CopyOnWriteArrayList<>();
@@ -86,20 +82,6 @@ public class Configs {
             builder.pop()
                     .comment("Configs related to spawning the mobs")
                     .push("spawning");
-
-            spawnWeight = builder
-                    .comment("The spawn weight of the mob compared to other mobs.",
-                            "Higher values makes spawning more probable.",
-                            "Default is similar to zombies")
-                    .defineInRange("Spawn Weight", 100, 0, Integer.MAX_VALUE);
-
-            spawnMinSize = builder
-                    .comment("The minimum size of the group of mobs that will spawn.")
-                    .defineInRange("Min Spawn Size", 4, 1, Integer.MAX_VALUE);
-
-            spawnMaxSize = builder
-                    .comment("The maximum size of the group of mobs that will spawn.")
-                    .defineInRange("Max Spawn Size", 4, 1, Integer.MAX_VALUE);
 
             babySpawnChance = builder
                     .comment("Chance that a player mob will spawn as a baby.",

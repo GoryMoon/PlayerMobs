@@ -1,12 +1,12 @@
 {
-  "entity.player_mobs.player_mob": "qoW \u0279\u01DD\u028E\u0250\u05DF\u0500",
-  "item.player_mobs.player_mob_spawn_egg": "bb\u018E u\u028D\u0250dS qoW \u0279\u01DD\u028E\u0250\u05DF\u0500",
-  "player_mobs.commands.reload.done": "s\u01DD\u026F\u0250u %d \u0265\u0287\u0131\u028D s\u029Eu\u0131\u05DF \u01DD\u0287o\u026F\u01DD\u0279 p\u01DDp\u0250o\u05DF\u01DD\u1D1A ]sqoW\u0279\u01DD\u028E\u0250\u05DF\u0500[",
-  "player_mobs.commands.reload.start": " \u02D9\u02D9\u02D9s\u029Eu\u0131\u05DF \u01DD\u0287o\u026F\u01DD\u0279 bu\u0131p\u0250o\u05DF\u01DD\u1D1A ]sqoW\u0279\u01DD\u028E\u0250\u05DF\u0500[",
-  "player_mobs.commands.spawn.failed": "\u028E\u0287\u0131\u0287u\u01DD u\u028D\u0250ds o\u0287 \u01DD\u05DFq\u0250u\u2229 ]sqoW\u0279\u01DD\u028E\u0250\u05DF\u0500[",
-  "player_mobs.commands.spawn.invalid_position": "u\u028D\u0250ds \u0279o\u025F uo\u0131\u0287\u0131sod p\u0131\u05DF\u0250\u028CuI ]sqoW\u0279\u01DD\u028E\u0250\u05DF\u0500[",
-  "player_mobs.commands.spawn.success": "%s p\u01DDu\u028D\u0250dS ]sqoW\u0279\u01DD\u028E\u0250\u05DF\u0500[",
-  "player_mobs.commands.spawn.uuid": "s\u15E1I\u2229\u2229 \u01DD\u0287\u0250\u0254\u0131\u05DFdnp o\u0287 \u01DDnp \u028E\u0287\u0131\u0287u\u01DD u\u028D\u0250ds o\u0287 \u01DD\u05DFq\u0250u\u2229 ]sqoW\u0279\u01DD\u028E\u0250\u05DF\u0500[",
-  "player_mobs.subtitles.entity.player_mob.death": "s\u01DD\u0131p qoW \u0279\u01DD\u028E\u0250\u05DF\u0500",
-  "player_mobs.subtitles.entity.player_mob.hurt": "s\u0287\u0279n\u0265 qoW \u0279\u01DD\u028E\u0250\u05DF\u0500"
+  "entity.player_mobs.player_mob": "qoW ɹǝʎɐןԀ",
+  "item.player_mobs.player_mob_spawn_egg": "bbƎ uʍɐdS qoW ɹǝʎɐןԀ",
+  "player_mobs.commands.reload.done": "sǝɯɐu %d ɥʇıʍ sʞuıן ǝʇoɯǝɹ pǝpɐoןǝᴚ ]sqoWɹǝʎɐןԀ[",
+  "player_mobs.commands.reload.start": " ˙˙˙sʞuıן ǝʇoɯǝɹ buıpɐoןǝᴚ ]sqoWɹǝʎɐןԀ[",
+  "player_mobs.commands.spawn.failed": "ʎʇıʇuǝ uʍɐds oʇ ǝןqɐu∩ ]sqoWɹǝʎɐןԀ[",
+  "player_mobs.commands.spawn.invalid_position": "uʍɐds ɹoɟ uoıʇısod pıןɐʌuI ]sqoWɹǝʎɐןԀ[",
+  "player_mobs.commands.spawn.success": "%s pǝuʍɐdS ]sqoWɹǝʎɐןԀ[",
+  "player_mobs.commands.spawn.uuid": "sᗡI∩∩ ǝʇɐɔıןdnp oʇ ǝnp ʎʇıʇuǝ uʍɐds oʇ ǝןqɐu∩ ]sqoWɹǝʎɐןԀ[",
+  "player_mobs.subtitles.entity.player_mob.death": "sǝıp qoW ɹǝʎɐןԀ",
+  "player_mobs.subtitles.entity.player_mob.hurt": "sʇɹnɥ qoW ɹǝʎɐןԀ"
 }

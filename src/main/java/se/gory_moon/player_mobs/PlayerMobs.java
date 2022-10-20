@@ -10,16 +10,18 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.data.event.GatherDataEvent;
 import se.gory_moon.player_mobs.entity.EntityRegistry;
 import se.gory_moon.player_mobs.sound.SoundRegistry;
 import se.gory_moon.player_mobs.utils.CustomRegistrate;
 import se.gory_moon.player_mobs.utils.NameManager;
+import se.gory_moon.player_mobs.world.BiomeModifierRegistry;
 
 @Mod(Constants.MOD_ID)
 public class PlayerMobs {
 
     private static final Lazy<CustomRegistrate> REGISTRATE = Lazy.of(() -> CustomRegistrate.create(Constants.MOD_ID));
+
 
     public PlayerMobs() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -33,6 +35,7 @@ public class PlayerMobs {
         modBus.register(Configs.COMMON);
         EntityRegistry.init();
         SoundRegistry.init();
+        BiomeModifierRegistry.BIOME_MODIFIER_SERIALIZERS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
     public static CustomRegistrate getRegistrate() {

@@ -8,7 +8,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -18,19 +18,18 @@ import se.gory_moon.player_mobs.utils.NameManager;
 
 public class PlayerMobsCommand {
 
-    private static final SimpleCommandExceptionType SUMMON_FAILED = new SimpleCommandExceptionType(new TranslatableComponent(LangKeys.COMMANDS_SPAWN_FAILED.key()));
-    private static final SimpleCommandExceptionType DUPLICATE_UUID = new SimpleCommandExceptionType(new TranslatableComponent(LangKeys.COMMANDS_SPAWN_UUID.key()));
-    private static final SimpleCommandExceptionType INVALID_POS = new SimpleCommandExceptionType(new TranslatableComponent(LangKeys.COMMANDS_SPAWN_INVALID_POS.key()));
+    private static final SimpleCommandExceptionType SUMMON_FAILED = new SimpleCommandExceptionType(Component.translatable(LangKeys.COMMANDS_SPAWN_FAILED.key()));
+    private static final SimpleCommandExceptionType DUPLICATE_UUID = new SimpleCommandExceptionType(Component.translatable(LangKeys.COMMANDS_SPAWN_UUID.key()));
+    private static final SimpleCommandExceptionType INVALID_POS = new SimpleCommandExceptionType(Component.translatable(LangKeys.COMMANDS_SPAWN_INVALID_POS.key()));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands
                 .literal("playermobs")
                 .requires(commandSource -> commandSource.hasPermission(2))
                 .then(Commands.literal("reload").executes(context -> {
-                            context.getSource().sendSuccess(new TranslatableComponent(LangKeys.COMMANDS_RELOAD_START.key()), true);
-                            NameManager.INSTANCE.reloadRemoteLinks().thenAccept(change -> {
-                                context.getSource().sendSuccess(new TranslatableComponent(LangKeys.COMMANDS_RELOAD_DONE.key(), change), true);
-                            });
+                            context.getSource().sendSuccess(Component.translatable(LangKeys.COMMANDS_RELOAD_START.key()), true);
+                            NameManager.INSTANCE.reloadRemoteLinks().thenAccept(change ->
+                                    context.getSource().sendSuccess(Component.translatable(LangKeys.COMMANDS_RELOAD_DONE.key(), change), true));
                             return 1;
                         })
                 ).then(Commands.literal("spawn")
@@ -58,7 +57,7 @@ public class PlayerMobsCommand {
                 if (!source.getLevel().tryAddFreshEntityWithPassengers(entity)) {
                     throw DUPLICATE_UUID.create();
                 }
-                source.sendSuccess(new TranslatableComponent(LangKeys.COMMANDS_SPAWN_SUCCESS.key(), entity.getDisplayName()), true);
+                source.sendSuccess(Component.translatable(LangKeys.COMMANDS_SPAWN_SUCCESS.key(), entity.getDisplayName()), true);
                 return 1;
             }
         }

@@ -10,16 +10,18 @@ import com.tterrag.registrate.util.nullness.NonnullType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.common.data.SoundDefinition;
+import net.minecraftforge.registries.ForgeRegistries;
 import se.gory_moon.player_mobs.utils.CustomRegistrate;
 
 
+@SuppressWarnings("unused")
 public class SoundBuilder<P> extends AbstractBuilder<SoundEvent, SoundEvent, P, SoundBuilder<P>> {
 
     private final NonNullFunction<ResourceLocation, SoundEvent> factory;
     private final String modId;
 
     public SoundBuilder(AbstractRegistrate<?> owner, P parent, String name, BuilderCallback callback, String modId) {
-        super(owner, parent, name, callback, SoundEvent.class);
+        super(owner, parent, name, callback, ForgeRegistries.Keys.SOUND_EVENTS);
         this.modId = modId;
         this.factory = SoundEvent::new;
     }

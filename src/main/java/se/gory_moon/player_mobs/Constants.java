@@ -11,4 +11,6 @@ public class Constants {
     public static final String SOUND_PLAYER_MOB_HURT = "player_mob.hurt";
     public static final String SOUND_PLAYER_MOB_DEATH = "player_mob.death";
 
+    public static final String BIOME_MODIFIER_ADD_SPAWN = "add_spawn_as_other";
+
 }

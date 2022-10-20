@@ -7,7 +7,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -15,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
@@ -163,24 +163,24 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     }
 
     @Override
-    protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
-        super.populateDefaultEquipmentSlots(difficulty);
+    protected void populateDefaultEquipmentSlots(RandomSource pRandom, DifficultyInstance pDifficulty) {
+        super.populateDefaultEquipmentSlots(pRandom, pDifficulty);
         boolean force = Configs.COMMON.forceSpawnItem.get();
-        if (force || random.nextFloat() < (difficulty.getDifficulty() == Difficulty.HARD ? 0.1F: 0.5F)) {
-            int i = random.nextInt(3);
+        if (force || pRandom.nextFloat() < (pDifficulty.getDifficulty() == Difficulty.HARD ? 0.1F: 0.5F)) {
+            int i = pRandom.nextInt(3);
 
             if (force || i <= 1) {
-                ItemStack stack = ItemManager.INSTANCE.getRandomMainHand(random);
+                ItemStack stack = ItemManager.INSTANCE.getRandomMainHand(pRandom);
                 setItemSlot(EquipmentSlot.MAINHAND, stack);
-                if (random.nextFloat() > 0.5f) {
+                if (pRandom.nextFloat() > 0.5f) {
                     if (stack.getItem() instanceof ProjectileWeaponItem) {
                         ArrayList<ResourceLocation> potions = new ArrayList<>(ForgeRegistries.POTIONS.getKeys());
-                        Potion potion = ForgeRegistries.POTIONS.getValue(potions.get(random.nextInt(potions.size())));
+                        Potion potion = ForgeRegistries.POTIONS.getValue(potions.get(pRandom.nextInt(potions.size())));
                         setItemSlot(EquipmentSlot.OFFHAND, PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), potion));
                     } else {
-                        if (difficulty.getDifficulty() == Difficulty.HARD) {
-                            setItemSlot(EquipmentSlot.OFFHAND, ItemManager.INSTANCE.getRandomOffHand(random));
-                            getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("Shield Bonus", random.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.MULTIPLY_TOTAL));
+                        if (pDifficulty.getDifficulty() == Difficulty.HARD) {
+                            setItemSlot(EquipmentSlot.OFFHAND, ItemManager.INSTANCE.getRandomOffHand(pRandom));
+                            getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("Shield Bonus", pRandom.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.MULTIPLY_TOTAL));
                         }
                     }
                 }
@@ -206,12 +206,12 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     }
 
     @Override
-    protected int getExperienceReward(Player player) {
+    public int getExperienceReward() {
         if (this.isBaby()) {
             this.xpReward = (int) ((float) this.xpReward * 2.5F);
         }
 
-        return super.getExperienceReward(player);
+        return super.getExperienceReward();
     }
 
     @Override
@@ -321,34 +321,35 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     @SuppressWarnings("ConstantConditions")
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag dataTag) {
-        spawnData = super.finalizeSpawn(world, difficulty, reason, spawnData, dataTag);
-        this.populateDefaultEquipmentSlots(difficulty);
-        this.populateDefaultEquipmentEnchantments(difficulty);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+        pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        RandomSource randomSource = pLevel.getRandom();
+        this.populateDefaultEquipmentSlots(randomSource, pDifficulty);
+        this.populateDefaultEquipmentEnchantments(randomSource, pDifficulty);
 
         setUsername(NameManager.INSTANCE.getRandomName());
         this.setCombatTask();
-        float additionalDifficulty = difficulty.getSpecialMultiplier();
-        setCanPickUpLoot(this.random.nextFloat() < Configs.COMMON.pickupItemsChance.get() * additionalDifficulty);
-        setCanBreakDoors(random.nextFloat() < additionalDifficulty * 0.1F);
+        float additionalDifficulty = pDifficulty.getSpecialMultiplier();
+        setCanPickUpLoot(randomSource.nextFloat() < Configs.COMMON.pickupItemsChance.get() * additionalDifficulty);
+        setCanBreakDoors(randomSource.nextFloat() < additionalDifficulty * 0.1F);
 
-        double rangeBonus = random.nextDouble() * 1.5 * additionalDifficulty;
+        double rangeBonus = randomSource.nextDouble() * 1.5 * additionalDifficulty;
         if (rangeBonus > 1.0)
             getAttribute(Attributes.FOLLOW_RANGE).addPermanentModifier(new AttributeModifier("Range Bonus", rangeBonus, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if (random.nextFloat() < additionalDifficulty * 0.05F)
-            getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("Health Bonus", random.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if (randomSource.nextFloat() < additionalDifficulty * 0.05F)
+            getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("Health Bonus", randomSource.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if (random.nextFloat() < additionalDifficulty * 0.15F)
-            getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier("Damage Bonus", random.nextDouble() + 0.5, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if (randomSource.nextFloat() < additionalDifficulty * 0.15F)
+            getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier("Damage Bonus", randomSource.nextDouble() + 0.5, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if (random.nextFloat() < additionalDifficulty * 0.2F)
-            getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier("Speed Bonus", random.nextDouble() * 2.0 * 0.24 + 0.01, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        if (randomSource.nextFloat() < additionalDifficulty * 0.2F)
+            getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier("Speed Bonus", randomSource.nextDouble() * 2.0 * 0.24 + 0.01, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if (random.nextDouble() < Configs.COMMON.babySpawnChance.get())
+        if (randomSource.nextDouble() < Configs.COMMON.babySpawnChance.get())
             setBaby(true);
 
-        return spawnData;
+        return pSpawnData;
     }
 
     public void setCombatTask() {
@@ -465,7 +466,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     @Override
     public Component getCustomName() {
         Component customName = super.getCustomName();
-        return customName != null ? customName: new TextComponent(getUsername().getDisplayName());
+        return customName != null ? customName: Component.literal(getUsername().getDisplayName());
     }
 
     @Override
