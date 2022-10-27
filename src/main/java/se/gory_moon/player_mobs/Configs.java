@@ -244,7 +244,8 @@ public class Configs {
                 "minecraft:swiftness",
                 "minecraft:thick",
                 "minecraft:turtle_master",
-                "minecraft:water"
+                "minecraft:water",
+                "minecraft:water_breathing"
         );
 
         private static final List<String> DEFAULT_NAMES = ImmutableList.of(
