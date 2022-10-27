@@ -38,11 +38,16 @@ public class Configs {
         public ForgeConfigSpec.DoubleValue playerHeadDropChance;
         public ForgeConfigSpec.DoubleValue mobHeadDropChance;
         public ForgeConfigSpec.DoubleValue babySpawnChance;
-        public ForgeConfigSpec.ConfigValue<List<? extends String>> dimensionBlockListStrings;
-        public final List<ResourceKey<Level>> dimensionBlockList = new CopyOnWriteArrayList<>();
+        public ForgeConfigSpec.ConfigValue<List<? extends String>> dimensionBlocklistStrings;
+        public final List<ResourceKey<Level>> dimensionBlocklist = new CopyOnWriteArrayList<>();
         public ForgeConfigSpec.ConfigValue<List<? extends String>> mainItems;
         public ForgeConfigSpec.ConfigValue<List<? extends String>> offhandItems;
+        public ForgeConfigSpec.EnumValue<Difficulty> offhandDifficultyLimit;
+        public ForgeConfigSpec.DoubleValue offhandSpawnChance;
+        public ForgeConfigSpec.BooleanValue allowTippedArrows;
         public ForgeConfigSpec.BooleanValue forceSpawnItem;
+        public ForgeConfigSpec.ConfigValue<List<? extends String>> tippedArrowBlocklistStrings;
+        public final List<ResourceLocation> tippedArrowBlocklist = new CopyOnWriteArrayList<>();
 
         public ForgeConfigSpec.ConfigValue<List<? extends String>> mobNames;
         public ForgeConfigSpec.ConfigValue<List<? extends String>> nameLinks;
@@ -88,29 +93,49 @@ public class Configs {
                             "Set to -1 to disable.")
                     .defineInRange("Baby Spawn Chance", 0.1D, -1D, 1D);
 
-            dimensionBlockListStrings = builder
+            dimensionBlocklistStrings = builder
                     .comment("The id of the dimensions to block spawning in.",
                             "The player mobs spawn where Zombies spawn, so no need to block dimensions that doesn't contain Zombies.",
                             "Example id: \"minecraft:overworld\"")
                     .defineList("Dimension Blocklist", ImmutableList.of(), Common::validResourceLocation);
 
+            forceSpawnItem = builder
+                    .comment("Force the mobs to spawn holding items.")
+                    .define("Force Items Spawn", false);
+
             mainItems = builder
                     .comment("A list of items that the player mobs can spawn with.",
-                            "Default is 50% of getting a bow or a sword, then the swords are distributed after that.",
-                            "There is a separated chance to spawn with an item at all, this is to pick what it to spawn when it does",
-                            "Syntax is 'namespace:id-weight'")
+                            "Default is 40% for a bow, 10% for a crossbow and 50% for a sword, then the swords are distributed after that.",
+                            "There is a separated chance to spawn with an item at all, this is to pick what to spawn when it does",
+                            "Syntax is \"namespace:id-weight\"")
                     .defineList("Spawn Items", DEFAULT_MAIN_HAND_ITEMS, Common::validString);
 
             offhandItems = builder
                     .comment("What item to be able to spawn in the offhand",
+                            "Offhand items can only spawn when on hard difficulty",
                             "It won't spawn an item in the offhand if it spawns with a bow like item.",
                             "There is a separated chance to spawn with an item at all, this is to pick what it to spawn when it does",
-                            "Syntax is 'namespace:id-weight'")
+                            "Syntax is \"namespace:id-weight\"")
                     .defineList("Spawn Items Offhand", DEFAULT_OFFHAND_ITEMS, Common::validString);
 
-            forceSpawnItem = builder
-                    .comment("Force the mobs to spawn holding items.")
-                    .define("Force Items Spawn", false);
+            offhandDifficultyLimit = builder
+                    .comment("The difficulty and above that player mobs can spawn with items in their offhand.")
+                    .defineEnum("Offhand Spawn Difficulty", Difficulty.HARD);
+
+            offhandSpawnChance = builder
+                    .comment("The chance of items spawning in the offhand",
+                            "If holding a projectile weapon this can spawn a tipped arrow if allowed",
+                            "Else it will spawn from the offhand item list",
+                            "Set to -1 to disable.")
+                    .defineInRange("Offhand Spawn Chance", 0.5D, -1D, 1D);
+
+            allowTippedArrows = builder
+                    .comment("Allow for a change to spawn a random tipped arrow when the mob is holding a projectile weapon")
+                    .define("Spawn Tipped Arrows", true);
+
+            tippedArrowBlocklistStrings = builder
+                    .comment("A list of potion \"namespace:id\" to block from getting applied to tipped arrows")
+                    .defineList("Tipped Arrow Blocklist", DEFAULT_BLOCKED_POTIONS, Common::validResourceLocation);
 
             builder.pop()
                     .comment("Configs related to the names of the mobs.")
@@ -148,7 +173,7 @@ public class Configs {
         }
 
         public boolean isDimensionBlocked(ResourceKey<Level> type) {
-            return dimensionBlockList.contains(type);
+            return dimensionBlocklist.contains(type);
         }
 
         @SubscribeEvent
@@ -158,11 +183,16 @@ public class Configs {
 
         private void configReload() {
             ThreadUtils.tryRunOnMain(() -> {
-                dimensionBlockList.clear();
-                dimensionBlockList.addAll(dimensionBlockListStrings.get().stream()
+                dimensionBlocklist.clear();
+                dimensionBlocklist.addAll(dimensionBlocklistStrings.get().stream()
                         .map(ResourceLocation::tryParse)
                         .filter(Objects::nonNull)
                         .map(s -> ResourceKey.create(Registry.DIMENSION_REGISTRY, s))
+                        .toList());
+                tippedArrowBlocklist.clear();
+                tippedArrowBlocklist.addAll(tippedArrowBlocklistStrings.get().stream()
+                        .map(ResourceLocation::tryParse)
+                        .filter(Objects::nonNull)
                         .toList());
                 NameManager.INSTANCE.configLoad();
                 ItemManager.INSTANCE.configLoad();
@@ -170,8 +200,8 @@ public class Configs {
         }
 
         private static final List<String> DEFAULT_MAIN_HAND_ITEMS = ImmutableList.of(
-                "minecraft:bow-100",
-                "minecraft:crossbow-20",
+                "minecraft:bow-90",
+                "minecraft:crossbow-10",
                 "minecraft:stone_sword-64",
                 "minecraft:iron_sword-20",
                 "minecraft:golden_sword-10",
@@ -180,7 +210,41 @@ public class Configs {
         );
 
         private static final List<String> DEFAULT_OFFHAND_ITEMS = ImmutableList.of(
-                "minecraft:shield-1"
+                "minecraft:shield-1",
+                "minecraft:air-4"
+        );
+
+        private static final List<String> DEFAULT_BLOCKED_POTIONS = ImmutableList.of(
+                "minecraft:awkward",
+                "minecraft:empty",
+                "minecraft:fire_resistance",
+                "minecraft:healing",
+                "minecraft:invisibility",
+                "minecraft:leaping",
+                "minecraft:long_fire_resistance",
+                "minecraft:long_invisibility",
+                "minecraft:long_leaping",
+                "minecraft:long_night_vision",
+                "minecraft:long_regeneration",
+                "minecraft:long_strength",
+                "minecraft:long_swiftness",
+                "minecraft:long_turtle_master",
+                "minecraft:long_water_breathing",
+                "minecraft:luck",
+                "minecraft:mundane",
+                "minecraft:night_vision",
+                "minecraft:regeneration",
+                "minecraft:strength",
+                "minecraft:strong_healing",
+                "minecraft:strong_leaping",
+                "minecraft:strong_regeneration",
+                "minecraft:strong_strength",
+                "minecraft:strong_swiftness",
+                "minecraft:strong_turtle_master",
+                "minecraft:swiftness",
+                "minecraft:thick",
+                "minecraft:turtle_master",
+                "minecraft:water"
         );
 
         private static final List<String> DEFAULT_NAMES = ImmutableList.of(
