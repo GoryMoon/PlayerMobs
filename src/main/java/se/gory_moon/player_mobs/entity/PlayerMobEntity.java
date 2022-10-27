@@ -412,19 +412,19 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     }
 
     @Override
-    public void performRangedAttack(LivingEntity target, float distanceFactor) {
+    public void performRangedAttack(LivingEntity pTarget, float pDistanceFactor) {
         ItemStack weaponStack = getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, this::canFireProjectileWeapon));
         if (weaponStack.getItem() instanceof CrossbowItem) {
             this.performCrossbowAttack(this, 1.6F);
         } else {
             ItemStack itemstack = getProjectile(weaponStack);
-            AbstractArrow mobArrow = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
+            AbstractArrow mobArrow = ProjectileUtil.getMobArrow(this, itemstack, pDistanceFactor);
             if (getMainHandItem().getItem() instanceof BowItem)
                 mobArrow = ((BowItem) getMainHandItem().getItem()).customArrow(mobArrow);
-            double x = target.getX() - getX();
-            double y = target.getY(1D / 3D) - mobArrow.getY();
-            double z = target.getZ() - getZ();
-            double d3 = Mth.square(x * x + z * z);
+            double x = pTarget.getX() - getX();
+            double y = pTarget.getY(1D / 3D) - mobArrow.getY();
+            double z = pTarget.getZ() - getZ();
+            double d3 = Math.sqrt(x * x + z * z);
             mobArrow.shoot(x, y + d3 * 0.2F, z, 1.6F, 14 - level.getDifficulty().getId() * 4);
             this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (getRandom().nextFloat() * 0.4F + 0.8F));
             this.level.addFreshEntity(mobArrow);
