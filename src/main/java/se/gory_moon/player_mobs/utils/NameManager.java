@@ -108,6 +108,7 @@ public class NameManager {
             syncTime++;
 
             if (tickTime > 0 && syncTime >= tickTime || firstSync) {
+                syncTime = 0;
                 firstSync = false;
                 reloadRemoteLinks();
             }
