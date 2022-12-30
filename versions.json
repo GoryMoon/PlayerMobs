@@ -1,8 +1,12 @@
 {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/player-mobs",
     "promos": {
-        "1.18.1-recommended": "2.0.1.12",
-        "1.18.1-latest": "2.0.1.12",
+        "1.19.2-recommended": "3.0.2.21",
+        "1.19.2-latest": "3.0.2.21",
+        "1.18.2-recommended": "2.2.2.20",
+        "1.18.2-latest": "2.2.0.20",
+        "1.18.1-recommended": "2.2.2.20",
+        "1.18.1-latest": "2.2.0.20",
         "1.16.5-recommended": "1.1.1.10",
         "1.16.5-latest": "1.1.1.10",
         "1.16.4-recommended": "1.1.0.9",
@@ -10,7 +14,24 @@
         "1.16.3-recommended": "1.0.5.7",
         "1.16.3-latest": "1.0.5.7"
     },
+    "1.19.2": {
+        "3.0.2.21": "Fixed remote link timer never resetting, causing lots of requests",
+        "3.0.1.19": "Fixed mobs always shooting arrows straight up\nAdded more configs to control more about item spawning",
+        "3.0.0.18": "Updated to Minecraft 1.19.2."
+    },
+    "1.18.2": {
+        "2.2.0.20": "Fixed remote link timer never resetting, causing lots of requests\nAdded more configs to control more about item spawning (backport 1.19)",
+        "2.1.4.17": "Allow for custom names on mobs.",
+        "2.1.3.16": "Fix compatibility issue with Neat.",
+        "2.1.2.15": "Fix \"/playermobs spawn\" command not looking up display names from the previous release."
+    },
     "1.18.1": {
+        "2.2.0.20": "Fixed remote link timer never resetting, causing lots of requests\nAdded more configs to control more about item spawning (backport 1.19)",
+        "2.1.4.17": "Allow for custom names on mobs.",
+        "2.1.3.16": "Fix compatibility issue with Neat.",
+        "2.1.2.15": "Fix \"/playermobs spawn\" command not looking up display names from the previous release.",
+        "2.1.1.14": "Now trying to find entry in the provided lists where the display name matches and uses the skin related to that. (Mostly for manually spawned mobs)",
+        "2.1.0.13": "Fix armor rendering not working\nAdded config to force giving items\nAdded the ability to use crossbows\nUse translation for the custom player head name\nAdd more modlist info and items for the \"Catalogue\" mod",
         "2.0.1.12": "Fix crash when launching releated to the spawn egg.",
         "2.0.0.11": "Updated to MC 1.18.1"
     },
