@@ -88,6 +88,8 @@ public class NameManager {
                 allNames.add(new PlayerName(name));
             }
         }
+
+        allNames.removeIf(PlayerName::isInvalid);
         this.allNames.clear();
         this.allNames.addAll(allNames);
 

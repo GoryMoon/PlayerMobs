@@ -52,6 +52,10 @@ public class PlayerName {
         return displayName == null;
     }
 
+    public boolean isInvalid() {
+        return StringUtil.isNullOrEmpty(skinName);
+    }
+
     public String getDisplayName() {
         if (!StringUtil.isNullOrEmpty(displayName)) {
             return displayName;
