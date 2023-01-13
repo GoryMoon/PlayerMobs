@@ -25,6 +25,7 @@ public class PlayerMobRenderer extends HumanoidMobRenderer<PlayerMobEntity, Play
     private final RenderLayer<PlayerMobEntity, PlayerModel<PlayerMobEntity>> steveArmorModel;
     private final RenderLayer<PlayerMobEntity, PlayerModel<PlayerMobEntity>> alexArmorModel;
 
+    private final int armorLayerIndex;
     public PlayerMobRenderer(EntityRendererProvider.Context context) {
         super(context, new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER), false), 0.5F);
         steveModel = this.model;
@@ -32,7 +33,9 @@ public class PlayerMobRenderer extends HumanoidMobRenderer<PlayerMobEntity, Play
         steveArmorModel = new HumanoidArmorLayer<>(this, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)), new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)));
         alexArmorModel = new HumanoidArmorLayer<>(this, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_SLIM_INNER_ARMOR)), new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_SLIM_OUTER_ARMOR)));
 
-        this.addLayer(new ArrowLayer<>(context, this));
+        var arrowLayer = new ArrowLayer<>(context, this);
+        this.addLayer(arrowLayer);
+        armorLayerIndex = layers.indexOf(arrowLayer);
         this.addLayer(new PlayerMobDeadmau5EarsLayer(this));
         this.addLayer(new PlayerMobCapeLayer(this));
     }
@@ -43,7 +46,8 @@ public class PlayerMobRenderer extends HumanoidMobRenderer<PlayerMobEntity, Play
         model = slim ? alexModel: steveModel;
         layers.remove(steveArmorModel);
         layers.remove(alexArmorModel);
-        layers.add(slim ? alexArmorModel: steveArmorModel);
+        // Make sure we add the armor layer before most other layers as you normally do
+        layers.add(armorLayerIndex, slim ? alexArmorModel: steveArmorModel);
 
         model.leftArmPose = HumanoidModel.ArmPose.EMPTY;
         model.rightArmPose = HumanoidModel.ArmPose.EMPTY;
