@@ -190,7 +190,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     @Override
     public float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn) {
-        return this.isBaby() ? 0.93F: 1.62F;
+        return this.isBaby() ? 0.93F : 1.62F;
     }
 
     @Override
@@ -205,7 +205,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     @Override
     public double getMyRidingOffset() {
-        return this.isBaby() ? 0.0D: -0.45D;
+        return this.isBaby() ? 0.0D : -0.45D;
     }
 
     @Override
@@ -300,7 +300,9 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
         this.populateDefaultEquipmentSlots(difficulty);
         this.populateDefaultEquipmentEnchantments(difficulty);
 
-        setUsername(NameManager.INSTANCE.getRandomName());
+        if (!hasUsername())
+            setUsername(NameManager.INSTANCE.getRandomName());
+
         this.setCombatTask();
         float additionalDifficulty = difficulty.getSpecialMultiplier();
         setCanPickUpLoot(this.random.nextFloat() < Configs.COMMON.pickupItemsChance.get() * additionalDifficulty);
@@ -334,7 +336,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
             if (itemstack.getItem() instanceof CrossbowItem) {
                 goalSelector.addGoal(2, crossbowAttackGoal);
             } else if (itemstack.getItem() instanceof BowItem) {
-                bowAttackGoal.setMinAttackInterval(level.getDifficulty() != Difficulty.HARD ? 20: 40);
+                bowAttackGoal.setMinAttackInterval(level.getDifficulty() != Difficulty.HARD ? 20 : 40);
                 goalSelector.addGoal(2, bowAttackGoal);
             }
         }
@@ -407,6 +409,9 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
+        if (getCustomName() != null && getCustomName().getString().isEmpty())
+            compound.remove("CustomName");
+
         String username = getUsername().getCombinedNames();
         if (!StringUtil.isNullOrEmpty(username))
             compound.putString("Username", username);
@@ -439,12 +444,13 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     @Override
     public Component getCustomName() {
         Component customName = super.getCustomName();
-        return customName != null ? customName: new TextComponent(getUsername().getDisplayName());
+        String displayName = getUsername().getDisplayName();
+        return customName != null && !customName.getString().isEmpty() ? customName : !StringUtil.isNullOrEmpty(displayName) ? new TextComponent(displayName) : null;
     }
 
     @Override
     public boolean hasCustomName() {
-        return true;
+        return super.hasCustomName() || !StringUtil.isNullOrEmpty(getUsername().getDisplayName());
     }
 
     @Override
@@ -469,7 +475,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     @Nullable
     public GameProfile getProfile() {
-        if (profile == null && !getUsername().getSkinName().isEmpty()) {
+        if (profile == null && !getUsername().isInvalid()) {
             profile = new GameProfile(null, getUsername().getSkinName());
             ProfileUpdater.updateProfile(this);
         }
@@ -480,7 +486,14 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
         this.profile = profile;
     }
 
+    public boolean hasUsername() {
+        return !StringUtil.isNullOrEmpty(getEntityData().get(NAME));
+    }
+
     public PlayerName getUsername() {
+        if (!hasUsername()) {
+            setUsername(NameManager.INSTANCE.getRandomName());
+        }
         return new PlayerName(getEntityData().get(NAME));
     }
 
@@ -496,7 +509,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     }
 
     public void setUsername(PlayerName name) {
-        PlayerName oldName = getUsername();
+        PlayerName oldName = hasUsername() ? getUsername(): null;
         getEntityData().set(NAME, name.getCombinedNames());
 
         if ("Herobrine".equals(name.getDisplayName())) {

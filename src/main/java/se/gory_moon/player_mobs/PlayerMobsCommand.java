@@ -52,8 +52,8 @@ public class PlayerMobsCommand {
                 throw SUMMON_FAILED.create();
             } else {
                 entity.moveTo(pos.x, pos.y, pos.z, entity.getYRot(), entity.getXRot());
-                entity.finalizeSpawn(source.getLevel(), source.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
                 entity.setUsername(username);
+                entity.finalizeSpawn(source.getLevel(), source.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
 
                 if (!source.getLevel().tryAddFreshEntityWithPassengers(entity)) {
                     throw DUPLICATE_UUID.create();
