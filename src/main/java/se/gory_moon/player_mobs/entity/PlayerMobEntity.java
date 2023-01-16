@@ -500,7 +500,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     @Nullable
     public GameProfile getProfile() {
-        if (profile == null && !getUsername().isInvalid()) {
+        if (profile == null && hasUsername()) {
             profile = new GameProfile(null, getUsername().getSkinName());
             ProfileUpdater.updateProfile(this);
         }
@@ -516,7 +516,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     }
 
     public PlayerName getUsername() {
-        if (!hasUsername()) {
+        if (!hasUsername() && !level.isClientSide()) {
             setUsername(NameManager.INSTANCE.getRandomName());
         }
         return new PlayerName(getEntityData().get(NAME));
