@@ -19,10 +19,10 @@ public class SpawnHandler {
     public static void onCheckSpawn(LivingSpawnEvent.CheckSpawn event) {
         if (event.getEntity() instanceof PlayerMobEntity) {
             ResourceKey<Level> worldKey = Level.OVERWORLD;
-            if (event.getLevel() instanceof ServerLevelAccessor) {
-                worldKey = ((ServerLevelAccessor) event.getLevel()).getLevel().dimension();
-            } else if (event.getLevel() instanceof Level) {
-                worldKey = ((Level) event.getLevel()).dimension();
+            if (event.getLevel() instanceof ServerLevelAccessor levelAccessor) {
+                worldKey = levelAccessor.getLevel().dimension();
+            } else if (event.getLevel() instanceof Level level) {
+                worldKey = level.dimension();
             }
 
             if (Configs.COMMON.isDimensionBlocked(worldKey)) {

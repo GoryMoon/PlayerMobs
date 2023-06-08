@@ -23,7 +23,7 @@ public class SoundBuilder<P> extends AbstractBuilder<SoundEvent, SoundEvent, P, 
     public SoundBuilder(AbstractRegistrate<?> owner, P parent, String name, BuilderCallback callback, String modId) {
         super(owner, parent, name, callback, ForgeRegistries.Keys.SOUND_EVENTS);
         this.modId = modId;
-        this.factory = SoundEvent::new;
+        this.factory = SoundEvent::createVariableRangeEvent;
     }
 
     @Override

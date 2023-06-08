@@ -8,7 +8,7 @@ import se.gory_moon.player_mobs.sound.SoundProvider;
 
 public class CustomRegistrate extends AbstractRegistrate<CustomRegistrate> {
 
-    public static final ProviderType<SoundProvider> SOUND = ProviderType.register("sound", (r, e) -> new SoundProvider(r, e.getGenerator(), e.getExistingFileHelper()));
+    public static final ProviderType<SoundProvider> SOUND = ProviderType.register("sound", (r, e) -> new SoundProvider(r, e.getGenerator().getPackOutput(), e.getExistingFileHelper()));
 
     public static CustomRegistrate create(String modId) {
         return new CustomRegistrate(modId).registerEventListeners(FMLJavaModLoadingContext.get().getModEventBus());
