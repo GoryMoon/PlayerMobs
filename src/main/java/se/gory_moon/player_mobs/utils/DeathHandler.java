@@ -4,9 +4,9 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -32,15 +32,13 @@ public class DeathHandler {
         LivingEntity entity = event.getEntity();
         if (entity instanceof Player && entity.getCommandSenderWorld().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
             DamageSource source = event.getSource();
-            if (source instanceof EntityDamageSource) {
-                Entity trueSource = source.getEntity();
-                if (trueSource instanceof Player) {
-                    ItemStack stack = ((Player) trueSource).getUseItem();
-                    int looting = stack.getEnchantmentLevel(Enchantments.MOB_LOOTING);
-                    ItemStack drop = getDrop(entity, source, looting);
-                    if (!drop.isEmpty()) {
-                        ((Player) entity).drop(drop, true);
-                    }
+            Entity trueSource = source.getEntity();
+            if (trueSource instanceof Player player) {
+                ItemStack stack = player.getUseItem();
+                int looting = stack.getEnchantmentLevel(Enchantments.MOB_LOOTING);
+                ItemStack drop = getDrop(entity, source, looting);
+                if (!drop.isEmpty()) {
+                    player.drop(drop, true);
                 }
             }
         }
@@ -52,13 +50,13 @@ public class DeathHandler {
         if (entity instanceof Player || entity instanceof PlayerMobEntity) {
             ItemStack drop = getDrop(entity, event.getSource(), event.getLootingLevel());
             if (!drop.isEmpty()) {
-                event.getDrops().add(new ItemEntity(entity.getCommandSenderWorld(), entity.getX(), entity.getY(), entity.getZ(), drop));
+                event.getDrops().add(new ItemEntity(entity.getLevel(), entity.getX(), entity.getY(), entity.getZ(), drop));
             }
         }
     }
 
     private static ItemStack getDrop(LivingEntity entity, DamageSource source, int looting) {
-        if (entity.getCommandSenderWorld().isClientSide() || entity.getHealth() > 0)
+        if (entity.getLevel().isClientSide() || entity.getHealth() > 0)
             return ItemStack.EMPTY;
         if (entity.isBaby())
             return ItemStack.EMPTY;
@@ -66,7 +64,7 @@ public class DeathHandler {
         if (baseChance <= 0)
             return ItemStack.EMPTY;
 
-        if (poweredCreeper(source) || randomDrop(entity.getCommandSenderWorld().getRandom(), baseChance, looting)) {
+        if (poweredCreeper(source) || randomDrop(entity.getLevel().getRandom(), baseChance, looting)) {
             ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
             GameProfile profile = entity instanceof PlayerMobEntity ?
                     ((PlayerMobEntity) entity).getProfile():
@@ -90,10 +88,10 @@ public class DeathHandler {
     }
 
     private static boolean poweredCreeper(DamageSource source) {
-        if (source.isExplosion() && source instanceof EntityDamageSource) {
+        if (source.is(DamageTypeTags.IS_EXPLOSION)) {
             Entity entity = source.getEntity();
-            if (entity instanceof Creeper)
-                return ((Creeper) entity).isPowered();
+            if (entity instanceof Creeper creeper)
+                return creeper.isPowered();
         }
         return false;
     }

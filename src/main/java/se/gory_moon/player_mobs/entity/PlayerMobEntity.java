@@ -111,12 +111,21 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
-        if (Configs.COMMON.openDoors.get() && level.getDifficulty().getId() >= Configs.COMMON.openDoorsDifficulty.get().getId())
-            goalSelector.addGoal(1, new OpenDoorGoal(this, true));
-        goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2D, false));
-        goalSelector.addGoal(4, new RandomStrollGoal(this, 1.0D));
         goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 8.0F));
         goalSelector.addGoal(5, new RandomLookAroundGoal(this));
+
+        addBehaviourGoals();
+    }
+
+    protected void addBehaviourGoals() {
+        if (Configs.COMMON.openDoors.get() && level.getDifficulty().getId() >= Configs.COMMON.openDoorsDifficulty.get().getId()) {
+            goalSelector.addGoal(1, new OpenDoorGoal(this, true));
+            ((GroundPathNavigation) getNavigation()).setCanOpenDoors(true);
+        }
+
+        goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2D, false));
+        goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+
         targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombifiedPiglin.class));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::targetTwin));
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
@@ -191,11 +200,6 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     @Override
     public float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn) {
         return this.isBaby() ? 0.93F : 1.62F;
-    }
-
-    @Override
-    public boolean isControlledByLocalInstance() {
-        return false;
     }
 
     @Override
@@ -292,7 +296,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings({"DataFlowIssue", "deprecation"})
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
@@ -305,21 +309,21 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
             setUsername(NameManager.INSTANCE.getRandomName());
 
         this.setCombatTask();
-        float additionalDifficulty = pDifficulty.getSpecialMultiplier();
-        setCanPickUpLoot(randomSource.nextFloat() < Configs.COMMON.pickupItemsChance.get() * additionalDifficulty);
-        setCanBreakDoors(randomSource.nextFloat() < additionalDifficulty * 0.1F);
+        float specialMultiplier = pDifficulty.getSpecialMultiplier();
+        setCanPickUpLoot(randomSource.nextFloat() < Configs.COMMON.pickupItemsChance.get() * specialMultiplier);
+        setCanBreakDoors(randomSource.nextFloat() < specialMultiplier * 0.1F);
 
-        double rangeBonus = randomSource.nextDouble() * 1.5 * additionalDifficulty;
+        double rangeBonus = randomSource.nextDouble() * 1.5 * specialMultiplier;
         if (rangeBonus > 1.0)
             getAttribute(Attributes.FOLLOW_RANGE).addPermanentModifier(new AttributeModifier("Range Bonus", rangeBonus, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if (randomSource.nextFloat() < additionalDifficulty * 0.05F)
+        if (randomSource.nextFloat() < specialMultiplier * 0.05F)
             getAttribute(Attributes.MAX_HEALTH).addPermanentModifier(new AttributeModifier("Health Bonus", randomSource.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if (randomSource.nextFloat() < additionalDifficulty * 0.15F)
+        if (randomSource.nextFloat() < specialMultiplier * 0.15F)
             getAttribute(Attributes.ATTACK_DAMAGE).addPermanentModifier(new AttributeModifier("Damage Bonus", randomSource.nextDouble() + 0.5, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
-        if (randomSource.nextFloat() < additionalDifficulty * 0.2F)
+        if (randomSource.nextFloat() < specialMultiplier * 0.2F)
             getAttribute(Attributes.MOVEMENT_SPEED).addPermanentModifier(new AttributeModifier("Speed Bonus", randomSource.nextDouble() * 2.0 * 0.24 + 0.01, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
         if (randomSource.nextDouble() < Configs.COMMON.babySpawnChance.get())
