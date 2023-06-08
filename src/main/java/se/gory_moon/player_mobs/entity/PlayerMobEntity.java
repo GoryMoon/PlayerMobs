@@ -117,8 +117,8 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
         addBehaviourGoals();
     }
 
-    protected void addBehaviourGoals() {
-        if (Configs.COMMON.openDoors.get() && level.getDifficulty().getId() >= Configs.COMMON.openDoorsDifficulty.get().getId()) {
+    private void addBehaviourGoals() {
+        if (canOpenDoor()) {
             goalSelector.addGoal(1, new OpenDoorGoal(this, true));
             ((GroundPathNavigation) getNavigation()).setCanOpenDoors(true);
         }
@@ -129,6 +129,10 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
         targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombifiedPiglin.class));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::targetTwin));
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
+    }
+
+    private boolean canOpenDoor() {
+        return Configs.COMMON.openDoors.get() && level.getDifficulty().getId() >= Configs.COMMON.openDoorsDifficulty.get().getId();
     }
 
     @Override
@@ -351,7 +355,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
         if (GoalUtils.hasGroundPathNavigation(this)) {
             if (canBreakDoors != enabled) {
                 canBreakDoors = enabled;
-                ((GroundPathNavigation) getNavigation()).setCanOpenDoors(enabled);
+                ((GroundPathNavigation) getNavigation()).setCanOpenDoors(enabled || canOpenDoor());
                 if (enabled)
                     goalSelector.addGoal(1, breakDoorGoal);
                 else
