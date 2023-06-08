@@ -136,7 +136,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
-    jarJar(group: 'com.tterrag.registrate', name: 'Registrate', version: "[MC1.19.3,MC1.19.4)")
+    jarJar(group: 'com.tterrag.registrate', name: 'Registrate', version: "[MC1.19.4,MC1.20)")
 }
 
 reobf {

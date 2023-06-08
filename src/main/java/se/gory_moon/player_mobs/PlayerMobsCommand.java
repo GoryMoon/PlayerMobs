@@ -13,9 +13,12 @@ import net.minecraft.network.chat.*;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.ForgeEventFactory;
 import se.gory_moon.player_mobs.entity.EntityRegistry;
 import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 import se.gory_moon.player_mobs.utils.NameManager;
+
+import javax.annotation.Nullable;
 
 public class PlayerMobsCommand {
 
@@ -34,16 +37,16 @@ public class PlayerMobsCommand {
                             return 1;
                         })
                 ).then(Commands.literal("spawn")
-                        .then(Commands
-                                .argument("username", StringArgumentType.string())
+                        .executes(context -> spawnPlayerMob(context.getSource(), null, context.getSource().getPosition()))
+                        .then(Commands.argument("username", StringArgumentType.string())
                                 .executes(context -> spawnPlayerMob(context.getSource(), StringArgumentType.getString(context, "username"), context.getSource().getPosition()))
                                 .then(Commands.argument("pos", Vec3Argument.vec3())
                                         .executes(context -> spawnPlayerMob(context.getSource(), StringArgumentType.getString(context, "username"), Vec3Argument.getVec3(context, "pos"))))))
         );
     }
 
-    private static int spawnPlayerMob(CommandSourceStack source, String username, Vec3 pos) throws CommandSyntaxException {
-        BlockPos blockpos = new BlockPos(pos);
+    private static int spawnPlayerMob(CommandSourceStack source, @Nullable String username, Vec3 pos) throws CommandSyntaxException {
+        BlockPos blockpos = BlockPos.containing(pos);
         if (!Level.isInSpawnableBounds(blockpos)) {
             throw INVALID_POS.create();
         } else {
@@ -52,8 +55,11 @@ public class PlayerMobsCommand {
                 throw SUMMON_FAILED.create();
             } else {
                 entity.moveTo(pos.x, pos.y, pos.z, entity.getYRot(), entity.getXRot());
-                entity.setUsername(username);
-                entity.finalizeSpawn(source.getLevel(), source.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
+                if (username != null)
+                    entity.setUsername(username);
+                else
+                    entity.setUsername(NameManager.INSTANCE.getRandomName());
+                ForgeEventFactory.onFinalizeSpawn(entity, source.getLevel(), source.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
 
                 if (!source.getLevel().tryAddFreshEntityWithPassengers(entity)) {
                     throw DUPLICATE_UUID.create();
