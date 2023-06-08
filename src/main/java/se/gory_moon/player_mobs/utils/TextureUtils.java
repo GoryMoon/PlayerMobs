@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.client.resources.SkinManager;
 import net.minecraft.resources.ResourceLocation;
 import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 
@@ -17,9 +18,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class TextureUtils {
-
-    private static final ResourceLocation TEXTURE_STEVE = new ResourceLocation("textures/entity/steve.png");
-    private static final ResourceLocation TEXTURE_ALEX = new ResourceLocation("textures/entity/alex.png");
 
     private static final Map<UUID, SkinType> SKIN_TYPE_CACHE = new Object2ObjectOpenHashMap<>();
 
@@ -43,18 +41,18 @@ public class TextureUtils {
     }
 
     private static SkinType getType(@Nullable String stringType) {
-        return "slim".equals(stringType) ? SkinType.SLIM: SkinType.DEFAULT;
+        return "slim".equals(stringType) ? SkinType.SLIM : SkinType.DEFAULT;
     }
 
     public static ResourceLocation getPlayerSkin(PlayerMobEntity entity) {
-        return getTexture(entity, MinecraftProfileTexture.Type.SKIN).orElse(TEXTURE_STEVE);
+        return getTexture(entity, MinecraftProfileTexture.Type.SKIN).orElse(DefaultPlayerSkin.getDefaultSkin());
     }
 
     public static Optional<ResourceLocation> getPlayerCape(PlayerMobEntity entity) {
         return getTexture(entity, MinecraftProfileTexture.Type.CAPE);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
+    @SuppressWarnings("deprecation")
     private static Optional<ResourceLocation> getTexture(PlayerMobEntity entity, MinecraftProfileTexture.Type type) {
         if (entity.isTextureAvailable(type)) {
             return Optional.of(entity.getTexture(type));
@@ -70,8 +68,9 @@ public class TextureUtils {
             Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = mc.getSkinManager().getInsecureSkinInformation(profile);
             if (map.containsKey(type)) {
                 MinecraftProfileTexture profileTexture = map.get(type);
+                // Use sha1 as that is how minecraft hashes and stores the skins
                 String s = Hashing.sha1().hashUnencodedChars(profileTexture.getHash()).toString();
-                ResourceLocation location = new ResourceLocation("skins/" + s);
+                ResourceLocation location = SkinManager.getTextureLocation(type, s);
                 if (mc.textureManager.getTexture(location, MissingTextureAtlasSprite.getTexture()) != MissingTextureAtlasSprite.getTexture()) {
                     return Optional.of(location);
                 } else {
@@ -89,7 +88,7 @@ public class TextureUtils {
         if (type == MinecraftProfileTexture.Type.CAPE || type == MinecraftProfileTexture.Type.ELYTRA) {
             return Optional.empty();
         } else {
-            return Optional.of(getPlayerSkinType(profile) == SkinType.SLIM ? TEXTURE_ALEX: TEXTURE_STEVE);
+            return Optional.of(profile != null && profile.isComplete() ? DefaultPlayerSkin.getDefaultSkin(profile.getId()) : DefaultPlayerSkin.getDefaultSkin());
         }
     }
 

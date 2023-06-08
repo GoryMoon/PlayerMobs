@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -43,7 +43,7 @@ public class EntityRegistry {
 
     public static final ItemEntry<ForgeSpawnEggItem> PLAYER_MOD_SPAWN_EGG = REGISTRATE.object(Constants.PLAYER_MOB_SPAWN_EGG)
             .item(p -> new ForgeSpawnEggItem(PLAYER_MOB_ENTITY, 0xFFF144, 0x69DFDA, p))
-            .properties(p -> p.tab(CreativeModeTab.TAB_MISC))
+            .tab(() -> CreativeModeTabs.SPAWN_EGGS)
             .model((ctx, prov) -> prov.withExistingParent(ctx.getName(), new ResourceLocation("item/template_spawn_egg")))
             .register();
 

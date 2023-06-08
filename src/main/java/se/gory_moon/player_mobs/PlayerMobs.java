@@ -1,8 +1,9 @@
 package se.gory_moon.player_mobs;
 
 import com.tterrag.registrate.providers.ProviderType;
+import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.Lazy;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -10,7 +11,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.data.event.GatherDataEvent;
 import se.gory_moon.player_mobs.entity.EntityRegistry;
 import se.gory_moon.player_mobs.sound.SoundRegistry;
 import se.gory_moon.player_mobs.utils.CustomRegistrate;
@@ -20,8 +20,7 @@ import se.gory_moon.player_mobs.world.BiomeModifierRegistry;
 @Mod(Constants.MOD_ID)
 public class PlayerMobs {
 
-    private static final Lazy<CustomRegistrate> REGISTRATE = Lazy.of(() -> CustomRegistrate.create(Constants.MOD_ID));
-
+    private static final NonNullSupplier<CustomRegistrate> REGISTRATE = NonNullSupplier.lazy(() -> CustomRegistrate.create(Constants.MOD_ID));
 
     public PlayerMobs() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();

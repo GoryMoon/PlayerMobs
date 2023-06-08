@@ -1,7 +1,7 @@
 package se.gory_moon.player_mobs;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Difficulty;
@@ -187,7 +187,7 @@ public class Configs {
                 dimensionBlocklist.addAll(dimensionBlocklistStrings.get().stream()
                         .map(ResourceLocation::tryParse)
                         .filter(Objects::nonNull)
-                        .map(s -> ResourceKey.create(Registry.DIMENSION_REGISTRY, s))
+                        .map(s -> ResourceKey.create(Registries.DIMENSION, s))
                         .toList());
                 tippedArrowBlocklist.clear();
                 tippedArrowBlocklist.addAll(tippedArrowBlocklistStrings.get().stream()

@@ -2,7 +2,7 @@ package se.gory_moon.player_mobs.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -58,9 +58,9 @@ public class PlayerMobCapeLayer extends RenderLayer<PlayerMobEntity, PlayerModel
                     matrixStackIn.translate(0.0F, 1.5F, -0.1F);
                 }
 
-                matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(6.0F + f2 / 2.0F + f1));
-                matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(f3 / 2.0F));
-                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180.0F - f3 / 2.0F));
+                matrixStackIn.mulPose(Axis.XP.rotationDegrees(6.0F + f2 / 2.0F + f1));
+                matrixStackIn.mulPose(Axis.ZP.rotationDegrees(f3 / 2.0F));
+                matrixStackIn.mulPose(Axis.YP.rotationDegrees(180.0F - f3 / 2.0F));
                 VertexConsumer consumer = bufferIn.getBuffer(RenderType.entitySolid(location.get()));
                 this.getParentModel().renderCloak(matrixStackIn, consumer, packedLightIn, OverlayTexture.NO_OVERLAY);
                 matrixStackIn.popPose();

@@ -2,7 +2,7 @@ package se.gory_moon.player_mobs.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -33,8 +33,8 @@ public class PlayerMobDeadmau5EarsLayer extends RenderLayer<PlayerMobEntity, Pla
                     pitch *= -0.5;
                 }
 
-                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(netHeadYaw));
-                matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(pitch));
+                matrixStackIn.mulPose(Axis.YP.rotationDegrees(netHeadYaw));
+                matrixStackIn.mulPose(Axis.XP.rotationDegrees(pitch));
 
                 if (entity.isBaby()) {
                     matrixStackIn.scale(0.7F, 0.7F, 0.7F);
@@ -44,8 +44,8 @@ public class PlayerMobDeadmau5EarsLayer extends RenderLayer<PlayerMobEntity, Pla
                 matrixStackIn.translate(0.375F * (float) (j * 2 - 1), 0.0D, 0.0D);
                 matrixStackIn.translate(0.0D, -0.375D, 0.0D);
 
-                matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-pitch));
-                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(-netHeadYaw));
+                matrixStackIn.mulPose(Axis.XP.rotationDegrees(-pitch));
+                matrixStackIn.mulPose(Axis.YP.rotationDegrees(-netHeadYaw));
 
                 float size = 4F / 3F;
                 matrixStackIn.scale(size, size, size);

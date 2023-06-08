@@ -2,7 +2,7 @@ package se.gory_moon.player_mobs.sound;
 
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.providers.RegistrateProvider;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.SoundDefinition;
@@ -17,11 +17,11 @@ public class SoundProvider extends SoundDefinitionsProvider implements Registrat
     /**
      * Creates a new instance of this data provider.
      *
-     * @param generator The data generator instance provided by the event you are initializing this provider in.
-     * @param helper    The existing file helper provided by the event you are initializing this provider in.
+     * @param output The PackOutput instance provided by the data generator.
+     * @param helper The existing file helper provided by the event you are initializing this provider in.
      */
-    public SoundProvider(AbstractRegistrate<?> owner, DataGenerator generator, ExistingFileHelper helper) {
-        super(generator, owner.getModid(), helper);
+    public SoundProvider(AbstractRegistrate<?> owner, PackOutput output, ExistingFileHelper helper) {
+        super(output, owner.getModid(), helper);
         this.owner = owner;
     }
 

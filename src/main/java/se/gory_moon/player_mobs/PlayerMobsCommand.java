@@ -4,11 +4,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.*;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -57,7 +58,12 @@ public class PlayerMobsCommand {
                 if (!source.getLevel().tryAddFreshEntityWithPassengers(entity)) {
                     throw DUPLICATE_UUID.create();
                 }
-                source.sendSuccess(Component.translatable(LangKeys.COMMANDS_SPAWN_SUCCESS.key(), entity.getDisplayName()), true);
+                MutableComponent name = MutableComponent.create(entity.getDisplayName().getContents())
+                        .withStyle(Style.EMPTY
+                                .withColor(ChatFormatting.YELLOW)
+                                .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, entity.getUUID().toString()))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new HoverEvent.EntityTooltipInfo(entity.getType(), entity.getUUID(), entity.getName()))));
+                source.sendSuccess(Component.translatable(LangKeys.COMMANDS_SPAWN_SUCCESS.key(), name), true);
                 return 1;
             }
         }
