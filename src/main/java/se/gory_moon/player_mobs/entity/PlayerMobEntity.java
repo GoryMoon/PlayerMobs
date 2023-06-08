@@ -34,15 +34,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.BreakDoorGoal;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
-import net.minecraft.world.entity.ai.goal.RangedCrossbowAttackGoal;
+import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
@@ -142,17 +134,21 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     }
 
     private void addBehaviourGoals() {
-        if (Configs.COMMON.openDoors.get() && level.getDifficulty().getId() >= Configs.COMMON.openDoorsDifficulty.get().getId()) {
+        if (canOpenDoors()) {
             goalSelector.addGoal(1, new OpenDoorGoal(this, true));
             ((GroundPathNavigation) getNavigation()).setCanOpenDoors(true);
         }
 
         goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2D, false));
-        goalSelector.addGoal(4, new RandomStrollGoal(this, 1.0D));
+        goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1.0D));
 
         targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombifiedPiglin.class));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::targetTwin));
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
+    }
+
+    private boolean canOpenDoors() {
+        return Configs.COMMON.openDoors.get() && level.getDifficulty().getId() >= Configs.COMMON.openDoorsDifficulty.get().getId();
     }
 
     @Override
@@ -380,7 +376,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
         if (GoalUtils.hasGroundPathNavigation(this)) {
             if (canBreakDoors != enabled) {
                 canBreakDoors = enabled;
-                ((GroundPathNavigation) getNavigation()).setCanOpenDoors(enabled);
+                ((GroundPathNavigation) getNavigation()).setCanOpenDoors(enabled || canOpenDoors());
                 if (enabled)
                     goalSelector.addGoal(1, breakDoorGoal);
                 else
