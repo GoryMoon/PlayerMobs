@@ -135,12 +135,21 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
-        if (Configs.COMMON.openDoors.get() && level.getDifficulty().getId() >= Configs.COMMON.openDoorsDifficulty.get().getId())
-            goalSelector.addGoal(1, new OpenDoorGoal(this, true));
-        goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2D, false));
-        goalSelector.addGoal(4, new RandomStrollGoal(this, 1.0D));
         goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 8.0F));
         goalSelector.addGoal(5, new RandomLookAroundGoal(this));
+
+        addBehaviourGoals();
+    }
+
+    private void addBehaviourGoals() {
+        if (Configs.COMMON.openDoors.get() && level.getDifficulty().getId() >= Configs.COMMON.openDoorsDifficulty.get().getId()) {
+            goalSelector.addGoal(1, new OpenDoorGoal(this, true));
+            ((GroundPathNavigation) getNavigation()).setCanOpenDoors(true);
+        }
+
+        goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2D, false));
+        goalSelector.addGoal(4, new RandomStrollGoal(this, 1.0D));
+
         targetSelector.addGoal(1, new HurtByTargetGoal(this, ZombifiedPiglin.class));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::targetTwin));
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
