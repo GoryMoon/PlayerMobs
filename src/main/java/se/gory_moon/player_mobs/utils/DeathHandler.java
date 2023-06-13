@@ -50,13 +50,13 @@ public class DeathHandler {
         if (entity instanceof Player || entity instanceof PlayerMobEntity) {
             ItemStack drop = getDrop(entity, event.getSource(), event.getLootingLevel());
             if (!drop.isEmpty()) {
-                event.getDrops().add(new ItemEntity(entity.getLevel(), entity.getX(), entity.getY(), entity.getZ(), drop));
+                event.getDrops().add(new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), drop));
             }
         }
     }
 
     private static ItemStack getDrop(LivingEntity entity, DamageSource source, int looting) {
-        if (entity.getLevel().isClientSide() || entity.getHealth() > 0)
+        if (entity.level().isClientSide() || entity.getHealth() > 0)
             return ItemStack.EMPTY;
         if (entity.isBaby())
             return ItemStack.EMPTY;
@@ -64,7 +64,7 @@ public class DeathHandler {
         if (baseChance <= 0)
             return ItemStack.EMPTY;
 
-        if (poweredCreeper(source) || randomDrop(entity.getLevel().getRandom(), baseChance, looting)) {
+        if (poweredCreeper(source) || randomDrop(entity.level().getRandom(), baseChance, looting)) {
             ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
             GameProfile profile = entity instanceof PlayerMobEntity ?
                     ((PlayerMobEntity) entity).getProfile():

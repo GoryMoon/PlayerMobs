@@ -1,7 +1,7 @@
 plugins {
     id 'eclipse'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '5.1.+'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
@@ -136,7 +136,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
-    jarJar(group: 'com.tterrag.registrate', name: 'Registrate', version: "[MC1.19.4,MC1.20)")
+    jarJar(group: 'com.tterrag.registrate', name: 'Registrate', version: "[MC1.20,MC1.21)")
 }
 
 reobf {
@@ -145,7 +145,7 @@ reobf {
 
 tasks.jarJar.configure {
     // remove '-all' from jarJar jar file
-    classifier ''
+    archiveClassifier.set('')
 }
 
 tasks.register('sourcesJar', Jar) {
@@ -176,7 +176,7 @@ artifacts {
 }
 
 jar {
-    classifier 'slim'
+    archiveClassifier.set('slim')
     manifest {
         attributes([
             "Specification-Title": "player_mobs",
