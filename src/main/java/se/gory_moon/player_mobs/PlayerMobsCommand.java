@@ -31,9 +31,9 @@ public class PlayerMobsCommand {
                 .literal("playermobs")
                 .requires(commandSource -> commandSource.hasPermission(2))
                 .then(Commands.literal("reload").executes(context -> {
-                            context.getSource().sendSuccess(Component.translatable(LangKeys.COMMANDS_RELOAD_START.key()), true);
+                            context.getSource().sendSuccess(() -> Component.translatable(LangKeys.COMMANDS_RELOAD_START.key()), true);
                             NameManager.INSTANCE.reloadRemoteLinks().thenAccept(change ->
-                                    context.getSource().sendSuccess(Component.translatable(LangKeys.COMMANDS_RELOAD_DONE.key(), change), true));
+                                    context.getSource().sendSuccess(() -> Component.translatable(LangKeys.COMMANDS_RELOAD_DONE.key(), change), true));
                             return 1;
                         })
                 ).then(Commands.literal("spawn")
@@ -69,7 +69,7 @@ public class PlayerMobsCommand {
                                 .withColor(ChatFormatting.YELLOW)
                                 .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, entity.getUUID().toString()))
                                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new HoverEvent.EntityTooltipInfo(entity.getType(), entity.getUUID(), entity.getName()))));
-                source.sendSuccess(Component.translatable(LangKeys.COMMANDS_SPAWN_SUCCESS.key(), name), true);
+                source.sendSuccess(() -> Component.translatable(LangKeys.COMMANDS_SPAWN_SUCCESS.key(), name), true);
                 return 1;
             }
         }

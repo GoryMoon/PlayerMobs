@@ -43,7 +43,7 @@ public class EntityRegistry {
 
     public static final ItemEntry<ForgeSpawnEggItem> PLAYER_MOD_SPAWN_EGG = REGISTRATE.object(Constants.PLAYER_MOB_SPAWN_EGG)
             .item(p -> new ForgeSpawnEggItem(PLAYER_MOB_ENTITY, 0xFFF144, 0x69DFDA, p))
-            .tab(() -> CreativeModeTabs.SPAWN_EGGS)
+            .tab(CreativeModeTabs.SPAWN_EGGS)
             .model((ctx, prov) -> prov.withExistingParent(ctx.getName(), new ResourceLocation("item/template_spawn_egg")))
             .register();
 

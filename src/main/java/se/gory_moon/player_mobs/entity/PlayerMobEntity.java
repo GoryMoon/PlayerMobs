@@ -94,7 +94,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     public PlayerMobEntity(EntityType<? extends Monster> type, Level worldIn) {
         super(type, worldIn);
-        this.setCombatTask();
+        setCombatTask();
     }
 
     public static AttributeSupplier.Builder registerAttributes() {
@@ -132,7 +132,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     }
 
     private boolean canOpenDoor() {
-        return Configs.COMMON.openDoors.get() && level.getDifficulty().getId() >= Configs.COMMON.openDoorsDifficulty.get().getId();
+        return Configs.COMMON.openDoors.get() && level().getDifficulty().getId() >= Configs.COMMON.openDoorsDifficulty.get().getId();
     }
 
     @Override
@@ -155,11 +155,11 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     protected void populateDefaultEquipmentSlots(RandomSource pRandom, DifficultyInstance pDifficulty) {
         super.populateDefaultEquipmentSlots(pRandom, pDifficulty);
         boolean force = Configs.COMMON.forceSpawnItem.get();
-        if (force || pRandom.nextFloat() < (this.level.getDifficulty() == Difficulty.HARD ? 0.5F : 0.1F)) {
+        if (force || pRandom.nextFloat() < (level().getDifficulty() == Difficulty.HARD ? 0.5F : 0.1F)) {
             var stack = ItemManager.INSTANCE.getRandomMainHand(pRandom);
             setItemSlot(EquipmentSlot.MAINHAND, stack);
 
-            if (this.level.getDifficulty().getId() >= Configs.COMMON.offhandDifficultyLimit.get().getId() && pRandom.nextDouble() > Configs.COMMON.offhandSpawnChance.get()) {
+            if (level().getDifficulty().getId() >= Configs.COMMON.offhandDifficultyLimit.get().getId() && pRandom.nextDouble() > Configs.COMMON.offhandSpawnChance.get()) {
                 if (stack.getItem() instanceof ProjectileWeaponItem && Configs.COMMON.allowTippedArrows.get()) {
                     var potions = new ArrayList<>(ForgeRegistries.POTIONS.getKeys());
                     potions.removeAll(Configs.COMMON.tippedArrowBlocklist);
@@ -178,15 +178,15 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     @Override
     public void setItemSlot(EquipmentSlot slotIn, ItemStack stack) {
         super.setItemSlot(slotIn, stack);
-        if (!this.level.isClientSide) {
-            this.setCombatTask();
+        if (!level().isClientSide) {
+            setCombatTask();
         }
     }
 
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         if (IS_CHILD.equals(key)) {
-            this.refreshDimensions();
+            refreshDimensions();
         }
 
         super.onSyncedDataUpdated(key);
@@ -194,8 +194,8 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     @Override
     public int getExperienceReward() {
-        if (this.isBaby()) {
-            this.xpReward = (int) ((float) this.xpReward * 2.5F);
+        if (isBaby()) {
+            xpReward = (int) ((float) xpReward * 2.5F);
         }
 
         return super.getExperienceReward();
@@ -203,7 +203,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     @Override
     public float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn) {
-        return this.isBaby() ? 0.93F : 1.62F;
+        return isBaby() ? 0.93F : 1.62F;
     }
 
     @Override
@@ -213,57 +213,57 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     @Override
     public double getMyRidingOffset() {
-        return this.isBaby() ? 0.0D : -0.45D;
+        return isBaby() ? 0.0D : -0.45D;
     }
 
     @Override
     public boolean canHoldItem(ItemStack stack) {
-        return (stack.getItem() != Items.EGG || !this.isBaby() || !this.isPassenger()) && super.canHoldItem(stack);
+        return (stack.getItem() != Items.EGG || !isBaby() || !isPassenger()) && super.canHoldItem(stack);
     }
 
     @Override
     public void tick() {
         super.tick();
-        this.xCloakO = this.xCloak;
-        this.yCloakO = this.yCloak;
-        this.zCloakO = this.zCloak;
-        double x = this.getX() - this.xCloak;
-        double y = this.getY() - this.yCloak;
-        double z = this.getZ() - this.zCloak;
+        xCloakO = xCloak;
+        yCloakO = yCloak;
+        zCloakO = zCloak;
+        double x = getX() - xCloak;
+        double y = getY() - yCloak;
+        double z = getZ() - zCloak;
         double maxCapeAngle = 10.0D;
         if (x > maxCapeAngle) {
-            this.xCloak = this.getX();
-            this.xCloakO = this.xCloak;
+            xCloak = getX();
+            xCloakO = xCloak;
         }
 
         if (z > maxCapeAngle) {
-            this.zCloak = this.getZ();
-            this.zCloakO = this.zCloak;
+            zCloak = getZ();
+            zCloakO = zCloak;
         }
 
         if (y > maxCapeAngle) {
-            this.yCloak = this.getY();
-            this.yCloakO = this.yCloak;
+            yCloak = getY();
+            yCloakO = yCloak;
         }
 
         if (x < -maxCapeAngle) {
-            this.xCloak = this.getX();
-            this.xCloakO = this.xCloak;
+            xCloak = getX();
+            xCloakO = xCloak;
         }
 
         if (z < -maxCapeAngle) {
-            this.zCloak = this.getZ();
-            this.zCloakO = this.zCloak;
+            zCloak = getZ();
+            zCloakO = zCloak;
         }
 
         if (y < -maxCapeAngle) {
-            this.yCloak = this.getY();
-            this.yCloakO = this.yCloak;
+            yCloak = getY();
+            yCloakO = yCloak;
         }
 
-        this.xCloak += x * 0.25D;
-        this.zCloak += z * 0.25D;
-        this.yCloak += y * 0.25D;
+        xCloak += x * 0.25D;
+        zCloak += z * 0.25D;
+        yCloak += y * 0.25D;
     }
 
     @Override
@@ -283,9 +283,9 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     @Override
     public void setBaby(boolean isChild) {
         super.setBaby(isChild);
-        this.getEntityData().set(IS_CHILD, isChild);
-        if (!this.level.isClientSide) {
-            AttributeInstance attribute = this.getAttribute(Attributes.MOVEMENT_SPEED);
+        getEntityData().set(IS_CHILD, isChild);
+        if (!level().isClientSide) {
+            AttributeInstance attribute = getAttribute(Attributes.MOVEMENT_SPEED);
             attribute.removeModifier(BABY_SPEED_BOOST);
             if (isChild) {
                 attribute.addTransientModifier(BABY_SPEED_BOOST);
@@ -306,13 +306,13 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
         pSpawnData = super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
         RandomSource randomSource = pLevel.getRandom();
-        this.populateDefaultEquipmentSlots(randomSource, pDifficulty);
-        this.populateDefaultEquipmentEnchantments(randomSource, pDifficulty);
+        populateDefaultEquipmentSlots(randomSource, pDifficulty);
+        populateDefaultEquipmentEnchantments(randomSource, pDifficulty);
 
         if (!hasUsername())
             setUsername(NameManager.INSTANCE.getRandomName());
 
-        this.setCombatTask();
+        setCombatTask();
         float specialMultiplier = pDifficulty.getSpecialMultiplier();
         setCanPickUpLoot(randomSource.nextFloat() < Configs.COMMON.pickupItemsChance.get() * specialMultiplier);
         setCanBreakDoors(randomSource.nextFloat() < specialMultiplier * 0.1F);
@@ -337,7 +337,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     }
 
     public void setCombatTask() {
-        if (!level.isClientSide) {
+        if (!level().isClientSide) {
             goalSelector.removeGoal(bowAttackGoal);
             goalSelector.removeGoal(crossbowAttackGoal);
 
@@ -345,7 +345,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
             if (itemstack.getItem() instanceof CrossbowItem) {
                 goalSelector.addGoal(2, crossbowAttackGoal);
             } else if (itemstack.getItem() instanceof BowItem) {
-                bowAttackGoal.setMinAttackInterval(level.getDifficulty() != Difficulty.HARD ? 20 : 40);
+                bowAttackGoal.setMinAttackInterval(level().getDifficulty() != Difficulty.HARD ? 20 : 40);
                 goalSelector.addGoal(2, bowAttackGoal);
             }
         }
@@ -362,7 +362,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
                     goalSelector.removeGoal(breakDoorGoal);
             }
         } else if (canBreakDoors) {
-            this.goalSelector.removeGoal(breakDoorGoal);
+            goalSelector.removeGoal(breakDoorGoal);
             canBreakDoors = false;
         }
     }
@@ -378,28 +378,28 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
 
     @Override
     public void shootCrossbowProjectile(LivingEntity target, ItemStack crossbow, Projectile projectile, float angle) {
-        this.shootCrossbowProjectile(this, target, projectile, angle, 1.6F);
+        shootCrossbowProjectile(this, target, projectile, angle, 1.6F);
     }
 
     public boolean isChargingCrossbow() {
-        return this.entityData.get(IS_CHARGING_CROSSBOW);
+        return entityData.get(IS_CHARGING_CROSSBOW);
     }
 
     @Override
     public void setChargingCrossbow(boolean pIsCharging) {
-        this.entityData.set(IS_CHARGING_CROSSBOW, pIsCharging);
+        entityData.set(IS_CHARGING_CROSSBOW, pIsCharging);
     }
 
     @Override
     public void onCrossbowAttackPerformed() {
-        this.noActionTime = 0;
+        noActionTime = 0;
     }
 
     @Override
     public void performRangedAttack(LivingEntity pTarget, float pDistanceFactor) {
         ItemStack weaponStack = getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, this::canFireProjectileWeapon));
         if (weaponStack.getItem() instanceof CrossbowItem) {
-            this.performCrossbowAttack(this, 1.6F);
+            performCrossbowAttack(this, 1.6F);
         } else {
             ItemStack itemstack = getProjectile(weaponStack);
             AbstractArrow mobArrow = ProjectileUtil.getMobArrow(this, itemstack, pDistanceFactor);
@@ -409,9 +409,9 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
             double y = pTarget.getY(1D / 3D) - mobArrow.getY();
             double z = pTarget.getZ() - getZ();
             double d3 = Math.sqrt(x * x + z * z);
-            mobArrow.shoot(x, y + d3 * 0.2F, z, 1.6F, 14 - level.getDifficulty().getId() * 4);
-            this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (getRandom().nextFloat() * 0.4F + 0.8F));
-            this.level.addFreshEntity(mobArrow);
+            mobArrow.shoot(x, y + d3 * 0.2F, z, 1.6F, 14 - level().getDifficulty().getId() * 4);
+            playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (getRandom().nextFloat() * 0.4F + 0.8F));
+            level().addFreshEntity(mobArrow);
         }
     }
 
@@ -500,7 +500,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     }
 
     public PlayerName getUsername() {
-        if (!hasUsername() && !level.isClientSide()) {
+        if (!hasUsername() && !level().isClientSide()) {
             setUsername(NameManager.INSTANCE.getRandomName());
         }
         return new PlayerName(getEntityData().get(NAME));
@@ -514,7 +514,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
                 playerName = name.get();
         }
         NameManager.INSTANCE.useName(playerName);
-        this.setUsername(playerName);
+        setUsername(playerName);
     }
 
     public void setUsername(PlayerName name) {
