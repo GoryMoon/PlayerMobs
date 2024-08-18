@@ -1,6 +1,0 @@
-// 1.19.4	2023-06-08T12:37:36.8754672	Registrate Provider for player_mobs [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), Blockstates, Item models, Lang (en_us/en_ud), Sound Definitions]
-6673e2cadce40b14d02a51751ec142b3930a5161 assets/player_mobs/lang/en_ud.json
-273e244a84d4c3e8423e63759881a88293f7621b assets/player_mobs/lang/en_us.json
-63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets/player_mobs/models/item/player_mob_spawn_egg.json
-ec2c82546fabffebb6018baac581193dae27b5c8 assets/player_mobs/sounds.json
-875040a100091fe5ea553b94a1221a9d5f69c750 data/player_mobs/loot_tables/entities/player_mob.json

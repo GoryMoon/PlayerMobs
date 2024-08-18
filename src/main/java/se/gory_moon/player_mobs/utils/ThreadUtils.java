@@ -1,9 +1,9 @@
 package se.gory_moon.player_mobs.utils;
 
-import net.minecraft.Util;
-import net.minecraft.util.thread.BlockableEventLoop;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 
 public class ThreadUtils {
 
@@ -13,14 +13,8 @@ public class ThreadUtils {
      * @param runnable The runnable task that should be run
      */
     public static void tryRunOnMain(Runnable runnable) {
-        BlockableEventLoop<? extends Runnable> executor = DistExecutor.safeRunForDist(
-                () -> ClientThreadUtils::getExecutor,
-                () -> ServerLifecycleHooks::getCurrentServer);
-        if (executor != null) {
-            executor.submitAsync(runnable);
-        } else {
-            Util.backgroundExecutor().execute(runnable);
-        }
+        var executor = LogicalSidedProvider.WORKQUEUE.get(FMLLoader.getDist() == Dist.CLIENT ? LogicalSide.CLIENT : LogicalSide.SERVER);
+        executor.submitAsync(runnable);
     }
 
 }

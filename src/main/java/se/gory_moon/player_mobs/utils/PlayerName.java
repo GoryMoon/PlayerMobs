@@ -4,24 +4,11 @@ import net.minecraft.util.StringUtil;
 
 import javax.annotation.Nullable;
 
-public class PlayerName {
-    private String skinName;
-    @Nullable
-    private String displayName;
+public record PlayerName(String skinName, @Nullable String displayName) {
 
-    public PlayerName(String combined) {
+    public static PlayerName create(String combined) {
         String[] parts = combined.split(":", 2);
-        skinName = parts[0];
-        if (parts.length > 1) {
-            displayName = parts[1];
-        }
-    }
-
-    public PlayerName(String skin, @Nullable String display) {
-        skinName = skin;
-        if (!StringUtil.isNullOrEmpty(display)) {
-            displayName = display;
-        }
+        return new PlayerName(parts[0], parts.length > 1 ? parts[1] : null);
     }
 
     public String getCombinedNames() {
@@ -32,22 +19,6 @@ public class PlayerName {
         }
     }
 
-    public void setNames(String name) {
-        skinName = displayName = name;
-    }
-
-    public void setSkinName(String name) {
-        skinName = name;
-    }
-
-    public String getSkinName() {
-        return skinName;
-    }
-
-    public void setDisplayName(String display) {
-        displayName = display;
-    }
-
     public boolean noDisplayName() {
         return displayName == null;
     }
@@ -56,7 +27,8 @@ public class PlayerName {
         return StringUtil.isNullOrEmpty(skinName);
     }
 
-    public String getDisplayName() {
+    @Override
+    public String displayName() {
         if (!StringUtil.isNullOrEmpty(displayName)) {
             return displayName;
         } else {

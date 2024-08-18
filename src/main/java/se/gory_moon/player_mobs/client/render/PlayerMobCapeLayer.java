@@ -14,6 +14,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.NotNull;
 import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 import se.gory_moon.player_mobs.utils.TextureUtils;
 
@@ -24,7 +25,7 @@ public class PlayerMobCapeLayer extends RenderLayer<PlayerMobEntity, PlayerModel
         super(playerModelIn);
     }
 
-    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, PlayerMobEntity entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(@NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int packedLightIn, @NotNull PlayerMobEntity entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         Optional<ResourceLocation> location = TextureUtils.getPlayerCape(entity);
         if (!entity.isInvisible() && location.isPresent()) {
             ItemStack itemstack = entity.getItemBySlot(EquipmentSlot.CHEST);
