@@ -177,6 +177,11 @@ public class Configs {
         }
 
         @SubscribeEvent
+        void onLoad(ModConfigEvent.Loading event) {
+            configReload();
+        }
+
+        @SubscribeEvent
         void onReload(ModConfigEvent.Reloading event) {
             configReload();
         }
