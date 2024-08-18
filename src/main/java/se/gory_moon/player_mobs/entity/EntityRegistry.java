@@ -1,55 +1,59 @@
 package se.gory_moon.player_mobs.entity;
 
-import com.tterrag.registrate.util.entry.EntityEntry;
-import com.tterrag.registrate.util.entry.ItemEntry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.functions.LootingEnchantFunction;
-import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import se.gory_moon.player_mobs.Constants;
-import se.gory_moon.player_mobs.PlayerMobs;
-import se.gory_moon.player_mobs.client.render.PlayerMobRenderer;
-import se.gory_moon.player_mobs.utils.CustomRegistrate;
+
+import java.util.Optional;
+import java.util.function.Supplier;
 
 public class EntityRegistry {
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Constants.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Constants.MOD_ID);
+    public static final DeferredRegister<EntityDataSerializer<?>> ENTITY_DATA_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.ENTITY_DATA_SERIALIZERS, Constants.MOD_ID);
 
-    private static final CustomRegistrate REGISTRATE = PlayerMobs.getRegistrate();
+    public static final DeferredHolder<EntityType<?>, EntityType<PlayerMobEntity>> PLAYER_MOB_ENTITY = ENTITIES.register(
+            Constants.PLAYER_MOB_ENTITY,
+            () -> EntityType.Builder.<PlayerMobEntity>of(PlayerMobEntity::new, MobCategory.MONSTER)
+                    .sized(0.6F, 1.8F)
+                    .eyeHeight(1.62F)
+                    .passengerAttachments(2.0125F)
+                    .vehicleAttachment(Player.DEFAULT_VEHICLE_ATTACHMENT)
+                    .ridingOffset(-0.7F)
+                    .clientTrackingRange(8)
+                    .build(Constants.PLAYER_MOB_ENTITY)
+    );
 
-    public static final EntityEntry<PlayerMobEntity> PLAYER_MOB_ENTITY = REGISTRATE.object(Constants.PLAYER_MOB_ENTITY)
-            .<PlayerMobEntity>entity(PlayerMobEntity::new, MobCategory.MONSTER)
-            .lang("Player Mob")
-            .renderer(() -> PlayerMobRenderer::new)
-            .spawnPlacement(SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules)
-            .properties(builder -> builder.sized(0.6F, 1.8F).clientTrackingRange(8))
-            .loot((register, entityType) ->
-                    register.add(entityType, LootTable.lootTable()
-                            .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(Items.BONE)).apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 3))).apply(LootingEnchantFunction.lootingMultiplier(UniformGenerator.between(0.0F, 1.0F))))
-                            .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(Items.ROTTEN_FLESH)).apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 3))).apply(LootingEnchantFunction.lootingMultiplier(UniformGenerator.between(0.0F, 1.0F))))
-                    )
-            )
-            .register();
+    public static final DeferredHolder<Item, DeferredSpawnEggItem> PLAYER_MOD_SPAWN_EGG = ITEMS.registerItem(
+            Constants.PLAYER_MOB_SPAWN_EGG,
+            properties -> new DeferredSpawnEggItem(PLAYER_MOB_ENTITY, 0xFFF144, 0x69DFDA, properties)
+    );
 
-    public static final ItemEntry<ForgeSpawnEggItem> PLAYER_MOD_SPAWN_EGG = REGISTRATE.object(Constants.PLAYER_MOB_SPAWN_EGG)
-            .item(p -> new ForgeSpawnEggItem(PLAYER_MOB_ENTITY, 0xFFF144, 0x69DFDA, p))
-            .tab(CreativeModeTabs.SPAWN_EGGS)
-            .model((ctx, prov) -> prov.withExistingParent(ctx.getName(), new ResourceLocation("item/template_spawn_egg")))
-            .register();
+    public static final Supplier<EntityDataSerializer<Optional<ResolvableProfile>>> RESOLVABLE_PROFILE_SERIALIZER = ENTITY_DATA_SERIALIZERS.register(
+            "optional_resolvable_profile_serializer",
+            () -> EntityDataSerializer.forValueType(ResolvableProfile.STREAM_CODEC.apply(ByteBufCodecs::optional))
+    );
+
+    public static void registerEntitySpawnPlacement(RegisterSpawnPlacementsEvent event) {
+        event.register(PLAYER_MOB_ENTITY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.OR);
+    }
 
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(PLAYER_MOB_ENTITY.get(), PlayerMobEntity.registerAttributes().build());
     }
-
-    public static void init() {}
 }

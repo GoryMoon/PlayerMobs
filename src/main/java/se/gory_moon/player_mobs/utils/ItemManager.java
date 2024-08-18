@@ -1,12 +1,13 @@
 package se.gory_moon.player_mobs.utils;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import se.gory_moon.player_mobs.Configs;
@@ -34,7 +35,7 @@ public class ItemManager {
         weightedOffItems.addAll(parseItems(Configs.COMMON.offhandItems));
     }
 
-    private List<WeightedEntry.Wrapper<ResourceLocation>> parseItems(ForgeConfigSpec.ConfigValue<List<? extends String>> items) {
+    private List<WeightedEntry.Wrapper<ResourceLocation>> parseItems(ModConfigSpec.ConfigValue<List<? extends String>> items) {
         return items.get().stream().map(item -> {
             String[] parts = item.split("-");
             int weight = 1;
@@ -46,8 +47,8 @@ public class ItemManager {
                 }
             }
             ResourceLocation location = ResourceLocation.tryParse(parts[0]);
-            if (location == null || !ForgeRegistries.ITEMS.containsKey(location)) {
-                LOGGER.error(String.format("Failed to parse item id: %s", parts[0]));
+            if (location == null || !BuiltInRegistries.ITEM.containsKey(location)) {
+                LOGGER.error("Failed to parse item id: {}", parts[0]);
                 return null;
             }
             return WeightedEntry.wrap(location, weight);
@@ -63,12 +64,12 @@ public class ItemManager {
     }
 
     private ItemStack getRandomItem(List<WeightedEntry.Wrapper<ResourceLocation>> items, RandomSource randomSource) {
-        if (items.size() == 0)
+        if (items.isEmpty())
             return ItemStack.EMPTY;
 
         return WeightedRandom
                 .getRandomItem(randomSource, items)
-                .map(resourceLocationWrapper -> new ItemStack(ForgeRegistries.ITEMS.getValue(resourceLocationWrapper.getData())))
+                .map(resourceLocationWrapper -> new ItemStack(BuiltInRegistries.ITEM.get(resourceLocationWrapper.data())))
                 .orElse(ItemStack.EMPTY);
     }
 }

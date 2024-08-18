@@ -13,12 +13,13 @@ import net.minecraft.network.chat.*;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import se.gory_moon.player_mobs.entity.EntityRegistry;
 import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 import se.gory_moon.player_mobs.utils.NameManager;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class PlayerMobsCommand {
 
@@ -32,7 +33,7 @@ public class PlayerMobsCommand {
                 .requires(commandSource -> commandSource.hasPermission(2))
                 .then(Commands.literal("reload").executes(context -> {
                             context.getSource().sendSuccess(() -> Component.translatable(LangKeys.COMMANDS_RELOAD_START.key()), true);
-                            NameManager.INSTANCE.reloadRemoteLinks().thenAccept(change ->
+                            NameManager.INSTANCE.reloadRemoteLinks(context.getSource().getServer()).thenAccept(change ->
                                     context.getSource().sendSuccess(() -> Component.translatable(LangKeys.COMMANDS_RELOAD_DONE.key(), change), true));
                             return 1;
                         })
@@ -50,7 +51,7 @@ public class PlayerMobsCommand {
         if (!Level.isInSpawnableBounds(blockpos)) {
             throw INVALID_POS.create();
         } else {
-            PlayerMobEntity entity = EntityRegistry.PLAYER_MOB_ENTITY.create(source.getLevel());
+            PlayerMobEntity entity = EntityRegistry.PLAYER_MOB_ENTITY.get().create(source.getLevel());
             if (entity == null) {
                 throw SUMMON_FAILED.create();
             } else {
@@ -59,12 +60,13 @@ public class PlayerMobsCommand {
                     entity.setUsername(username);
                 else
                     entity.setUsername(NameManager.INSTANCE.getRandomName());
-                ForgeEventFactory.onFinalizeSpawn(entity, source.getLevel(), source.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null, null);
+
+                EventHooks.finalizeMobSpawn(entity, source.getLevel(), source.getLevel().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.COMMAND, null);
 
                 if (!source.getLevel().tryAddFreshEntityWithPassengers(entity)) {
                     throw DUPLICATE_UUID.create();
                 }
-                MutableComponent name = MutableComponent.create(entity.getDisplayName().getContents())
+                MutableComponent name = MutableComponent.create(Objects.requireNonNull(entity.getDisplayName()).getContents())
                         .withStyle(Style.EMPTY
                                 .withColor(ChatFormatting.YELLOW)
                                 .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, entity.getUUID().toString()))
