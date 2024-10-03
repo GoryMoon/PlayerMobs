@@ -9,6 +9,10 @@ Adds hostile mobs that have the skin of players
 [![Modrinth Downloads](https://img.shields.io/modrinth/dt/player-mobs?color=1bd96a&label=Downlods&logo=Modrinth)](https://modrinth.com/mod/player-mobs)
 [![Modrinth Versions](https://img.shields.io/modrinth/game-versions/player-mobs?color=1bd96a&label=Available%20for&logo=Modrinth)](https://modrinth.com/mod/player-mobs)
 
+# Custom skin textures
+
+More info about adding/overriding textures of the player mobs can be found [here](https://github.com/GoryMoon/PlayerMobs/wiki/Custom-player-mob-skins)
+
 License
 ----
 GNU LGLP v.3

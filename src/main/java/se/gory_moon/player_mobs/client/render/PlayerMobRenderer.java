@@ -53,6 +53,7 @@ public class PlayerMobRenderer extends HumanoidMobRenderer<PlayerMobEntity, Play
 
         this.addLayer(new PlayerMobDeadmau5EarsLayer(this));
         this.addLayer(new PlayerMobCapeLayer(this));
+        this.addLayer(new PlayerMobElytraLayer(this, pContext.getModelSet()));
     }
 
     @Override
