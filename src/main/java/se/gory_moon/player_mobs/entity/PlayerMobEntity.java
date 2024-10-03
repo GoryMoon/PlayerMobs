@@ -168,7 +168,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
             var stack = ItemManager.INSTANCE.getRandomMainHand(pRandom);
             setItemSlot(EquipmentSlot.MAINHAND, stack);
 
-            if (level().getDifficulty().getId() >= Configs.COMMON.offhandDifficultyLimit.get().getId() && pRandom.nextDouble() > Configs.COMMON.offhandSpawnChance.get()) {
+            if (level().getDifficulty().getId() >= Configs.COMMON.offhandDifficultyLimit.get().getId() && pRandom.nextDouble() < Configs.COMMON.offhandSpawnChance.get()) {
                 if (stack.getItem() instanceof ProjectileWeaponItem && Configs.COMMON.allowTippedArrows.get()) {
                     var potions = new ArrayList<>(BuiltInRegistries.POTION.keySet());
                     potions.removeAll(Configs.COMMON.tippedArrowBlocklist);
@@ -177,9 +177,11 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
                         potion.ifPresent(potionReference -> setItemSlot(EquipmentSlot.OFFHAND, PotionContents.createItemStack(Items.TIPPED_ARROW, potionReference)));
                     }
                 } else {
-                    setItemSlot(EquipmentSlot.OFFHAND, ItemManager.INSTANCE.getRandomOffHand(pRandom));
-                    Objects.requireNonNull(getAttribute(Attributes.MAX_HEALTH))
-                            .addPermanentModifier(new AttributeModifier(SHIELD_BONUS_ID, pRandom.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+                    ItemStack randomOffHand = ItemManager.INSTANCE.getRandomOffHand(pRandom);
+                    setItemSlot(EquipmentSlot.OFFHAND, randomOffHand);
+                    if (randomOffHand.getItem() instanceof ShieldItem)
+                        Objects.requireNonNull(getAttribute(Attributes.MAX_HEALTH))
+                                .addPermanentModifier(new AttributeModifier(SHIELD_BONUS_ID, pRandom.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
                 }
             }
         }
