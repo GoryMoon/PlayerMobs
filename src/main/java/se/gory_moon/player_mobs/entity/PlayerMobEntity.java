@@ -66,8 +66,11 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     private ResourceLocation skin;
     @Nullable
     private ResourceLocation cape;
+    @Nullable
+    private ResourceLocation elytra;
     private boolean skinAvailable;
     private boolean capeAvailable;
+    private boolean elytraAvailable;
 
     public double xCloakO;
     public double yCloakO;
@@ -544,6 +547,10 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
                     cape = location;
                     capeAvailable = true;
                 }
+                case ELYTRA -> {
+                    elytra = location;
+                    elytraAvailable = true;
+                }
             }
         };
     }
@@ -552,6 +559,8 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     public boolean isTextureAvailable(MinecraftProfileTexture.Type type) {
         if (type == MinecraftProfileTexture.Type.SKIN)
             return skinAvailable;
+        if (type == MinecraftProfileTexture.Type.ELYTRA)
+            return elytraAvailable;
         return capeAvailable;
     }
 
@@ -560,6 +569,8 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
     public ResourceLocation getTexture(MinecraftProfileTexture.Type type) {
         if (type == MinecraftProfileTexture.Type.SKIN)
             return skin;
+        if (type == MinecraftProfileTexture.Type.ELYTRA)
+            return elytra;
         return cape;
     }
 }

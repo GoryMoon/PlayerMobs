@@ -39,6 +39,7 @@ public class PlayerMobRenderer extends HumanoidMobRenderer<PlayerMobEntity, Play
         armorLayerIndex = layers.indexOf(arrowLayer);
         this.addLayer(new PlayerMobDeadmau5EarsLayer(this));
         this.addLayer(new PlayerMobCapeLayer(this));
+        this.addLayer(new PlayerMobElytraLayer(this, pContext.getModelSet()));
     }
 
     @Override
