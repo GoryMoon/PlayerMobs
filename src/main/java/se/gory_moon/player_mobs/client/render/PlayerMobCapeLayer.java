@@ -12,8 +12,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 import se.gory_moon.player_mobs.utils.TextureUtils;
 
@@ -28,7 +28,7 @@ public class PlayerMobCapeLayer extends RenderLayer<PlayerMobEntity, PlayerModel
         Optional<ResourceLocation> location = TextureUtils.getPlayerCape(entity);
         if (!entity.isInvisible() && location.isPresent()) {
             ItemStack itemstack = entity.getItemBySlot(EquipmentSlot.CHEST);
-            if (itemstack.getItem() != Items.ELYTRA) {
+            if (!(itemstack.getItem() instanceof ElytraItem)) {
                 matrixStackIn.pushPose();
                 matrixStackIn.translate(0.0D, 0.0D, 0.125D);
                 double d0 = Mth.lerp(partialTicks, entity.xCloakO, entity.xCloak) - Mth.lerp(partialTicks, entity.xo, entity.getX());
