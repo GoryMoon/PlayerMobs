@@ -187,21 +187,19 @@ public class Configs {
         }
 
         private void configReload() {
-            ThreadUtils.tryRunOnMain(() -> {
-                dimensionBlocklist.clear();
-                dimensionBlocklist.addAll(dimensionBlocklistStrings.get().stream()
-                        .map(ResourceLocation::tryParse)
-                        .filter(Objects::nonNull)
-                        .map(s -> ResourceKey.create(Registries.DIMENSION, s))
-                        .toList());
-                tippedArrowBlocklist.clear();
-                tippedArrowBlocklist.addAll(tippedArrowBlocklistStrings.get().stream()
-                        .map(ResourceLocation::tryParse)
-                        .filter(Objects::nonNull)
-                        .toList());
-                NameManager.INSTANCE.configLoad();
-                ItemManager.INSTANCE.configLoad();
-            });
+            dimensionBlocklist.clear();
+            dimensionBlocklist.addAll(dimensionBlocklistStrings.get().stream()
+                    .map(ResourceLocation::tryParse)
+                    .filter(Objects::nonNull)
+                    .map(s -> ResourceKey.create(Registries.DIMENSION, s))
+                    .toList());
+            tippedArrowBlocklist.clear();
+            tippedArrowBlocklist.addAll(tippedArrowBlocklistStrings.get().stream()
+                    .map(ResourceLocation::tryParse)
+                    .filter(Objects::nonNull)
+                    .toList());
+            NameManager.INSTANCE.configLoad();
+            ItemManager.INSTANCE.configLoad();
         }
 
         private static final List<String> DEFAULT_MAIN_HAND_ITEMS = ImmutableList.of(
