@@ -549,7 +549,7 @@ public class PlayerMobEntity extends Monster implements RangedAttackMob, Crossbo
         }
 
         if (!Objects.equals(oldName, name)) {
-            setProfile(new ResolvableProfile(Optional.of(name.skinName()), Optional.empty(), new PropertyMap()));
+            setProfile(new ResolvableProfile(Optional.of(StringUtil.truncateStringIfNecessary(name.skinName(),16, false)), Optional.empty(), new PropertyMap()));
         }
     }
 }

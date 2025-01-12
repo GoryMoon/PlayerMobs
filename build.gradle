@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.158'
+    id 'net.neoforged.gradle.userdev' version '7.0.176'
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -42,7 +42,6 @@ minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/
 runs {
     configureEach {
         systemProperty 'forge.logging.markers', 'REGISTRIES'
-        //property 'forge.logging.markers', 'CORE,LOADING,REGISTRIES'
 
         // Recommended logging level for the console
         systemProperty 'forge.logging.console.level', 'debug'
@@ -62,7 +61,7 @@ runs {
     server {
         // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
         systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-        arguments '--nogui'
+        arguments.add '--nogui'
     }
 
     // This run config launches GameTestServer and runs all registered gametests, then exits.
