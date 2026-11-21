@@ -1,0 +1,12 @@
+gradle.beforeProject { project ->
+    project.repositories.whenObjectAdded { repository ->
+        if (repository instanceof org.gradle.api.artifacts.repositories.MavenArtifactRepository) {
+            def repositoryUrl = repository.url.toString()
+            if (repositoryUrl.startsWith('https://maven.neoforged.net/releases')) {
+                repository.url = uri(repositoryUrl.replace(
+                        'https://maven.neoforged.net/releases',
+                        'https://neoforged.forgecdn.net/releases'))
+            }
+        }
+    }
+}

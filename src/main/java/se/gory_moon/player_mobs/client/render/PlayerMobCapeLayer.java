@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -19,8 +20,11 @@ import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 import se.gory_moon.player_mobs.utils.TextureUtils;
 
 import java.util.Optional;
+import java.lang.reflect.Field;
 
 public class PlayerMobCapeLayer extends RenderLayer<PlayerMobEntity, PlayerModel<PlayerMobEntity>> {
+    private static final Field EMF_CAPE_MODEL_FIELD = findEmfCapeModelField();
+
     public PlayerMobCapeLayer(RenderLayerParent<PlayerMobEntity, PlayerModel<PlayerMobEntity>> playerModelIn) {
         super(playerModelIn);
     }
@@ -30,6 +34,17 @@ public class PlayerMobCapeLayer extends RenderLayer<PlayerMobEntity, PlayerModel
         if (!entity.isInvisible() && location.isPresent()) {
             ItemStack itemstack = entity.getItemBySlot(EquipmentSlot.CHEST);
             if (!(itemstack.getItem() instanceof ElytraItem)) {
+                ModelPart emfCapeModel = getEmfCapeModel();
+                if (emfCapeModel != null) {
+                    matrixStackIn.pushPose();
+                    matrixStackIn.translate(0.0F, 0.0F, 0.125F);
+                    matrixStackIn.mulPose(Axis.YP.rotationDegrees(180.0F));
+                    VertexConsumer consumer = bufferIn.getBuffer(RenderType.entitySolid(location.get()));
+                    emfCapeModel.render(matrixStackIn, consumer, packedLightIn, OverlayTexture.NO_OVERLAY);
+                    matrixStackIn.popPose();
+                    return;
+                }
+
                 matrixStackIn.pushPose();
                 matrixStackIn.translate(0.0D, 0.0D, 0.125D);
                 double d0 = Mth.lerp(partialTicks, entity.xCloakO, entity.xCloak) - Mth.lerp(partialTicks, entity.xo, entity.getX());
@@ -66,6 +81,29 @@ public class PlayerMobCapeLayer extends RenderLayer<PlayerMobEntity, PlayerModel
                 this.getParentModel().renderCloak(matrixStackIn, consumer, packedLightIn, OverlayTexture.NO_OVERLAY);
                 matrixStackIn.popPose();
             }
+        }
+    }
+
+    private ModelPart getEmfCapeModel() {
+        if (EMF_CAPE_MODEL_FIELD == null) {
+            return null;
+        }
+
+        try {
+            Object modelPart = EMF_CAPE_MODEL_FIELD.get(this.getParentModel());
+            return modelPart instanceof ModelPart ? (ModelPart) modelPart : null;
+        } catch (IllegalAccessException ignored) {
+            return null;
+        }
+    }
+
+    private static Field findEmfCapeModelField() {
+        try {
+            Field field = PlayerModel.class.getDeclaredField("emf$capeModelPart");
+            field.setAccessible(true);
+            return field;
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+            return null;
         }
     }
 }

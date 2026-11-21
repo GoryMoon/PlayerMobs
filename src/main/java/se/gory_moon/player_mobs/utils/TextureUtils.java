@@ -14,14 +14,11 @@ import se.gory_moon.player_mobs.entity.PlayerMobEntity;
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TextureUtils {
-
-    private static final Map<UUID, PlayerSkin.Model> SKIN_MODEL_CACHE = new Object2ObjectOpenHashMap<>();
 
     private static final Map<String, ResourceLocation> SKIN_RESOURCE_CACHE = new Object2ObjectOpenHashMap<>();
     private static final Map<String, ResourceLocation> CAPE_RESOURCE_CACHE = new Object2ObjectOpenHashMap<>();
@@ -29,21 +26,9 @@ public class TextureUtils {
     public static final ResourceLocation HIDE_FEATURE = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "hide_feature");
 
     public static PlayerSkin.Model getPlayerSkinType(PlayerMobEntity entity) {
-        var optionalProfile = entity.getProfile();
-        var type = PlayerSkin.Model.SLIM;
-
-        if (optionalProfile.map(ResolvableProfile::isResolved).orElse(false)) {
-            var profile = optionalProfile.get();
-            if (SKIN_MODEL_CACHE.containsKey(profile.id().get())) {
-                type = SKIN_MODEL_CACHE.get(profile.id().get());
-            } else {
-                Minecraft mc = Minecraft.getInstance();
-                var playerSkin = mc.getSkinManager().getInsecureSkin(profile.gameProfile());
-                SKIN_MODEL_CACHE.put(profile.id().get(), type = playerSkin.model());
-            }
-        }
-
-        return type;
+        return getTexture(entity)
+                .map(PlayerSkin::model)
+                .orElse(PlayerSkin.Model.SLIM);
     }
 
     public static ResourceLocation getPlayerSkin(PlayerMobEntity entity) {
